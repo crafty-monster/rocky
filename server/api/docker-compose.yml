@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  rocky_shining-ocelot:
+      image: itzg/minecraft-bedrock-server
+      environment:
+        EULA: "TRUE"
+        GAMEMODE: survival
+        DIFFICULTY: easy
+        ALLOW_CHEATS: "true"
+        DEFAULT_PLAYER_PERMISSION_LEVEL: operator
+      ports:
+        - 19132:19132/udp
+      volumes:
+        - ./data/rocky_shining-ocelot:/data
+      stdin_open: true
+      tty: true
