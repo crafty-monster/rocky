@@ -63,7 +63,7 @@ export default class World {
    */
   static async list() {
     console.log('World.list()');
-    const containers = await docker.listContainers();
+    const containers = await docker.listContainers({all: true});
     return containers
         .map(c => {
           const id = c.Id;
@@ -81,7 +81,7 @@ export default class World {
    * Stops all running worlds
    * @return {Array} List of worlds
    */
-  static async clear() {
+  static async stop() {
     console.log('World.clear()');
     const containers = await docker.listContainers();
     const output = [];
@@ -92,6 +92,30 @@ export default class World {
         console.log('Stopping container...', name, id);
         await docker.getContainer(id).stop();
         console.log('Container stopped', name, id);
+        output.push({name, id});
+      } else {
+        console.log('Skipping container..', name);
+      }
+    }
+    return output;
+  }
+
+  /**
+   * Removes all stopped worlds
+   * @return {Array} List of worlds
+   */
+  static async remove() {
+    console.log('World.remove()');
+    const containers = await docker.listContainers({all: true});
+    const output = [];
+    for (const c of containers) {
+      const state = c.State;
+      const name = c?.Names?.[0];
+      const id = c.Id;
+      if (name?.startsWith('/rocky_') && state === 'exited') {
+        console.log('Removing container...', name, id);
+        await docker.getContainer(id).remove();
+        console.log('Container removed', name, id);
         output.push({name, id});
       } else {
         console.log('Skipping container..', name);

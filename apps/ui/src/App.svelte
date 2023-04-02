@@ -50,8 +50,11 @@
     <button on:click={create}>
       create world
     </button>
+    <button on:click={ () => fetch('/api/world/stopAll', {method: 'POST'}) }>
+      stop worlds
+    </button>
     <button on:click={ () => fetch('/api/world', {method: 'DELETE'}) }>
-      clear worlds
+      remove stopped worlds
     </button>
   </div>
 

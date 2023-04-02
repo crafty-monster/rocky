@@ -60,7 +60,7 @@ class Server {
    */
   async containers() {
     console.log('Server.containers()');
-    return await this.docker.listContainers();
+    return await this.docker.listContainers({all: true});
   }
 }
 

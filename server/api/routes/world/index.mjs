@@ -18,9 +18,17 @@ export const list = async (req, res) => {
   }
 };
 
-export const clear = async (req, res) => {
+export const stop = async (req, res) => {
   try {
-    res.status(200).json(await World.clear());
+    res.status(200).json(await World.stop());
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+export const remove = async (req, res) => {
+  try {
+    res.status(200).json(await World.remove());
   } catch (err) {
     res.status(500).send(err);
   }
