@@ -38,20 +38,24 @@ class Server {
     return await this.docker.version();
   }
   /**
-   * Checks if server is up
+   * Runs a ping if server is connected
    * @see https://docs.docker.com/engine/api/v1.42/#tag/System/operation/SystemPing
    * @return {Boolean}
    */
-  async up() {
-    console.log('Server.status()');
+  async connected() {
+    console.log('Server.connected()');
     let up = false;
+    let path = 'unix:///var/run/docker.sock';
+    if (DOCKER_HOST) {
+      path = `tcp://${DOCKER_HOST}${DOCKER_PORT && (':' + DOCKER_PORT)}`;
+    }
     try {
       this.docker.modem.timeout = 500;
       await this.docker.ping();
       up = true;
     } catch (e) {/* Do nothing */}
     this.docker.modem.timeout = null;
-    return up;
+    return {path, up};
   }
   /**
    * List Containers

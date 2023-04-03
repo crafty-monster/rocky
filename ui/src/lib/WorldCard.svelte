@@ -48,7 +48,7 @@ for (const path in assets) {
     </h4>
     <p>
       {#if state === 'new'}
-        Never be afraid to create something new. Life gets boring when you stay within the limits of what you already know.
+        Life gets boring when you stay within the limits of what you already know.
       {:else}
         {description || 'The future can be scary, but there are ways to deal with that fear.'}
       {/if}
@@ -88,11 +88,11 @@ for (const path in assets) {
   border-radius: 10px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  width: 300px;
+  width: 220px;
 }
 .card-image img {
   width: 100%;
-  height: 200px;
+  height: 160px;
   object-fit: cover;
 }
 .card-image small {
@@ -112,7 +112,8 @@ for (const path in assets) {
   min-height: 250px;
 }
 .card-body h4 {
-  margin-top: 5px;
+  font-size: 1.2em;
+  margin-top: 10px;
   font-weight: bold;
 }
 .tag {
@@ -165,5 +166,18 @@ for (const path in assets) {
 .tools {
   margin-top: 10px;
   font-size: 80%;
+}
+
+/* PHABLET STYLES */
+@media all and (max-width: 760px) { 
+  .card {
+    width: 200px;
+  }
+  .card-body h4 {
+    font-size: 1em;
+  }
+  .card-image img {
+    height: 150px;
+  }
 }
 </style>

@@ -1,8 +1,9 @@
 <script>
   import WorldCard from './lib/WorldCard.svelte';
+  import SystemInfo from './lib/SystemInfo.svelte';
   import logo from './assets/logo.transparentbg.png';
 
-  let newworld = {id: '(new)', name: 'Create World', state: 'new', port: 'survival'}
+  let newworld = {id: '(new)', name: 'Generate World', state: 'new', port: 'survival'}
   let disconnectedworld = {id: '(error)', name: 'Disconnected', state: 'disconnected'}
   let worlds = [newworld];
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
@@ -26,8 +27,7 @@
     }
     static async list() {
       try {
-        worlds = await fetch('/api/world/list').then(r => r.json());
-        worlds.push(newworld);
+        worlds = [newworld].concat(await fetch('/api/world/list').then(r => r.json()));
       } catch (err) {
         worlds = [{port: String(err).substr(0,8), ...disconnectedworld}];
       }
@@ -37,20 +37,12 @@
 </script>
 
 <main>
-  <div class="pt-4 mx-auto">
-    <h1><img src={logo} alt="rocky: Minecraft Server Manager"/></h1>
+  <div class="heading pt-4 mx-auto d-flex justify-content-between">
+    <h1><img src={logo} alt="ROCKY: minecraft bedrock server controller"/></h1>
+    <div class="systeminfo d-flex justify-content-right align-items-end"><SystemInfo /></div>
   </div>
 
   <section>
-    <button class="btn btn-light" on:click={ () => fetch('/api/healthcheck') }>
-      healthcheck
-    </button>
-    <button class="btn btn-light" on:click={ () => fetch('/api/server/up') }>
-      server up
-    </button>
-    <button class="btn btn-light" on:click={ () => fetch('/api/server/info') }>
-      server info
-    </button>
     <button class="btn btn-light" on:click={ () => fetch('/api/server/containers') }>
       list containers
     </button>
@@ -77,11 +69,15 @@
 
 <style>
   main {
-    max-width: 1300px;
+    max-width: 1000px;
     margin: 0 auto;
   }
-  main h1 img {
+  .heading h1 img {
     width: 340px;
+  }
+  .heading .systeminfo {
+    width: 240px; 
+    height: 105px;
   }
   section {
     padding-top: 2em;
@@ -90,20 +86,9 @@
     display: flex;
     flex-wrap: wrap;
   }
-  /** REMOVE BELOW 
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  @media all and (max-width: 760px) { 
+    .worlds {
+      justify-content: space-evenly;
+    }
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }*/
 </style>

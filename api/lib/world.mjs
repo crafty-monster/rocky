@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
 import randomQuotes from 'random-quotes';
 import server from './server.mjs';
@@ -159,8 +160,10 @@ export default class World {
         // Step 2) Remove files
         console.log('Checking data folder..', c.folder);
         if (fs.existsSync(c.folder)) {
-          console.log('Removing files from', c.folder);
-          fs.rmSync(c.folder, {recursive: true, force: true});
+          setTimeout(async () => {
+            console.log('Removing files from', c.folder);
+            await fsPromises.rm(c.folder, {recursive: true, force: true});
+          }, 2000);
         }
         output.push({state: undefined, ...c});
       } else {
@@ -190,8 +193,10 @@ export default class World {
     if (process.platform === 'win32') c.folder = Utils.toWindowsPath(c.folder);
     console.log('Checking data folder..', c.folder);
     if (fs.existsSync(c.folder)) {
-      console.log('Removing files from', c.folder);
-      fs.rmSync(c.folder, {recursive: true, force: true});
+      setTimeout(async () => {
+        console.log('Removing files from', c.folder);
+        await fsPromises.rm(c.folder, {recursive: true, force: true});
+      }, 2000);
     }
     return {state: undefined, ...c};
   }

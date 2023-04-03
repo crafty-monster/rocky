@@ -16,12 +16,12 @@ export const version = async (req, res) => {
   }
 };
 
-export const up = async (req, res) => {
-  const up = await server.up();
-  if (up) {
-    res.status(200).send(up);
+export const connected = async (req, res) => {
+  const connected = await server.connected();
+  if (connected) {
+    res.status(200).send(connected);
   } else {
-    res.status(500).send(up);
+    res.status(500).send(connected);
   }
 };
 

@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import './lib/error.mjs';
 import {healthcheck} from './routes/index.mjs';
 import {create, list, start, stop, stopAll, remove, removeAll} from './routes/world/index.mjs';
-import {up, info, version, containers} from './routes/server/index.mjs';
+import {connected, info, version, containers} from './routes/server/index.mjs';
 
 const app = express();
 app.use(cors());
@@ -15,7 +15,7 @@ const PORT = 9999;
 
 app.get('/api/healthcheck', healthcheck);
 
-app.get('/api/server/up', up);
+app.get('/api/server/connected', connected);
 app.get('/api/server/info', info);
 app.get('/api/server/version', version);
 app.get('/api/server/containers', containers);
