@@ -55,6 +55,8 @@
     <div class="tools">
       {#if state === 'new'}
         <button class="btn btn-primary" on:click={() => dispatch('create')}>Create New</button>
+      {:else if state === 'disconnected'}
+        <button class="btn btn-primary" disabled>Create New</button>
       {:else if state === 'exited'}
         <button class="btn btn-success" on:click={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => dispatch('started', {id}))}>Start</button>
         <button class="btn btn-danger" on:click={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => dispatch('deleted', {id}))}>Delete</button>
