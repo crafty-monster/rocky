@@ -1,30 +1,40 @@
 <script>
 // @ts-nocheck
 
-	import { createEventDispatcher } from 'svelte';
-  import * as timeago from 'timeago.js';
-  const assets = import.meta.glob("../assets/map.*.png");
-  const dispatch = createEventDispatcher();
-  export let id = null;
-  export let name = null;
-  export let description = null;
-  export let state = null;
-  export let port = null;
-  export let created = null;
-  const images = {};
-  for (const path in assets) {
-    assets[path]().then(({ default: imageUrl }) => {
-      images[path.split('/').pop()] = imageUrl;
-    });
-  }
+import { createEventDispatcher } from 'svelte';
+import * as timeago from 'timeago.js';
+const assets = import.meta.glob("../assets/map.*.png");
+const dispatch = createEventDispatcher();
+export let id = null;
+export let name = null;
+export let description = null;
+export let state = null;
+export let port = null;
+export let created = null;
+const images = {};
+for (const path in assets) {
+  assets[path]().then(({ default: imageUrl }) => {
+    images[path.split('/').pop()] = imageUrl;
+  });
+}
 </script>
 
 <div id={id} class="card">
   <div class="card-image">
     <small>{String(id).substr(0,12)}</small>
-    <a href="minecraft://?addExternalServer={name}|play.crafty.monster:{port}">
-      <img src="{'/src/assets/map.' + String(id).substr(0,2) + '.png'}" alt="rover" onerror="this.onerror=null;this.src='/src/assets/map.--.png'"/>
-    </a>
+    {#if state === 'new'}
+      <a href="javascript:;" on:click={() => dispatch('create')}>
+        <img src="images/map.(new).png"/>
+      </a>
+    {:else if state === 'disconnected'}
+      <a href="javascript:;">
+        <img src="images/map.(disconnected).png"/>
+      </a>
+    {:else}
+      <a href="minecraft://?addExternalServer={name}|play.crafty.monster:{port}">
+        <img src="{'images/map.' + String(id).substr(0,2) + '.png'}" alt="rover" onerror="this.onerror=null;this.src='images/map.--.png'"/>
+      </a>
+    {/if}
   </div>
   <div class="card-body">
     <div style="display:flex;">
@@ -37,7 +47,7 @@
       {name}
     </h4>
     <p>
-      {#if id === 'new'}
+      {#if state === 'new'}
         Never be afraid to create something new. Life gets boring when you stay within the limits of what you already know.
       {:else}
         {description || 'The future can be scary, but there are ways to deal with that fear.'}
@@ -54,7 +64,7 @@
     </div>
     <div class="tools">
       {#if state === 'new'}
-        <button class="btn btn-primary" on:click={() => dispatch('create')}>Create New</button>
+        <button class="btn btn-primary" on:click={() => dispatch('create')}>Generate</button>
       {:else if state === 'disconnected'}
         <button class="btn btn-primary" disabled>Create New</button>
       {:else if state === 'exited'}

@@ -1,5 +1,6 @@
 <script>
-  import WorldCard from './lib/WorldCard.svelte'
+  import WorldCard from './lib/WorldCard.svelte';
+  import logo from './assets/logo.transparentbg.png';
 
   let newworld = {id: '(new)', name: 'Create World', state: 'new', port: 'survival'}
   let disconnectedworld = {id: '(error)', name: 'Disconnected', state: 'disconnected'}
@@ -36,8 +37,8 @@
 </script>
 
 <main>
-  <div class="container py-4 px-3 mx-auto">
-    <h1>rocky: Minecraft Server Manager</h1>
+  <div class="pt-4 mx-auto">
+    <h1><img src={logo} alt="rocky: Minecraft Server Manager"/></h1>
   </div>
 
   <section>
@@ -56,10 +57,10 @@
     <button class="btn btn-light" on:click={App.list}>
       list worlds
     </button>
-    <button class="btn btn-light" on:click={ () => fetch('/api/world/stopAll', {method: 'POST'}) }>
+    <button class="btn btn-light" on:click={ () => fetch('/api/world/stopAll', {method: 'POST'}).then(() => App.list()) }>
       stop worlds
     </button>
-    <button class="btn btn-light" on:click={ () => fetch('/api/world', {method: 'DELETE'}) }>
+    <button class="btn btn-light" on:click={ () => fetch('/api/world', {method: 'DELETE'}).then(() => App.list()) }>
       remove stopped worlds
     </button>
   </section>
@@ -78,6 +79,9 @@
   main {
     max-width: 1300px;
     margin: 0 auto;
+  }
+  main h1 img {
+    width: 340px;
   }
   section {
     padding-top: 2em;
