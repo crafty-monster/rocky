@@ -1,7 +1,8 @@
 <script>
   import WorldCard from './lib/WorldCard.svelte'
 
-  let worlds = [];
+  let newworld = {id: 'new', name: 'Create World', state: 'new', port: 'survival'}
+  let worlds = [newworld];
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
   
@@ -22,7 +23,12 @@
       setTimeout(() => App.list(), 1000);
     }
     static async list() {
-      worlds = await fetch('/api/world/list').then(r => r.json());
+      try {
+        worlds = await fetch('/api/world/list').then(r => r.json());
+        worlds.push(newworld);
+      } catch (err) {
+        worlds = [{id: 'disconnected', name: 'Disconnected'}];
+      }
     }
   }
   setTimeout(() => App.list(), 1000);
@@ -32,21 +38,6 @@
   <div class="container py-4 px-3 mx-auto">
     <h1>rocky: Minecraft Server Manager</h1>
   </div>
-
-  <ul class="nav nav-pills">
-    <li class="nav-item">
-      <a class="nav-link active" aria-current="page" href="#">Main</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Other</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Link</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-    </li>
-  </ul>
 
   <section>
     <button class="btn btn-light" on:click={ () => fetch('/api/healthcheck') }>
@@ -64,9 +55,6 @@
     <button class="btn btn-light" on:click={App.list}>
       list worlds
     </button>
-    <button class="btn btn-light" on:click={App.create}>
-      create world
-    </button>
     <button class="btn btn-light" on:click={ () => fetch('/api/world/stopAll', {method: 'POST'}) }>
       stop worlds
     </button>
@@ -76,8 +64,11 @@
   </section>
 
   <section class="worlds">
+    {#if !worlds}
+      <WorldCard id="disconnected" name="disconnected"/>
+    {/if}
     {#each worlds as world}
-      <WorldCard {...world} on:stopped={App.list} on:started={App.list} on:deleted={App.list}/>
+      <WorldCard {...world} on:stopped={App.list} on:started={App.list} on:deleted={App.list} on:create={App.create}/>
     {/each}
   </section>
 </main>

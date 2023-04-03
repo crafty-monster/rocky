@@ -5,12 +5,12 @@
   import * as timeago from 'timeago.js';
   const assets = import.meta.glob("../assets/map.*.png");
   const dispatch = createEventDispatcher();
-  export let id;
-  export let name;
-  export let description;
-  export let state;
-  export let port;
-  export let created;
+  export let id = null;
+  export let name = null;
+  export let description = null;
+  export let state = null;
+  export let port = null;
+  export let created = null;
   const images = {};
   for (const path in assets) {
     assets[path]().then(({ default: imageUrl }) => {
@@ -29,13 +29,19 @@
   <div class="card-body">
     <div style="display:flex;">
       <span class="tag tag-{state}">{state}</span>
+      {#if port}
       <span class="tag float-end">{port}</span>
+      {/if}
     </div>
     <h4>
       {name}
     </h4>
     <p>
-      {description || 'The future can be scary, but there are ways to deal with that fear.'}
+      {#if id === 'new'}
+        Never be afraid to create something new. Life gets boring when you stay within the limits of what you already know.
+      {:else}
+        {description || 'The future can be scary, but there are ways to deal with that fear.'}
+      {/if}
     </p>
     <div class="user">
       <img
@@ -47,7 +53,9 @@
       </div>
     </div>
     <div class="tools">
-      {#if state === 'exited'}
+      {#if state === 'new'}
+        <button class="btn btn-primary" on:click={() => dispatch('create')}>Create New</button>
+      {:else if state === 'exited'}
         <button class="btn btn-success" on:click={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => dispatch('started', {id}))}>Start</button>
         <button class="btn btn-danger" on:click={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => dispatch('deleted', {id}))}>Delete</button>
       {:else}
@@ -105,8 +113,11 @@
   text-transform: uppercase;
   cursor: pointer;
 }
+.tag-new {
+  background-color: #6eb518;
+}
 .tag-started {
-  background-color: #33cb4a;
+  background-color: #3ac182;
 }
 .tag-running {
   background-color: #5babcd;
