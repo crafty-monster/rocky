@@ -3,13 +3,16 @@
   "version": "0.0.1",
   "type": "module",
   "workspaces": [
-    "apps/*",
-    "server/*",
-    "shared/*"
+    "ui",
+    "api",
+    "utils"
   ],
   "scripts": {
+    "start": "concurrently \"npm run start:*\"",
     "dev": "concurrently \"npm run dev:*\"",
     "inspect": "concurrently \"npm run dev:app\" \"npm run inspect -w @rocky/api\"",
+    "start:app": "npm start -w @rocky/ui",
+    "start:api": "npm start -w @rocky/api",
     "dev:app": "npm run dev -w @rocky/ui",
     "dev:api": "npm run dev -w @rocky/api",
     "build": "npm run build -w @rocky/ui",

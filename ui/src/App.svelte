@@ -94,7 +94,7 @@
     display: flex;
     flex-wrap: wrap;
   }
-  /** REMOVE BELOW */
+  /** REMOVE BELOW 
   .logo {
     height: 6em;
     padding: 1.5em;
@@ -109,5 +109,5 @@
   }
   .read-the-docs {
     color: #888;
-  }
+  }*/
 </style>

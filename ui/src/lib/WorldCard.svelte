@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
 	import { createEventDispatcher } from 'svelte';
   import * as timeago from 'timeago.js';
   const assets = import.meta.glob("../assets/map.*.png");

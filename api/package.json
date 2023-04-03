@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
+    "start": "node index.mjs",
     "dev": "env $(cat .env | xargs) nodemon --ignore ./data index.mjs",
-    "inspect": "env $(cat .env | xargs) nodemon --ignore ./data --inspect index.mjs",
-    "serve": "node index.mjs"
+    "inspect": "env $(cat .env | xargs) nodemon --ignore ./data --inspect index.mjs"
   },
   "dependencies": {
     "body-parser": "^1.20.2",

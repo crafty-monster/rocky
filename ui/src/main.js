@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './scss/app.scss'
 import App from './App.svelte'
 

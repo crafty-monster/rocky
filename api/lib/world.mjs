@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import randomQuotes from 'random-quotes';
 import server from './server.mjs';
-import Utils from '../../../shared/utils/index.mjs';
+import Utils from '../../utils/index.mjs';
 import * as url from 'url';
 
 const docker = server.docker;
