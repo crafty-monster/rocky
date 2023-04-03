@@ -13,5 +13,5 @@ services:
         - 19132:19132/udp
       volumes:
         - ./data/rocky_shining-ocelot:/data
-      stdin_open: true
-      tty: true
+      # stdin_open: true
+      # tty: true

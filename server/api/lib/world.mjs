@@ -1,14 +1,13 @@
 /* eslint-disable require-jsdoc */
+import fs from 'fs';
 import path from 'path';
+import randomQuotes from 'random-quotes';
 import server from './server.mjs';
+import Utils from '../../../shared/utils/index.mjs';
 import * as url from 'url';
 
 const docker = server.docker;
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-
-const toPosix = (path) => {
-  return String('/' + path).replace(/\\/gi, '/').replace(/(\w):/g, (s) => s.toLowerCase().replace(':', ''));
-};
 
 export default class World {
   /**
@@ -19,9 +18,10 @@ export default class World {
   static async create(settings) {
     console.log('Creating world with settings', settings);
     const name = 'rocky_' + settings['server-name'];
+    const description = randomQuotes.default().body;
     const port = 29133 + Math.floor(Math.random() * 800);
     let datafolder = path.join(__dirname + '/../data/' + name);
-    if (process.platform === 'win32') datafolder = toPosix(datafolder);
+    if (process.platform === 'win32') datafolder = Utils.toPosixPath(datafolder);
     // console.log('datapath', datapath);
     // console.log('toPosix', toPosix(datapath));
     // console.log('import.meta.url', import.meta.url);
@@ -39,6 +39,12 @@ export default class World {
       ],
       Volumes: {
         '/data': {},
+      },
+      Labels: {
+        'monster.crafty.rocky': 'true',
+        'monster.crafty.rocky.description': description,
+        'monster.crafty.rocky.settings.gamemode': 'survival',
+        'monster.crafty.rocky.settings.difficulty': 'easy',
       },
       HostConfig: {
         PortBindings: {
@@ -63,38 +69,74 @@ export default class World {
    */
   static async list() {
     console.log('World.list()');
-    const containers = await docker.listContainers({all: true});
+    const containers = await docker.listContainers({all: true, filters: {name: ['/rocky_']}});
     return containers
         .map(c => {
           const id = c.Id;
-          const name = c?.Names?.[0];
+          const name = String(c.Names?.[0]).replace('/rocky_', '');
+          const description = c.Labels['monster.crafty.rocky.description'];
           const created = new Date(c.Created * 1000).toISOString();
           const port = c.Ports?.[0]?.PublicPort;
+          const folder = c.Mounts?.find(m => m.Type === 'bind')?.Source;
           const state = c.State;
           const meta = c;
-          return {id, name, created, port, state, meta};
-        })
-        .filter(w => w.name.startsWith('/rocky'));
+          return {id, name, description, created, port, state, folder, meta};
+        });
+  }
+
+  /**
+   * Starts a world
+   * @param {String} id The id of the world to start
+   * @return {Array} Details of the world start
+   */
+  static async start(id) {
+    console.log('World.start(%s)', id);
+    const containers = await World.list();
+    const c = containers.find(c => c.id === id);
+    if (!c) {
+      throw new Error('Cannot find container to start:' + id);
+    }
+    console.log('Starting container...', c.name, c.id);
+    await docker.getContainer(c.id).start();
+    console.log('Container started', c.name, c.id);
+    return c;
+  }
+
+  /**
+   * Stops a running word
+   * @param {String} id the id of the world to stop
+   */
+  static async stop(id) {
+    console.log('World.stop(%s)', id);
+    const containers = await World.list();
+    const c = containers.find(c => c.id === id);
+    if (c.state === 'running') {
+      console.log('Stopping container...', c.name, c.id);
+      await docker.getContainer(c.id).stop();
+      console.log('Container stopped', c.name, c.id);
+      return c;
+    } else {
+      console.log('Skipping container..', c.name);
+    }
+    return null;
   }
 
   /**
    * Stops all running worlds
    * @return {Array} List of worlds
    */
-  static async stop() {
-    console.log('World.clear()');
-    const containers = await docker.listContainers();
+  static async stopAll() {
+    console.log('World.stopAll()');
+    const containers = await World.list();
     const output = [];
     for (const c of containers) {
-      const name = c?.Names?.[0];
-      const id = c.Id;
-      if (name?.startsWith('/rocky_')) {
-        console.log('Stopping container...', name, id);
-        await docker.getContainer(id).stop();
-        console.log('Container stopped', name, id);
-        output.push({name, id});
+      if (c.state === 'running') {
+        console.log('Stopping container...', c.name, c.id);
+        await docker.getContainer(c.id).stop();
+        console.log('Container stopped', c.name, c.id);
+        output.push(c);
       } else {
-        console.log('Skipping container..', name);
+        console.log('Skipping container..', c.name);
       }
     }
     return output;
@@ -104,23 +146,53 @@ export default class World {
    * Removes all stopped worlds
    * @return {Array} List of worlds
    */
-  static async remove() {
-    console.log('World.remove()');
-    const containers = await docker.listContainers({all: true});
+  static async removeAll() {
+    console.log('World.removeAll()');
+    const containers = await World.list();
     const output = [];
     for (const c of containers) {
-      const state = c.State;
-      const name = c?.Names?.[0];
-      const id = c.Id;
-      if (name?.startsWith('/rocky_') && state === 'exited') {
-        console.log('Removing container...', name, id);
-        await docker.getContainer(id).remove();
-        console.log('Container removed', name, id);
-        output.push({name, id});
+      if (c.state === 'exited') {
+        // Step 1) Remove container (use force)
+        console.log('Removing container...', c.name, c.id);
+        await docker.getContainer(c.id).remove({force: true});
+        console.log('Container removed', c.name, c.id);
+        // Step 2) Remove files
+        console.log('Checking data folder..', c.folder);
+        if (fs.existsSync(c.folder)) {
+          console.log('Removing files from', c.folder);
+          fs.rmSync(c.folder, {recursive: true, force: true});
+        }
+        output.push({state: undefined, ...c});
       } else {
-        console.log('Skipping container..', name);
+        console.log('Skipping container..', c.name);
       }
     }
     return output;
+  }
+
+  /**
+   * Remove a world
+   * @param {String} id The id of the world to remove
+   * @return {Array} Details of the world removed
+   */
+  static async remove(id) {
+    console.log('World.remove(%s)', id);
+    const containers = await World.list();
+    const c = containers.find(c => c.id === id);
+    if (!c) {
+      throw new Error('Cannot find container to remove:' + id);
+    }
+    // Step 1) Remove container (use force)
+    console.log('Removing container...', c.name, c.id);
+    await docker.getContainer(c.id).remove({force: true});
+    console.log('Container removed', c.name, c.id);
+    // Step 2) Remove files
+    if (process.platform === 'win32') c.folder = Utils.toWindowsPath(c.folder);
+    console.log('Checking data folder..', c.folder);
+    if (fs.existsSync(c.folder)) {
+      console.log('Removing files from', c.folder);
+      fs.rmSync(c.folder, {recursive: true, force: true});
+    }
+    return {state: undefined, ...c};
   }
 }

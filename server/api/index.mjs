@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 
 import './lib/error.mjs';
 import {healthcheck} from './routes/index.mjs';
-import {create, list, stop, remove} from './routes/world/index.mjs';
+import {create, list, start, stop, stopAll, remove, removeAll} from './routes/world/index.mjs';
 import {up, info, version, containers} from './routes/server/index.mjs';
 
 const app = express();
@@ -22,9 +22,11 @@ app.get('/api/server/containers', containers);
 
 app.get('/api/world/list', list);
 app.post('/api/world/create', create);
-app.post('/api/world/stopAll', stop);
-app.delete('/api/world', remove);
-
+app.post('/api/world/stopAll', stopAll);
+app.post('/api/world/:id/start', start);
+app.post('/api/world/:id/stop', stop);
+app.delete('/api/world/:id', remove);
+app.delete('/api/world', removeAll);
 
 app.listen(PORT, (err) => {
   if (err) console.log(err);

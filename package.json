@@ -4,7 +4,8 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "server/*"
+    "server/*",
+    "shared/*"
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:*\"",
