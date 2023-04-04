@@ -1,6 +1,5 @@
 FROM node:16.16-slim
 WORKDIR /var/task
-RUN apt update && apt install -yqq curl
 COPY . /
 RUN npm ci
 RUN npm run build
