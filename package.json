@@ -15,7 +15,7 @@
     "start:api": "npm start -w @rocky/api",
     "dev:app": "npm run dev -w @rocky/ui",
     "dev:api": "npm run dev -w @rocky/api",
-    "build": "npm run build -w @rocky/ui",
+    "build": "npm run build -w @rocky/ui && sleep 1 && mv ./ui/dist ./api/public",
     "preview": "npm run preview -w @rocky/ui"
   },
   "dependencies": {

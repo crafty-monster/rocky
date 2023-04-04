@@ -1,7 +1,14 @@
+# TL/DR
+
+ROCKY is a container manager for Minecraft Bedrock instances.
+
+It uses the [Docker Engine API](https://docs.docker.com/engine/api/v1.38/) to create, run, stop and manage existing containers.
+
+Each world is a self-contained instance running an image of minecraft bedrock.
+
 ![branding/thumbnail.png](branding/thumbnail.png)
 
-
-Powered by the the following projects:
+###  Powered by the the following projects:
 
 ![docker](branding/vendor/logo.docker.png)
 ![node.js](branding/vendor/logo.nodejs.png)
@@ -10,13 +17,6 @@ Powered by the the following projects:
 ![svelte](branding/vendor/logo.svelte.png)
 ![bootstrap](branding/vendor/logo.bootstrap.png)
 
-# TL/DR
-
-ROCKY is a container manager for Minecraft Bedrock instances.
-
-It uses the [Docker Engine API](https://docs.docker.com/engine/api/v1.38/) to create, run, stop and manage existing containers.
-
-Each world is a self-contained instance running an image of minecraft bedrock.
 
 # Installation
 
