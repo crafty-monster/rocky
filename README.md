@@ -28,7 +28,7 @@ It has been developed using version `1.19.03` but any newer version should work 
 $ docker -v
 Docker version 19.03.1, build 74b1e89e8a
 $ docker build -t rocky .
-$ docker run -p 8060:8060 rocky
+$ docker run -p 8888:8888 rocky
 ```
 
 Optionally, you may also install [Docker Compose](https://docs.docker.com/compose/install/) to make it easier to update your installation with `docker-compose down` and `docker-compose up` commands.
