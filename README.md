@@ -8,7 +8,7 @@ Each world is a self-contained instance running an image of minecraft bedrock.
 
 ![branding/thumbnail.png](branding/thumbnail.png)
 
-###  Powered by the the following projects:
+##  Powered by:
 
 ![docker](branding/vendor/logo.docker.png)
 ![node.js](branding/vendor/logo.nodejs.png)
@@ -25,17 +25,27 @@ You will need [Docker](https://docs.docker.com/get-docker/) installed.
 It has been developed using version `1.19.03` but any newer version should work fine.
 
 ```sh
+$ git clone https://github.com/crafty-monster/rocky.git
+$ cd rocky
 $ docker -v
 Docker version 19.03.1, build 74b1e89e8a
 $ docker build -t rocky .
-$ docker run -p 8888:8888 rocky
+$ docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock rocky
 ```
 
-Optionally, you may also install [Docker Compose](https://docs.docker.com/compose/install/) to make it easier to update your installation with `docker-compose down` and `docker-compose up` commands.
+Then open https://localhost:48000. 
+
+You can also expose ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
+
+# Updates
+
+Install [Docker Compose](https://docs.docker.com/compose/install/) to make it easier to update your installation with `docker-compose build` and `docker-compose restart` commands.
 
 ```sh
-# Start the server
-$ docker-compose up
+# Install & start the server
+$ git clone https://github.com/crafty-monster/rocky.git
+$ cd rocky
+$ docker-compose up --build
 ```
 
 ```sh
@@ -55,4 +65,6 @@ v16.16.0
 $ npm i
 $ npm run dev
 ```
+
+Then open http://localhost:5173/.
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>My Minecraft SMP Server</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+</head>
+
+<body>
+  <div class="head">
+    <img src="logo.png">
+  </div>
+  <div id="app" class="content">
+    <div class="container">
+      <div v-for="w in worlds" class="card">
+        <div class="card-header">
+          <a :href="`minecraft://?addExternalServer=${w.name}|${hostname}:${w.port}`"><img
+              :src="`http://${hostname}:5173/admin/images/thumbs/map.${String(w.id).substr(0,2)}.jpg`" :alt="w.name" /></a>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-teal">{{w.state}}</span>
+          <h4>
+            {{w.name}}
+          </h4>
+          <p>
+            {{w.description}}
+          </p>
+          <div class="user">
+            <img
+              src="https://yt3.ggpht.com/TeP-iwah77PBR8PcbVds-qlVTPrp3Dq1mEq_qp9xNp6StUYJd8N_ASY45Vhij95hfkM-mFAyOQ=s176-c-k-c0x00ffffff-no-rj"
+              alt="user" />
+            <div class="user-info">
+              <h5>{{w.by}}</h5>
+              <small>{{new Date(w.created).toISOString()}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: { 
+        worlds: [],
+        hostname: location.hostname,
+      },
+      async mounted() {
+        this.worlds = await fetch('/api/world').then(r => r.json());
+      },
+    });
+    </script>
+</body>
+
+</html>

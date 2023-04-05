@@ -1,7 +1,7 @@
 <script>
   let info = {};
   let connected = {};
-  const updateInfo = async () => info = await fetch('/api/server/info').then(r => r.json());
+  const updateInfo = async () => info = await fetch('/api/server').then(r => r.json());
   const updateConnected = async () => connected = await fetch('/api/server/connected').then(r => r.json());
 
   updateInfo();

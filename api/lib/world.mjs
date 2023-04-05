@@ -18,9 +18,9 @@ export default class World {
    */
   static async create(settings) {
     console.log('Creating world with settings', settings);
-    const name = 'rocky_' + settings['server-name'];
+    const name = 'rocky_world__' + settings['server-name'];
     const description = randomQuotes.default().body;
-    const port = 29133 + Math.floor(Math.random() * 800);
+    const port = 49001 + Math.floor(Math.random() * 800);
     let datafolder = path.join(__dirname + '/../data/' + name);
     if (process.platform === 'win32') datafolder = Utils.toPosixPath(datafolder);
     // console.log('datapath', datapath);
@@ -74,7 +74,7 @@ export default class World {
     return containers
         .map(c => {
           const id = c.Id;
-          const name = String(c.Names?.[0]).replace('/rocky_', '');
+          const name = String(c.Names?.[0]).replace('/rocky_world__', '');
           const description = c.Labels['monster.crafty.rocky.description'];
           const created = new Date(c.Created * 1000).toISOString();
           const port = c.Ports?.[0]?.PublicPort;
@@ -158,12 +158,13 @@ export default class World {
         await docker.getContainer(c.id).remove({force: true});
         console.log('Container removed', c.name, c.id);
         // Step 2) Remove files
+        if (process.platform === 'win32') c.folder = Utils.toWindowsPath(c.folder);
         console.log('Checking data folder..', c.folder);
         if (fs.existsSync(c.folder)) {
           setTimeout(async () => {
             console.log('Removing files from', c.folder);
             await fsPromises.rm(c.folder, {recursive: true, force: true});
-          }, 2000);
+          }, 3000);
         }
         output.push({state: undefined, ...c});
       } else {
@@ -196,7 +197,7 @@ export default class World {
       setTimeout(async () => {
         console.log('Removing files from', c.folder);
         await fsPromises.rm(c.folder, {recursive: true, force: true});
-      }, 2000);
+      }, 3000);
     }
     return {state: undefined, ...c};
   }

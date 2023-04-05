@@ -4,6 +4,7 @@
 import { createEventDispatcher } from 'svelte';
 import * as timeago from 'timeago.js';
 const assets = import.meta.glob("../assets/map.*.png");
+const hostname = window.location.hostname;
 const dispatch = createEventDispatcher();
 export let id = null;
 export let name = null;
@@ -23,16 +24,18 @@ for (const path in assets) {
   <div class="card-image">
     <small>{String(id).substr(0,12)}</small>
     {#if state === 'new'}
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:;" on:click={() => dispatch('create')}>
-        <img src="images/map.(new).png"/>
+        <img src="images/thumbs/map.(new).jpg" alt="new"/>
       </a>
     {:else if state === 'disconnected'}
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:;">
-        <img src="images/map.(disconnected).png"/>
+        <img src="images/thumbs/map.(disconnected).jpg" alt="disconnected"/>
       </a>
     {:else}
-      <a href="minecraft://?addExternalServer={name}|play.crafty.monster:{port}">
-        <img src="{'images/map.' + String(id).substr(0,2) + '.png'}" alt="rover" onerror="this.onerror=null;this.src='images/map.--.png'"/>
+      <a href="minecraft://?addExternalServer={name}|{hostname}:{port}">
+        <img src="{'images/thumbs/map.' + String(id).substr(0,2) + '.jpg'}" alt="rover" onerror="this.onerror=null;this.src='images/thumbs/map.--.jpg'"/>
       </a>
     {/if}
   </div>

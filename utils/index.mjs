@@ -11,5 +11,5 @@ export default class Utils{
   static toWindowsPath(path) {
     const drive = path.split('/')[1];
     return [drive + ':'].concat(path.split('/').slice(2)).join('\\');
-  }
+  };
 };
