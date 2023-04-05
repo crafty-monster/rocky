@@ -3,22 +3,24 @@
   "version": "0.0.1",
   "type": "module",
   "workspaces": [
-    "ui",
+    "admin-ui",
     "api",
     "utils"
   ],
   "scripts": {
     "start": "concurrently \"npm run start:*\"",
-    "dev": "concurrently \"npm run dev:*\"",
-    "inspect": "concurrently \"npm run dev:app\" \"npm run inspect -w @rocky/api\"",
-    "start:app": "npm start -w @rocky/ui",
+    "start:ui": "npm start -w @rocky/admin-ui",
     "start:api": "npm start -w @rocky/api",
-    "dev:app": "npm run dev -w @rocky/ui",
+    "dev": "concurrently \"npm run dev:*\"",
+    "dev:ui": "npm run dev -w @rocky/admin-ui",
     "dev:api": "npm run dev -w @rocky/api",
-    "build": "npm run build -w @rocky/ui && sleep 1 && mv ./ui/dist ./api/public",
-    "preview": "npm run preview -w @rocky/ui"
+    "inspect": "concurrently \"npm run dev:app\" \"npm run inspect -w @rocky/api\"",
+    "build": "npm run build -w @rocky/admin-ui && sleep 1 && mv ./ui/dist ./api/public/admin",
+    "build:ui": "npm run build -w @rocky/admin-ui",
+    "preview": "npm run preview -w @rocky/admin-ui"
   },
-  "dependencies": {
-    "concurrently": "^8.0.1"
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "http-server": "^14.1.1"
   }
 }

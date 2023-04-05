@@ -27,7 +27,7 @@
     }
     static async list() {
       try {
-        worlds = [newworld].concat(await fetch('/api/world/').then(r => r.json()));
+        worlds = [newworld].concat(await fetch('/api/world/list').then(r => r.json()));
       } catch (err) {
         worlds = [{port: String(err).substr(0,8), ...disconnectedworld}];
       }

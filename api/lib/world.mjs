@@ -46,6 +46,7 @@ export default class World {
         'monster.crafty.rocky.description': description,
         'monster.crafty.rocky.settings.gamemode': 'survival',
         'monster.crafty.rocky.settings.difficulty': 'easy',
+        'monster.crafty.rocky.by': 'bob',
       },
       HostConfig: {
         PortBindings: {
@@ -70,18 +71,38 @@ export default class World {
    */
   static async list() {
     console.log('World.list()');
-    const containers = await docker.listContainers({all: true, filters: {name: ['/rocky_']}});
+    const containers = await docker.listContainers({all: true, filters: {name: ['/rocky_world__']}});
     return containers
         .map(c => {
           const id = c.Id;
           const name = String(c.Names?.[0]).replace('/rocky_world__', '');
           const description = c.Labels['monster.crafty.rocky.description'];
-          const created = new Date(c.Created * 1000).toISOString();
           const port = c.Ports?.[0]?.PublicPort;
-          const folder = c.Mounts?.find(m => m.Type === 'bind')?.Source;
           const state = c.State;
+          const folder = c.Mounts?.find(m => m.Type === 'bind')?.Source;
+          const created = new Date(c.Created * 1000).toISOString();
+          const by = c.Labels['monster.crafty.rocky.by'];
           const meta = c;
-          return {id, name, description, created, port, state, folder, meta};
+          return {id, name, description, port, state, folder, created, by, meta};
+        });
+  }
+
+  /**
+   * Minimal listing of running worlds for public access
+   * @return {Array} List of worlds
+   */
+  static async show() {
+    console.log('World.show()');
+    const containers = await docker.listContainers({filters: {name: ['/rocky_world__']}});
+    return containers
+        .map(c => {
+          const id = String(c.Id).substring(0, 12);
+          const name = String(c.Names?.[0]).replace('/rocky_world__', '');
+          const description = c.Labels['monster.crafty.rocky.description'];
+          const port = c.Ports?.[0]?.PublicPort;
+          const created = new Date(c.Created * 1000).toISOString();
+          const by = c.Labels['monster.crafty.rocky.by'];
+          return {id, name, description, created, port, by};
         });
   }
 

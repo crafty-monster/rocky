@@ -5,6 +5,6 @@ Dockerfile
 README.md
 **/node_modules/
 api/data/
-api/public/
-ui/dist/
+api/www/admin/
+admin-ui/dist/
 **/.env

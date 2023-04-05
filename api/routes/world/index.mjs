@@ -17,6 +17,14 @@ export const list = async (req, res) => {
   }
 };
 
+export const show = async (req, res) => {
+  try {
+    res.status(200).json(await World.show());
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 export const start = async (req, res) => {
   const {id} = req.params;
   if (!id) return res.status(400).send('No id');

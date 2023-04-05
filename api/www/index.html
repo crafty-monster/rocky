@@ -14,6 +14,7 @@
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+  <script src="timeago.min.js"></script>
 </head>
 
 <body>
@@ -28,21 +29,26 @@
               :src="`http://${hostname}:5173/admin/images/thumbs/map.${String(w.id).substr(0,2)}.jpg`" :alt="w.name" /></a>
         </div>
         <div class="card-body">
-          <span class="tag tag-teal">{{w.state}}</span>
+          <span>
+            <span class="tag tag-purple">survival</span>
+          </span>
           <h4>
             {{w.name}}
           </h4>
           <p>
             {{w.description}}
           </p>
-          <div class="user">
+          <div v-if="w.created" class="user">
             <img
               src="https://yt3.ggpht.com/TeP-iwah77PBR8PcbVds-qlVTPrp3Dq1mEq_qp9xNp6StUYJd8N_ASY45Vhij95hfkM-mFAyOQ=s176-c-k-c0x00ffffff-no-rj"
               alt="user" />
             <div class="user-info">
               <h5>{{w.by}}</h5>
-              <small>{{new Date(w.created).toISOString()}}</small>
+              <small>{{timeago(w.created)}}</small>
             </div>
+          </div>
+          <div v-else>
+            <button class="btn btn-primary">Admin</button>
           </div>
         </div>
       </div>
@@ -56,8 +62,20 @@
         worlds: [],
         hostname: location.hostname,
       },
+      methods: {
+        timeago: (d) => timeago.format(d),
+      },
       async mounted() {
         this.worlds = await fetch('/api/world').then(r => r.json());
+        if (!this.worlds.length) {
+          this.worlds.push({
+            id: '--',
+            name: 'Nothing to see',
+            description: 'Please create some worlds for people to play with.',
+            port: 'blank',
+            by: 'nobody'
+          });
+        }
       },
     });
     </script>
