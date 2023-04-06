@@ -4,11 +4,10 @@ import fsPromises from 'fs/promises';
 import path from 'path';
 import randomQuotes from 'random-quotes';
 import server from './server.js';
-import Utils from '../../utils/index.mjs';
-import * as url from 'url';
+import utils from '../../utils/index.js';
 
 const docker = server.docker;
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = utils.__dirname(import.meta);
 
 export default class World {
   /**
@@ -22,7 +21,7 @@ export default class World {
     const description = randomQuotes.default().body;
     const port = 49001 + Math.floor(Math.random() * 800);
     let datafolder = path.join(__dirname + '/../data/' + name);
-    if (process.platform === 'win32') datafolder = Utils.toPosixPath(datafolder);
+    if (process.platform === 'win32') datafolder = utils.toPosixPath(datafolder);
     // console.log('datapath', datapath);
     // console.log('toPosix', toPosix(datapath));
     // console.log('import.meta.url', import.meta.url);
@@ -197,7 +196,7 @@ export default class World {
         await docker.getContainer(c.id).remove({force: true});
         console.log('Container removed', c.name, c.id);
         // Step 2) Remove files
-        if (process.platform === 'win32') c.folder = Utils.toWindowsPath(c.folder);
+        if (process.platform === 'win32') c.folder = utils.toWindowsPath(c.folder);
         console.log('Checking data folder..', c.folder);
         if (fs.existsSync(c.folder)) {
           setTimeout(async () => {
@@ -230,7 +229,7 @@ export default class World {
     await docker.getContainer(c.id).remove({force: true});
     console.log('Container removed', c.name, c.id);
     // Step 2) Remove files
-    if (process.platform === 'win32') c.folder = Utils.toWindowsPath(c.folder);
+    if (process.platform === 'win32') c.folder = utils.toWindowsPath(c.folder);
     console.log('Checking data folder..', c.folder);
     if (fs.existsSync(c.folder)) {
       setTimeout(async () => {

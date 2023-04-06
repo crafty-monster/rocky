@@ -6,7 +6,7 @@
 
   updateInfo();
   updateConnected();
-  setInterval(updateConnected, 10*1000);
+  setInterval(updateConnected, 20*1000);
 </script>
 
 <ul class="text-end w-100 me-3" style="font-size: 12px; color: #666">

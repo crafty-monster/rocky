@@ -59,10 +59,10 @@ for (const path in assets) {
     </p>
     <div class="user">
       <img
-        src="https://yt3.ggpht.com/TeP-iwah77PBR8PcbVds-qlVTPrp3Dq1mEq_qp9xNp6StUYJd8N_ASY45Vhij95hfkM-mFAyOQ=s176-c-k-c0x00ffffff-no-rj"
+        src="images/user.2.png"
         alt="user" />
       <div class="user-info">
-        <h5>{by}</h5>
+        <h5>{by ?? 'you'}</h5>
         <small>{timeago.format(created)}</small>
       </div>
     </div>
@@ -162,6 +162,7 @@ for (const path in assets) {
   width: 40px;
   height: 40px;
   margin-right: 10px;
+  background-color: #eeeaff
 }
 .user-info h5 {
   margin: 0;

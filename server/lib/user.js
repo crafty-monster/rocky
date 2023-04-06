@@ -1,4 +1,5 @@
 /* eslint-disable require-jsdoc */
+import {md5} from '../../utils/index.js';
 
 // Users are determined by environment variables
 // ie:
@@ -19,7 +20,8 @@ export default class User {
     if (!req?.headers?.authorization) return null;
     const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
     const [username] = Buffer.from(b64auth, 'base64').toString().split(':');
-    return {username};
+    const id = md5(username).substr(0, 6);
+    return {id, username};
   }
   static auth(username, password) {
     console.log('User.auth(%s, *******)', username);
