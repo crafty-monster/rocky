@@ -24,7 +24,6 @@ if [ "$2" = "--force" ]; then
     rebuild
 elif [ $LOCAL = $REMOTE ]; then
     echo "$(date +%FT%T) Up-to-date"
-    rebuild
 elif [ $LOCAL = $BASE ]; then
     echo "$(date +%FT%T) Need to pull"
     rebuild
