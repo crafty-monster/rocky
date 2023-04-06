@@ -33,5 +33,3 @@ else
     echo "$(date +%FT%T) Diverged"
 fi
 
-
-
