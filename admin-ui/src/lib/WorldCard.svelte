@@ -12,6 +12,7 @@ export let description = null;
 export let state = null;
 export let port = null;
 export let created = null;
+export let by = null;
 const images = {};
 for (const path in assets) {
   assets[path]().then(({ default: imageUrl }) => {
@@ -61,7 +62,7 @@ for (const path in assets) {
         src="https://yt3.ggpht.com/TeP-iwah77PBR8PcbVds-qlVTPrp3Dq1mEq_qp9xNp6StUYJd8N_ASY45Vhij95hfkM-mFAyOQ=s176-c-k-c0x00ffffff-no-rj"
         alt="user" />
       <div class="user-info">
-        <h5>Xavier</h5>
+        <h5>{by}</h5>
         <small>{timeago.format(created)}</small>
       </div>
     </div>
