@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 
 import './lib/error.mjs';
 import {healthcheck} from './routes/index.mjs';
-import {create, show, list, start, stop, stopAll, remove, removeAll} from './routes/world/index.mjs';
+import {create, show, list, start, logs, stop, stopAll, remove, removeAll} from './routes/world/index.mjs';
 import {connected, info, version, containers} from './routes/server/index.mjs';
 
 const PORT = process.env.PORT || 48000;
@@ -27,6 +27,7 @@ app.post('/api/world/create', create);
 app.post('/api/world/stopAll', stopAll);
 app.post('/api/world/:id/start', start);
 app.post('/api/world/:id/stop', stop);
+app.get('/api/world/:id/logs', logs);
 app.delete('/api/world/:id', remove);
 app.delete('/api/world', removeAll);
 

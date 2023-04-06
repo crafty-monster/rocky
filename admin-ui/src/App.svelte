@@ -23,11 +23,14 @@
         'difficulty': 'easy',
       };
       fetch('/api/world/create', { method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(settings) });
-      setTimeout(() => App.list(), 1000);
+      setTimeout(() => App.list(), 2000);
     }
     static async list() {
       try {
         worlds = [newworld].concat(await fetch('/api/world/list').then(r => r.json()));
+        if (worlds.length > 8) {
+          worlds.shift();
+        }
       } catch (err) {
         worlds = [{port: String(err).substr(0,8), ...disconnectedworld}];
       }

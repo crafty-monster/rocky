@@ -125,6 +125,24 @@ export default class World {
   }
 
   /**
+   * Shows the logs for a container
+   * @param {String} id The id of the world to show logs for
+   * @return {Array} Details of the world to show logs for
+   */
+  static async logs(id) {
+    console.log('World.logs(%s)', id);
+    const containers = await World.list();
+    const c = containers.find(c => c.id === id);
+    if (!c) {
+      throw new Error('Cannot find container to show logs:' + id);
+    }
+    const logs = await docker
+        .getContainer(c.id)
+        .logs({stdout: true, stderr: true, tail: 200});
+    return logs.toString().split('\n').map(s => Buffer.from(s).slice(8).toString());
+  }
+
+  /**
    * Stops a running word
    * @param {String} id the id of the world to stop
    */

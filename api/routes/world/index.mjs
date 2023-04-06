@@ -35,6 +35,16 @@ export const start = async (req, res) => {
   }
 };
 
+export const logs = async (req, res) => {
+  const {id} = req.params;
+  if (!id) return res.status(400).send('No id');
+  try {
+    res.status(200).json(await World.logs(id));
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 export const stop = async (req, res) => {
   const {id} = req.params;
   if (!id) return res.status(400).send('No id');

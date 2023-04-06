@@ -76,6 +76,8 @@ for (const path in assets) {
       {:else}
         <button class="btn btn-warning" on:click={() => fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
       {/if}
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <i class="fa fa-gear fa-xl" on:click={() => fetch(`/api/world/${id}/logs`)}></i>
     </div>
   </div>
 </div>
@@ -169,6 +171,18 @@ for (const path in assets) {
 .tools {
   margin-top: 10px;
   font-size: 80%;
+}
+.tools i.fa-gear {
+  flex-grow: 1;
+  text-align: right;
+  position: absolute;
+  right: 20px;
+  line-height: 41px;
+  opacity: 0.4;
+  cursor: pointer;
+}
+.tools i.fa-gear:hover {
+  opacity: 0.8;
 }
 
 /* PHABLET STYLES */

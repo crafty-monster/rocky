@@ -26,7 +26,7 @@
       <div v-for="w in worlds" class="card">
         <div class="card-header">
           <a :href="`minecraft://?addExternalServer=${w.name}|${hostname}:${w.port}`"><img
-              :src="`http://${hostname}:5173/admin/images/thumbs/map.${String(w.id).substr(0,2)}.jpg`" :alt="w.name" /></a>
+              :src="`/admin/images/thumbs/map.${String(w.id).substr(0,2)}.jpg`" :alt="w.name" /></a>
         </div>
         <div class="card-body">
           <span>
