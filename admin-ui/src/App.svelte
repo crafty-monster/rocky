@@ -10,7 +10,7 @@
     async function start(user) {
       if (user?.id) {
         authenticated = true;
-        setTimeout(() => loading = false, 2000);
+        setTimeout(() => loading = false, 1000);
       }
     }
 </script>
