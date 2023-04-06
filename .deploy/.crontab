@@ -1,3 +1,0 @@
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-
-*/1 * * * * cd $PROJECTS_DIR/rocky/.deploy && ./check.sh >> check.log 2>&1

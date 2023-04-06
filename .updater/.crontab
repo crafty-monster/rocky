@@ -1,0 +1,4 @@
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+PROJECTS_DIR=/root/projects
+
+*/1 * * * * cd $PROJECTS_DIR/rocky/.updater && ./check.sh >> check.log 2>&1

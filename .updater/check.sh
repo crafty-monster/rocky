@@ -13,7 +13,8 @@ BASE=$(git merge-base @ "$UPSTREAM")
 
 function rebuild() {
     git pull
-    docker-compose up --build -d
+    docker-compose build
+    docker-compose restart -d
 }
 
 if [ "$2" = "--force" ]; then
