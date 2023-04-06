@@ -4,8 +4,8 @@ docker-compose.yml
 Dockerfile
 README.md
 **/node_modules/
-api/data/
-api/www/admin/
+server/data/
+server/www/admin/
 admin-ui/dist/
 **/.env
 **/db.json
