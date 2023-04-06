@@ -8,3 +8,4 @@ api/data/
 api/www/admin/
 admin-ui/dist/
 **/.env
+**/db.json

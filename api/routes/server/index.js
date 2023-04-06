@@ -1,4 +1,4 @@
-import server from '../../lib/server.mjs';
+import server from '../../lib/server.js';
 
 export const info = async (req, res) => {
   try {

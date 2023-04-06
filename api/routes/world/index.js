@@ -1,4 +1,4 @@
-import World from '../../lib/world.mjs';
+import World from '../../lib/world.js';
 
 export const create = async (req, res) => {
   const settings = req.body;

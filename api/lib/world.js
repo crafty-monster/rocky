@@ -3,7 +3,7 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 import randomQuotes from 'random-quotes';
-import server from './server.mjs';
+import server from './server.js';
 import Utils from '../../utils/index.mjs';
 import * as url from 'url';
 
