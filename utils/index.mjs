@@ -1,4 +1,4 @@
-
+import fs from 'fs';
 import * as url from 'url';
 
 export default class Utils{
@@ -12,4 +12,7 @@ export default class Utils{
     const drive = path.split('/')[1];
     return [drive + ':'].concat(path.split('/').slice(2)).join('\\');
   };
+  static loadJSON(path) {
+    return JSON.parse(fs.readFileSync(new URL(path, import.meta.url)));
+  }
 };

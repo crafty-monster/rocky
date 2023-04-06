@@ -8,6 +8,8 @@ services:
       - 48000:48000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ROCKY_USER1: admin:rocky
     # healthcheck:
     #   test: curl --fail http://localhost:48000/api/healthcheck || exit 1
     #   interval: 30s

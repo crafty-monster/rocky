@@ -1,61 +1,30 @@
-import crypto from 'crypto';
+/* eslint-disable require-jsdoc */
 
-import lowdb from './lowdb.js';
+// Users are determined by environment variables
+// ie:
+// ROCKY_USER1=admin:123456
+// ROCKY_USER2=bob:456789
+// etc...
+const users = Object.keys(process.env)
+    .filter(k => k.startsWith('ROCKY_USER'))
+    .reduce((acc, k) => {
+      const [user, pass] = String(process.env[k]).split(':');
+      acc[user] = pass;
+      return acc;
+    }, {});
 
-/**
- * Returns a HMACSHA256 of a string salted with a key
- * @param {string} str The string to hash
- * @param {string} key The key used in the HMAC component of the algo
- * @return {string} The HMACSHA256 string
- */
-function hmacsha256(str, key) {
-  return crypto
-      .createHmac('sha256', key)
-      .update(str)
-      .digest('hex');
-}
-
-/**
- * A user
- */
 export default class User {
-  /**
-   * Creates a user
-   * @param {Object} user settings, usually username and password.
-   * @return {Object} user details
-   */
-  static async register(user) {
-    lowdb.data.user = lowdb.data.user || [];
-    const record = {
-      username: user.username,
-      passwordhash: hmacsha256(user.password, user.username),
-    };
-    const existing = lowdb.data.user.find(u => u.username === user.username);
-    if (existing) {
-      Object.assign(existing, record);
-    } else {
-      lowdb.data.user.push(record);
-    }
-    await lowdb.write();
-    return record;
+  static me(req) {
+    console.log('User.me(%s)', req.headers.authorization);
+    if (!req?.headers?.authorization) return null;
+    const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
+    const [username] = Buffer.from(b64auth, 'base64').toString().split(':');
+    return {username};
   }
-  /**
-   * Checks if the database has been initialized
-   * @return {Boolean} if there are any users
-   */
-  static async exists() {
-    return lowdb.data?.user?.length > 0;
-  }
-  /**
-   * Authenticates a user
-   * @param {String} username
-   * @param {String} password
-   * @return {Boolean} if the user/password combination works
-   */
-  static async login(username, password) {
-    if (!User.exists()) return false;
-    const user = lowdb.data.user.find(u => u.username = username);
-    if (!user) return false;
-    return user.passwordhash === hmacsha256(password, username);
+  static auth(username, password) {
+    console.log('User.auth(%s, *******)', username);
+    if (!username || !password) return false;
+    // eslint-disable-next-line no-prototype-builtins
+    return (users.hasOwnProperty(username) && users[username] === String(password));
   }
 }

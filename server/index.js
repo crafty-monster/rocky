@@ -1,11 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import basicAuth from 'express-basic-auth';
 
 import './lib/error.js';
+import User from './lib/user.js';
 import {checkAdmin as ADMIN_ACCESS} from './middleware/index.js';
 import {healthcheck} from './routes/index.js';
-import {register, login, exists} from './routes/user/index.js';
+import {me} from './routes/user/index.js';
 import {create, show, list, start, logs, stop, stopAll, remove, removeAll} from './routes/world/index.js';
 import {connected, info, version, containers} from './routes/server/index.js';
 
@@ -17,17 +19,19 @@ app.use(bodyParser.json());
 app.use(express.static('www'));
 
 app.get('/api/healthcheck', healthcheck);
+app.get('/api/server/connected', connected);
+app.get('/api/world/', show);
 
-app.post('/api/login', login);
-app.post('/api/user', register);
-app.get('/api/user/exists', exists);
+// Authentication from here onwards
+app.use(basicAuth({authorizer: User.auth, challenge: true}));
+app.use('/admin', express.static('www/admin'));
+
+app.get('/api/user/me', ADMIN_ACCESS, me);
 
 app.get('/api/server/', ADMIN_ACCESS, info);
 app.get('/api/server/version', ADMIN_ACCESS, version);
 app.get('/api/server/containers', ADMIN_ACCESS, containers);
-app.get('/api/server/connected', connected);
 
-app.get('/api/world/', show);
 app.get('/api/world/list', ADMIN_ACCESS, list);
 app.post('/api/world/create', ADMIN_ACCESS, create);
 app.post('/api/world/stopAll', ADMIN_ACCESS, stopAll);
