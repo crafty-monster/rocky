@@ -6,4 +6,4 @@ RUN npm run build
 # We copied the static files during `npm run build`
 # so only need to start up express
 # (which hosts the static files)
-CMD ["npm", "run", "start:api"]
+CMD ["npm", "run", "start:server"]

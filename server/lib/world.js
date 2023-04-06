@@ -55,7 +55,7 @@ export default class World {
           }],
         },
         Binds: [
-          `${datafolder}:/data`,
+          // `${datafolder}:/data`,
         ],
       },
     });
