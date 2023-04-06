@@ -101,6 +101,7 @@ body {
   font-family: inherit;
   background-color: #ddd;
   cursor: pointer;
+  text-decoration: none;
   transition: border-color 0.25s;
 }
 .btn-primary {
