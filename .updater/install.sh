@@ -1,4 +1,5 @@
 #! /bin/bash
+#
 # Installs updater using cron
 # Logs output to `update.log`
 #
