@@ -10,3 +10,5 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 (crontab -l 2>/dev/null; echo "*/1 * * * * cd $SCRIPT_DIR && ./check.sh >> update.log 2>&1") | sudo crontab -
 # 3) Every hour, trim the logs to last 1000 lines
 (crontab -l 2>/dev/null; echo "0 * * * * cd $SCRIPT_DIR && tail -1000 update.log | cat > update.log") | sudo crontab -
+
+echo "Cron+git updater installed. Check the `update.log` in a minute or two."
