@@ -40,8 +40,9 @@
           </p>
           <div v-if="w.created" class="user">
             <img
-              src="https://yt3.ggpht.com/TeP-iwah77PBR8PcbVds-qlVTPrp3Dq1mEq_qp9xNp6StUYJd8N_ASY45Vhij95hfkM-mFAyOQ=s176-c-k-c0x00ffffff-no-rj"
-              alt="user" />
+              src="/admin/images/user.2.png"
+              alt="user" 
+              :style="`background-color: ${imageBackground(w.by)}`"/>
             <div class="user-info">
               <h5>{{w.by}}</h5>
               <small>{{timeago(w.created)}}</small>
@@ -64,6 +65,18 @@
       },
       methods: {
         timeago: (d) => timeago.format(d),
+        imageBackground (username) {
+          return `hsl(${Math.abs(this.hashCode(username))%359}, 70%, 90%)`; // hsl(250, 69%, 90%),
+        },
+        hashCode(str) {
+          let hash = 0;
+          for (let i = 0, len = str.length; i < len; i++) {
+              let chr = str.charCodeAt(i);
+              hash = (hash << 5) - hash + chr;
+              hash |= 0; // Convert to 32bit integer
+          }
+          return hash;
+        }
       },
       async mounted() {
         this.worlds = await fetch('/api/world').then(r => r.json());
