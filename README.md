@@ -20,7 +20,7 @@ Each world is a self-contained instance running an image of minecraft bedrock.
 
 # Installation
 
-You will need [Docker](https://docs.docker.com/get-docker/) installed. 
+You will need [Docker](https://docs.docker.com/get-docker/) installed since this project is an extra UI for docker that manages minecraft server containers.
 
 It has been developed using version `1.19.03` but any newer version should work fine.
 
@@ -33,7 +33,7 @@ $ docker build -t rocky .
 $ docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock rocky
 ```
 
-Then open https://localhost:48000. 
+Then open http://localhost:48000. 
 
 You can also expose ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
 
@@ -77,4 +77,10 @@ $ npm run dev
 ```
 
 Then open http://localhost:5173/.
+
+## Environment variables
+
+- `ROCKY_USER1`: Admin UI user/password, separated by a colon `:`. Defaults to `admin:rocky`. You can have any number of users (ie `ROCKY_USER2`, `ROCKY_USER3` etc). Can be edited directly in the `docker-compose.yml`.
+- `DOCKER_HOST`: For example `192.168.99.101`. Use if Docker is not running locally under `/var/run/docker.sock`.
+- `DOCKER_PORT`: For example `2376` (https) or `2375` (http). Use if docker is not running locally under `/var/run/docker.sock`.
 

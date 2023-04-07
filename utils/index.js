@@ -33,5 +33,14 @@ export function hashCode(str) {
   return hash;
 }
 
-export default {__dirname, toPosixPath, toWindowsPath, loadJSON, md5};
+export async function streamToString(stream) {
+  const chunks = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+    stream.on('error', (err) => reject(err));
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  });
+}
+
+export default {__dirname, toPosixPath, toWindowsPath, loadJSON, md5, hashCode, streamToString};
 

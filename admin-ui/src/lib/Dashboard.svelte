@@ -24,7 +24,7 @@
       console.log('nouns', nouns.length);
       console.log('total', adjectives.length*nouns.length);
       const settings = {
-        'server-name': `${adjective}-${noun}`,
+        'servername': `${adjective}-${noun}`,
         'gamemode': 'survival',
         'difficulty': 'easy',
       };

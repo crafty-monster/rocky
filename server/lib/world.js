@@ -17,15 +17,12 @@ export default class World {
    */
   static async create(settings) {
     console.log('Creating world with settings', settings);
-    const name = 'rocky_world__' + settings['server-name'];
+    const name = 'rocky_world__' + settings.servername;
     const description = randomQuotes.default().body;
     const port = 48001 + Math.floor(Math.random() * 1000);
+    settings.by = settings.by || 'bob';
     let datafolder = path.join(__dirname + '/../data/' + name);
     if (process.platform === 'win32') datafolder = utils.toPosixPath(datafolder);
-    // console.log('datapath', datapath);
-    // console.log('toPosix', toPosix(datapath));
-    // console.log('import.meta.url', import.meta.url);
-    // console.log('new URL(\'.\', import.meta.url)', new URL('.', import.meta.url));
     console.log('Creating container...', name, port, datafolder);
     const container = await docker.createContainer({
       name,
@@ -34,8 +31,11 @@ export default class World {
       Image: 'itzg/minecraft-bedrock-server',
       Env: [
         'EULA=true',
-        'GAMEMODE=survival',
-        'DIFFICULTY=easy',
+        `SERVER_NAME=${settings.servername}`,
+        `GAMEMODE=${settings.gamemode ?? 'survival'}`,
+        `DIFFICULTY=${settings.difficulty ?? 'easy'}`,
+        `ALLOW_CHEATS=${settings.allowCheats ?? 'true'}`,
+        `LEVEL_NAME=${settings.servername}`,
       ],
       Volumes: {
         '/data': {},
@@ -139,6 +139,33 @@ export default class World {
         .getContainer(c.id)
         .logs({stdout: true, stderr: true, tail: 200});
     return logs.toString().split('\n').map(s => Buffer.from(s).slice(8).toString());
+  }
+
+  /**
+   * Executes console commands
+   * @param {String} cId the container id
+   * @param {String} command the console command
+   * @return {String} List of worlds
+   */
+  static async execute(cId, command) {
+    console.log('World.execute(%s, command)', cId, command);
+    if (!command) {
+      throw new Error('No command to execute');
+    }
+    const containers = await World.list();
+    const c = containers.find(c => c.id === cId);
+    if (c.state === 'running') {
+      console.log('Running command on "%s" ...', c.name, command);
+      const exec = await docker.getContainer(c.id).exec({
+        Cmd: ['send-command'].concat(command.split(' ')),
+      });
+      const stream = await exec.start();
+      const response = await utils.streamToString(stream);
+      console.log('Command sent to "%s", response: ', c.name, response);
+      return {command, on: c.name, response};
+    } else {
+      throw new Error('Container down. Skipping command..');
+    }
   }
 
   /**

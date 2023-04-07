@@ -8,7 +8,7 @@ import User from './lib/user.js';
 import {checkAdmin as ADMIN_ACCESS} from './middleware/index.js';
 import {healthcheck} from './routes/index.js';
 import {me} from './routes/user/index.js';
-import {create, show, list, start, logs, stop, stopAll, remove, removeAll} from './routes/world/index.js';
+import {create, show, list, start, logs, execute, stop, stopAll, remove, removeAll} from './routes/world/index.js';
 import {connected, info, version, containers} from './routes/server/index.js';
 
 const PORT = process.env.PORT || 48000;
@@ -38,6 +38,7 @@ app.post('/api/world/stopAll', ADMIN_ACCESS, stopAll);
 app.post('/api/world/:id/start', ADMIN_ACCESS, start);
 app.post('/api/world/:id/stop', ADMIN_ACCESS, stop);
 app.get('/api/world/:id/logs', ADMIN_ACCESS, logs);
+app.post('/api/world/:id/execute', ADMIN_ACCESS, execute);
 app.delete('/api/world/:id', ADMIN_ACCESS, remove);
 app.delete('/api/world', ADMIN_ACCESS, removeAll);
 
