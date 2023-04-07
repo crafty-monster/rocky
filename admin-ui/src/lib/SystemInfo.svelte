@@ -9,18 +9,19 @@
   setInterval(updateConnected, 20*1000);
 </script>
 
-<ul class="text-end w-100 me-3" style="font-size: 12px; color: #666">
+<ul class="w-100 me-3" style="font-size: 12px; color: #666">
   <li class="connected {connected.up && 'on'}"><em></em>{connected.up ? 'Connected' : 'Disconnected'}</li>
-  <li>{connected.path}</li>
-  <li class="opacity-75">Docker v{info.ServerVersion || 'N/A'}</li>
-  <li class="opacity-75">vCPUs {Math.round(info.NCPU)}</li>
-  <li class="opacity-75">{(Math.round(info.MemTotal / 1024 / 1024 / 1024 * 10) / 10)}gb RAM</li>
+  <li class="lighter">{connected.path}</li>
+  <li class="lighter">Docker v{info.ServerVersion || 'N/A'}</li>
+  <li class="lighter">vCPUs {Math.round(info.NCPU)}</li>
+  <li class="lighter">{(Math.round(info.MemTotal / 1024 / 1024 / 1024 * 10) / 10)}gb RAM</li>
 </ul>
 
 <style>
   ul {
     margin: 0;
-    padding: 0
+    padding: 0;
+    text-align: right;
   }
   li {
     margin: 0;
@@ -30,6 +31,9 @@
   em {
     font-style: normal;
     font-weight: bold;
+  }
+  .lighter {
+    opacity: 0.75;
   }
   .connected {
     color: red;
@@ -47,5 +51,13 @@
   }
   .connected.on em {
     background: green;
+  }
+  @media all and (max-width: 760px) { 
+    ul {
+      text-align: center;
+    }
+    .lighter {
+      display: none;
+    }
   }
 </style>

@@ -98,7 +98,7 @@ for (const path in assets) {
   border-radius: 10px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  width: 220px;
+  width: 280px;
 }
 .card-image img {
   width: 100%;
@@ -193,7 +193,7 @@ for (const path in assets) {
 }
 
 /* PHABLET STYLES */
-@media all and (max-width: 760px) { 
+/* @media all and (max-width: 760px) { 
   .card {
     width: 200px;
   }
@@ -203,5 +203,5 @@ for (const path in assets) {
   .card-image img {
     height: 150px;
   }
-}
+} */
 </style>

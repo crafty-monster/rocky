@@ -87,12 +87,12 @@
   .heading h1 img {
     width: 340px;
   }
-  .heading .systeminfo {
+  .systeminfo {
     width: 240px; 
     height: 105px;
   }
   section {
-    padding-top: 2em;
+    padding-top: 1.5em;
   }
   .worlds {
     display: flex;
@@ -101,6 +101,14 @@
   @media all and (max-width: 760px) { 
     .worlds {
       justify-content: space-evenly;
+    }
+    .heading {
+      flex-direction: column;
+      text-align: center;
+    }
+    .systeminfo {
+      width: 100%;
+      height: auto;
     }
   }
 </style>
