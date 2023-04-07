@@ -1,8 +1,9 @@
 <script>
 // @ts-nocheck
 
-import { createEventDispatcher } from 'svelte';
+import {createEventDispatcher} from 'svelte';
 import * as timeago from 'timeago.js';
+import {hashCode} from '../../../utils/index';
 const assets = import.meta.glob("../assets/map.*.png");
 const hostname = window.location.hostname;
 const dispatch = createEventDispatcher();
@@ -13,7 +14,9 @@ export let state = null;
 export let port = null;
 export let created = null;
 export let by = null;
-const images = {};
+const images = {}; 
+const imageBackground = (username) => `hsl(${Math.abs(hashCode(username))%359}, 70%, 90%)`; // hsl(250, 69%, 90%)
+
 for (const path in assets) {
   assets[path]().then(({ default: imageUrl }) => {
     images[path.split('/').pop()] = imageUrl;
@@ -60,7 +63,8 @@ for (const path in assets) {
     <div class="user">
       <img
         src="images/user.2.png"
-        alt="user" />
+        alt="user"
+        style={'background-color: ' + imageBackground(by)}/>
       <div class="user-info">
         <h5>{by ?? 'you'}</h5>
         <small>{timeago.format(created)}</small>
@@ -122,6 +126,10 @@ for (const path in assets) {
   margin-top: 10px;
   font-weight: bold;
 }
+.card-body p {
+  font-size: 13px;
+  min-height: 80px;
+}
 .tag {
   background: #666;
   border-radius: 50px;
@@ -147,14 +155,9 @@ for (const path in assets) {
 .tag-exited {
   background-color: rgb(177, 65, 65);
 }
-
-.card-body p {
-  font-size: 13px;
-  margin: 0 0 40px;
-}
 .user {
   display: flex;
-  margin-top: auto;
+  margin-bottom: 10px;
 }
 
 .user img {
@@ -162,10 +165,12 @@ for (const path in assets) {
   width: 40px;
   height: 40px;
   margin-right: 10px;
-  background-color: #eeeaff
+  background-color: hsl(250, 69%, 90%);
 }
 .user-info h5 {
   margin: 0;
+  font-weight: bold;
+  font-size: 0.8em;
 }
 .user-info small {
   color: #545d7a;

@@ -45,7 +45,7 @@ export default class World {
         'monster.crafty.rocky.description': description,
         'monster.crafty.rocky.settings.gamemode': 'survival',
         'monster.crafty.rocky.settings.difficulty': 'easy',
-        'monster.crafty.rocky.by': 'bob',
+        'monster.crafty.rocky.by': settings.by || 'bob',
       },
       HostConfig: {
         PortBindings: {

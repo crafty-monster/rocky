@@ -3,10 +3,11 @@
   import SystemInfo from './SystemInfo.svelte';
   import logo from '../assets/logo.transparentbg.png';
 
-  export let ready = false;
-
-  let newworld = {id: '(new)', name: 'Generate World', state: 'new', port: 'survival'}
-  let disconnectedworld = {id: '(error)', name: 'Disconnected', state: 'disconnected'}
+  export let username = null;
+  
+  let ready = false;
+  let newworld = {id: '(new)', name: 'Generate World', state: 'new', port: 'survival', by: username};
+  let disconnectedworld = {id: '(error)', name: 'Disconnected', state: 'disconnected'};
   let worlds = [newworld];
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
@@ -36,7 +37,7 @@
         console.log('Worlds loaded,all ready');
         setTimeout(() => ready = true, 100);
       } catch (err) {
-        worlds = [{port: String(err).substr(0,8), ...disconnectedworld}];
+        worlds = [];
       }
     }
   }

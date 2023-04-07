@@ -5,11 +5,11 @@
     fetch('/api/user/me').then(r => r.json()).then(start);
 
     let loading = true;
-    let authenticated = false;
+    let username = null;
 
     async function start(user) {
-      if (user?.id) {
-        authenticated = true;
+      if (user?.id && user?.username) {
+        username = user.username;
         setTimeout(() => loading = false, 1000);
       }
     }
@@ -19,8 +19,8 @@
   {#if (loading)}
     <Splash />
   {/if}
-  {#if (authenticated)}
-    <Dashboard />
+  {#if (username)}
+    <Dashboard username={username}/>
   {/if}
 </main>
 

@@ -2,6 +2,7 @@ import World from '../../lib/world.js';
 
 export const create = async (req, res) => {
   const settings = req.body;
+  settings.by = req.auth?.user;
   try {
     res.status(200).json(await World.create(settings));
   } catch (err) {
