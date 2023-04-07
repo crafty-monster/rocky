@@ -19,7 +19,7 @@ export default class World {
     console.log('Creating world with settings', settings);
     const name = 'rocky_world__' + settings['server-name'];
     const description = randomQuotes.default().body;
-    const port = 49001 + Math.floor(Math.random() * 800);
+    const port = 48001 + Math.floor(Math.random() * 800);
     let datafolder = path.join(__dirname + '/../data/' + name);
     if (process.platform === 'win32') datafolder = utils.toPosixPath(datafolder);
     // console.log('datapath', datapath);
