@@ -51,8 +51,18 @@ $ docker-compose up --build
 ```sh
 # Update to latest version
 $ git pull
-$ docker-compose build
-$ docker-compose restart
+$ docker-compose up --build
+```
+
+You can automate updates by installing the updater.
+
+```
+$ cd .updater
+$ ./install.sh
+*/1 * * * * cd /root/projects/rocky/.updater && ./check.sh >> update.log 2>&1
+0 * * * * cd /root/projects/rocky/.updater && tail -1000 update.log | cat > update.log
+
+Rocky updater installed. Check the 'update.log' in a minute or two.
 ```
 
 # Development
