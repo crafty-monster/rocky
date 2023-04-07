@@ -1,4 +1,7 @@
 <script>
+  // TODO: Add `docker system prune` functionality
+  // TODO: Add `docker volume prune` functionality
+  // TODO: Add `docker log container` functionality
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
   import logo from '../assets/logo.transparentbg.png';
