@@ -126,10 +126,10 @@ for (const path in assets) {
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
-  min-height: 250px;
+  min-height: 200px;
 }
 .card-body p {
-  font-size: 13px;
+  font-size: 0.9em;
   min-height: 80px;
 }
 .tag {
