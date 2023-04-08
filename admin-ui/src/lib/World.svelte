@@ -27,6 +27,7 @@ for (const path in assets) {
 <div id={id} class="card">
   <div class="card-image">
     <small>{String(id).substr(0,12)}</small>
+    <h4>{name}</h4>
     {#if state === 'new'}
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:;" on:click={() => dispatch('create')}>
@@ -44,15 +45,12 @@ for (const path in assets) {
     {/if}
   </div>
   <div class="card-body">
-    <div style="display:flex;">
+    <div style="display:flex; margin-bottom: 1rem;">
       <span class="tag tag-{state}">{state}</span>
       {#if port}
       <span class="tag float-end">{port}</span>
       {/if}
     </div>
-    <h4>
-      {name}
-    </h4>
     <p>
       {#if state === 'new'}
         Life gets boring when you stay within the limits of what you already know.
@@ -105,6 +103,15 @@ for (const path in assets) {
   height: 160px;
   object-fit: cover;
 }
+.card-image h4 {
+  font-size: 1.2em;
+  font-weight: bold;
+  position: absolute;
+  margin: 20px;
+  top: 100px;
+  color: white;
+  text-shadow: 0px 1px 2px black, 0px 1px 2px black, 0px 1px 2px black;
+}
 .card-image small {
   position: absolute;
   color: white;
@@ -120,11 +127,6 @@ for (const path in assets) {
   align-items: flex-start;
   padding: 20px;
   min-height: 250px;
-}
-.card-body h4 {
-  font-size: 1.2em;
-  margin-top: 10px;
-  font-weight: bold;
 }
 .card-body p {
   font-size: 13px;

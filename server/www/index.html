@@ -25,6 +25,7 @@
     <div class="container">
       <div v-for="w in worlds" class="card">
         <div class="card-header">
+          <h4>{{w.name}}</h4>
           <a :href="`minecraft://?addExternalServer=${w.name}|${hostname}:${w.port}`"><img
               :src="`/admin/images/thumbs/map.${String(w.id).substr(0,2)}.jpg`" :alt="w.name" /></a>
         </div>
@@ -32,9 +33,6 @@
           <span>
             <span class="tag tag-purple">survival</span>
           </span>
-          <h4>
-            {{w.name}}
-          </h4>
           <p>
             {{w.description}}
           </p>
@@ -55,7 +53,9 @@
       </div>
     </div>
   </div>
-  </div>
+  <footer>
+    <a href="/admin"><img src="favicon-32x32.png" width="32" alt="creeper"/></a>
+  </footer>
   <script>
     const app = new Vue({
       el: '#app',
