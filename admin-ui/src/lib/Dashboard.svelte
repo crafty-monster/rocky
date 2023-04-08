@@ -83,7 +83,7 @@
   </div>
 
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
-  <StatusModal show={false} world={statusModal.world} />
+  <StatusModal bind:show={statusModal.show} world={statusModal.world} />
 
   <section>
     <button disabled={disconnected} class="btn btn-light" on:click={ () => fetch('/api/server/containers') }>

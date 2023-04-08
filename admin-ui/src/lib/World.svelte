@@ -74,7 +74,7 @@ for (const path in assets) {
         <button class="btn btn-warning" on:click={() => confirm(`Stop "${name}"?.`) && fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
       {/if}
       <div class="tools-right">
-        {#if state === 'running'}
+        {#if state === '-----'}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div class="info">
           <i class="fa fa-circle-info fa-xl" on:click={() => dispatch('status')}></i>
