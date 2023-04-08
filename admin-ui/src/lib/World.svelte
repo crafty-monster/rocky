@@ -104,11 +104,11 @@ for (const path in assets) {
   object-fit: cover;
 }
 .card-image h4 {
-  font-size: 1.2em;
+  font-size: 1.4em;
   font-weight: bold;
   position: absolute;
   margin: 20px;
-  top: 117px;
+  top: 113px;
   color: white;
   text-shadow: 0 2px 2px black, 0 -2px 3px black, 0 1px 3px black;
 }
