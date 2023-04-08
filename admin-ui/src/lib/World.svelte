@@ -108,7 +108,7 @@ for (const path in assets) {
   font-weight: bold;
   position: absolute;
   margin: 20px;
-  top: 100px;
+  top: 117px;
   color: white;
   text-shadow: 0 2px 2px black, 0 -2px 3px black, 0 1px 3px black;
 }
