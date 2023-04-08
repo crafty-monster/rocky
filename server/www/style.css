@@ -56,7 +56,11 @@ body {
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
-  min-height: 250px;
+  min-height: 210px;
+}
+.card-body p {
+  font-size: 0.9em;
+  margin: 25px 0;
 }
 
 .tag {
@@ -80,10 +84,6 @@ body {
   background-color: #cd5b9f;
 }
 
-.card-body p {
-  font-size: 13px;
-  margin: 25px 0;
-}
 .user {
   display: flex;
   margin-top: auto;
