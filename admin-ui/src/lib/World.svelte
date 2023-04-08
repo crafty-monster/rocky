@@ -24,7 +24,7 @@ for (const path in assets) {
 }
 </script>
 
-<div id={id} class="card">
+<div id={id} class={`card state-${state}`}>
   <div class="card-image">
     <small>{String(id).substr(0,12)}</small>
     {#if state === 'new'}
@@ -109,10 +109,17 @@ for (const path in assets) {
   height: 180px;
   object-fit: cover;
 }
+.state-exited .card-image img {
+  filter: grayscale();
+}
+.state-new .card-image img {
+  filter: sepia();
+}
 .card-image h4 {
   font-size: 1.4em;
   font-weight: bold;
   position: absolute;
+  z-index: 1;
   margin: 20px;
   top: 113px;
   color: white;
@@ -120,6 +127,7 @@ for (const path in assets) {
 }
 .card-image small {
   position: absolute;
+  z-index: 1;
   color: white;
   right: 5px;
   top: 5px;

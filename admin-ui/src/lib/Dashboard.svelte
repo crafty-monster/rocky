@@ -11,7 +11,7 @@
   
   let ready = false;
   let disconnected = false;
-  let newworld = {id: '(new)', name: 'Generate World', state: 'new', port: 'survival', by: username};
+  let newworld = {id: '(new)', name: 'New World', state: 'new', port: 'survival', by: username};
   let worlds = null;
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
@@ -86,11 +86,8 @@
   <StatusModal bind:show={statusModal.show} world={statusModal.world} />
 
   <section>
-    <button disabled={disconnected} class="btn btn-light" on:click={ () => fetch('/api/server/containers') }>
-      list containers
-    </button>
     <button disabled={disconnected} class="btn btn-light" on:click={Dashboard.list}>
-      list worlds
+      refresh worlds
     </button>
     <button disabled={disconnected} class="btn btn-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
       stop worlds
