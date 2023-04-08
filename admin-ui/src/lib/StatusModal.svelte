@@ -16,6 +16,8 @@
     console.log('fetchStatus()', world.id);
     if (!world.id) return;
     loading = true;
+    version = '';
+    players = '';
     status = await fetch(`/api/world/${world.id}/status`).then(r => r.json());
     if (status && status.version) {
       version = status.version;
@@ -77,7 +79,7 @@
   /* PHABLET STYLES */
   @media all and (max-width: 760px) { 
     .main {
-      width: 85vw;
+      width: 70vw;
     }
   }
 </style>
