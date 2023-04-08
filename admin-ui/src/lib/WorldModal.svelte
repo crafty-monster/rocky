@@ -8,7 +8,7 @@
   let disabled = false;
   let loading = false;
 
-  $: fetchLogs(world), disabled = world.state !== 'running';
+  $: fetchLogs(undefined, world), disabled = (world.state !== 'running');
   $: clearLogs(show);
   
   let logs = [];
@@ -23,11 +23,11 @@
     logs = [];
   }
 
-  async function fetchLogs() {
-    console.log('fetchLogs()', world.id);
+  async function fetchLogs(n) {
+    console.log('fetchLogs()', n, world.id);
     if (!world.id) return;
     loading = true;
-    logs = await fetch(`/api/world/${world.id}/logs/18`).then(r => r.json());
+    logs = await fetch(`/api/world/${world.id}/logs/${n ?? 18}`).then(r => r.json());
     loading = false;
     setTimeout(scrollToBottom, 50);
   }
@@ -70,7 +70,7 @@
         <a href="javascript:;"class="nav-link active">Console</a>
       </li>
       <li class="pt-1" style="margin-left: auto">
-        <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={fetchLogs} on:keyup={fetchLogs}></i>
+        <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={() => fetchLogs(100)} on:keyup={() => fetchLogs(100)}></i>
       </li>
     </ul>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
