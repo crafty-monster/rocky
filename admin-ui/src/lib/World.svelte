@@ -110,7 +110,7 @@ for (const path in assets) {
   margin: 20px;
   top: 100px;
   color: white;
-  text-shadow: 0px 1px 2px black, 0px 1px 2px black, 0px 1px 2px black;
+  text-shadow: 0 2px 2px black, 0 -2px 3px black, 0 1px 3px black;
 }
 .card-image small {
   position: absolute;
