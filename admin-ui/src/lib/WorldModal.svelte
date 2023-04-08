@@ -162,4 +162,10 @@
     background: #333;
     color: #ccc;
   }
+  /* PHABLET STYLES */
+  @media all and (max-width: 760px) { 
+    .main {
+      width: 85vw;
+    }
+  }
 </style>

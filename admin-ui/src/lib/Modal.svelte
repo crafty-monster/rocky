@@ -71,4 +71,12 @@
     0% { opacity: 1; }
     100% { opacity: 0; }
   }
+  /* PHABLET STYLES */
+  @media all and (max-width: 760px) { 
+    .main {
+      max-width: 95vw;
+      max-height: 95vh;
+      padding: 1rem;
+    }
+  }
 </style>

@@ -77,10 +77,12 @@ for (const path in assets) {
         <button class="btn btn-success" on:click={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => dispatch('started', {id}))}>Start</button>
         <button class="btn btn-danger" on:click={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => dispatch('deleted', {id}))}>Delete</button>
       {:else}
-        <button class="btn btn-warning" on:click={() => fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
+        <button class="btn btn-warning" on:click={() => confirm(`Stop "${name}"?.`) && fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
       {/if}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <i class="fa fa-gear fa-xl" on:click={() => dispatch('settings')}></i>
+      <!-- <span class="info"><i class="fa fa-circle-info fa-xl" on:click={() => dispatch('info')}></i></span> -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <span class="terminal"><i class="fa fa-terminal fa-sm" on:click={() => dispatch('settings')}></i></span>
     </div>
   </div>
 </div>
@@ -181,16 +183,28 @@ for (const path in assets) {
   margin-top: 10px;
   font-size: 80%;
 }
-.tools i.fa-gear {
-  flex-grow: 1;
+.tools .info,
+.tools .terminal {
+  cursor: pointer;
+  opacity: 0.4;
+}
+.tools .info {
+  margin-left: auto;
+  color: black;
+}
+.tools .terminal {
+  background: black;
+  padding: 0 5px;
+  margin-top: 14px;
+  border-radius: 4px;
+  color: white;
   text-align: right;
   position: absolute;
   right: 20px;
-  line-height: 41px;
-  opacity: 0.4;
-  cursor: pointer;
+  line-height: 21px;
+
 }
-.tools i.fa-gear:hover {
+.tools .terminal:hover {
   opacity: 0.8;
 }
 
