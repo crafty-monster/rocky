@@ -63,10 +63,10 @@
     <button class="btn btn-light" on:click={Dashboard.list}>
       list worlds
     </button>
-    <button class="btn btn-light" on:click={ () => fetch('/api/world/stopAll', {method: 'POST'}).then(() => Dashboard.list()) }>
+    <button class="btn btn-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(() => Dashboard.list()) }>
       stop worlds
     </button>
-    <button class="btn btn-light" on:click={ () => fetch('/api/world', {method: 'DELETE'}).then(() => Dashboard.list()) }>
+    <button class="btn btn-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(() => Dashboard.list()) }>
       remove stopped worlds
     </button>
   </section>
