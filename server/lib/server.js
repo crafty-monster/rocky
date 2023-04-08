@@ -21,16 +21,28 @@ class Server {
   }
   /**
    * Server information
-   * @see https://docs.docker.com/engine/api/v1.42/#tag/System/operation/SystemInfo
+   * @see https://docs.docker.com/engine/api/v1.37/#tag/System/operation/SystemInfo
    * @return {Object}
    */
   async info() {
     console.log('Server.info()');
-    return await this.docker.info();
+    let up = false;
+    let path = 'unix:///var/run/docker.sock';
+    let info = {};
+    if (DOCKER_HOST) {
+      path = `tcp://${DOCKER_HOST}${DOCKER_PORT && (':' + DOCKER_PORT)}`;
+    }
+    try {
+      this.docker.modem.timeout = 500;
+      info = await this.docker.info();
+      up = true;
+    } catch (e) {/* Do nothing */}
+    this.docker.modem.timeout = null;
+    return {path, up, info};
   }
   /**
    * Version information
-   * @see https://docs.docker.com/engine/api/v1.42/#tag/System/operation/SystemVersion
+   * @see https://docs.docker.com/engine/api/v1.37/#tag/System/operation/SystemVersion
    * @return {Object}
    */
   async version() {
@@ -39,23 +51,19 @@ class Server {
   }
   /**
    * Runs a ping if server is connected
-   * @see https://docs.docker.com/engine/api/v1.42/#tag/System/operation/SystemPing
+   * @see https://docs.docker.com/engine/api/v1.37/#tag/System/operation/SystemPing
    * @return {Boolean}
    */
   async connected() {
     console.log('Server.connected()');
-    let up = false;
-    let path = 'unix:///var/run/docker.sock';
-    if (DOCKER_HOST) {
-      path = `tcp://${DOCKER_HOST}${DOCKER_PORT && (':' + DOCKER_PORT)}`;
-    }
+    let ping = false;
     try {
       this.docker.modem.timeout = 500;
       await this.docker.ping();
-      up = true;
+      ping = true;
     } catch (e) {/* Do nothing */}
     this.docker.modem.timeout = null;
-    return {path, up};
+    return ping;
   }
   /**
    * List Containers
@@ -65,6 +73,21 @@ class Server {
   async containers() {
     console.log('Server.containers()');
     return await this.docker.listContainers({all: true});
+  }
+  /**
+   * System prune (containers, images and volumes)
+   * @see https://docs.docker.com/engine/api/v1.37/#operation/ContainerPrune
+   * @see https://docs.docker.com/engine/api/v1.37/#operation/ImagePrune
+   * @see https://docs.docker.com/engine/api/v1.37/#operation/VolumePrune
+   * @return {Array}
+   */
+  async prune() {
+    console.log('Server.prune()');
+    const images = await this.docker.pruneImages();
+    const volumes = await this.docker.pruneVolumes();
+    const totalMb = Math.round((images?.SpaceReclaimed || 0) + (volumes.SpaceReclaimed || 0) / 1024 / 1024);
+    console.log(`Deleted ${images?.ImagesDeleted?.length} images and ${volumes?.VolumesDeleted?.length} volumes. Saving ${totalMb}MB space.`);
+    return {images, volumes, totalMb};
   }
 }
 

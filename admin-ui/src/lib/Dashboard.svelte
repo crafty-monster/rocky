@@ -1,8 +1,6 @@
 <script>
   // @ts-nocheck
-  // TODO: Add `docker system prune` functionality
-  // TODO: Add `docker volume prune` functionality
-  // TODO: Add `docker log container` functionality
+  import { onMount } from 'svelte';
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
   import WorldModal from './WorldModal.svelte';
@@ -11,9 +9,9 @@
   export let username = null;
   
   let ready = false;
+  let disconnected = false;
   let newworld = {id: '(new)', name: 'Generate World', state: 'new', port: 'survival', by: username};
-  let disconnectedworld = {id: '(error)', name: 'Disconnected', state: 'disconnected'};
-  let worlds = [newworld];
+  let worlds = null;
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
   const modal = {
@@ -22,6 +20,14 @@
   };
 
   class Dashboard {
+    static async mounted() {
+      const r = await fetch('/api/server/connected');
+      disconnected = !r.ok;
+      if (!disconnected) {
+        await Dashboard.list()
+      }
+      ready = true;
+    }
     static async create() {
       if (!confirm('Create new world?')) return;
       const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
@@ -35,9 +41,10 @@
         'difficulty': 'easy',
       };
       await fetch('/api/world/create', { method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(settings) });
-      setTimeout(() => Dashboard.list(), 2000);
+      setTimeout(Dashboard.list, 2000);
     }
     static async list() {
+      console.log('Dashboard.list()');
       try {
         worlds = await fetch('/api/world/list').then(r => r.json());
         if (worlds.length < 9) {
@@ -47,16 +54,16 @@
         setTimeout(() => ready = true, 100);
       } catch (err) {
         worlds = [];
+        console.error(err);
       }
     }
-    static settings(world) {
-      console.log('Dashboard.settings()', world);
+    static terminal(world) {
+      console.log('Dashboard.terminal()', world);
       modal.show = true;
       modal.world = world;
     }
   }
-  setTimeout(() => Dashboard.list(), 100);
-
+  onMount(Dashboard.mounted);
 </script>
 
 <main class={ready ? 'd-block' : 'd-none'}>
@@ -68,27 +75,35 @@
   <WorldModal bind:show={modal.show} world={modal.world} />
 
   <section>
-    <button class="btn btn-light" on:click={ () => fetch('/api/server/containers') }>
+    <button disabled={disconnected} class="btn btn-light" on:click={ () => fetch('/api/server/containers') }>
       list containers
     </button>
-    <button class="btn btn-light" on:click={Dashboard.list}>
+    <button disabled={disconnected} class="btn btn-light" on:click={Dashboard.list}>
       list worlds
     </button>
-    <button class="btn btn-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(() => Dashboard.list()) }>
+    <button disabled={disconnected} class="btn btn-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
       stop worlds
     </button>
-    <button class="btn btn-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(() => Dashboard.list()) }>
+    <button disabled={disconnected} class="btn btn-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
       remove stopped worlds
+    </button>
+    <button disabled={disconnected} class="btn btn-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
+      cleanup unused space
     </button>
   </section>
 
   <section class="worlds">
-    {#if !worlds}
-      <World id="disconnected" name="disconnected"/>
+    {#if (disconnected || !worlds)}
+      <div class="disconnected">
+        <p><i class="fa fa-brands fa-docker fa-3x"></i></p>
+        <p><strong>Unable to connect!</strong></p>
+        <p>Is Docker installed and running?</p>
+      </div>
+    {:else}
+      {#each worlds as world}
+        <World {...world} on:stopped={Dashboard.list} on:started={Dashboard.list} on:deleted={Dashboard.list} on:create={Dashboard.create} on:terminal={() => Dashboard.terminal(world)}/>
+      {/each}
     {/if}
-    {#each worlds as world}
-      <World {...world} on:stopped={Dashboard.list} on:started={Dashboard.list} on:deleted={Dashboard.list} on:create={Dashboard.create} on:settings={() => Dashboard.settings(world)}/>
-    {/each}
   </section>
 </main>
 
@@ -110,6 +125,18 @@
   .worlds {
     display: flex;
     flex-wrap: wrap;
+  }
+  .disconnected {
+    padding: 100px 0;
+    margin: 0 20px;
+    text-align: center;
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 5px #ccc;
+  }
+  .disconnected i.fa {
+    opacity: 0.5;
   }
   @media all and (max-width: 760px) { 
     .worlds {

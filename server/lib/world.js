@@ -1,14 +1,10 @@
 /* eslint-disable require-jsdoc */
-import fs from 'fs';
-import fsPromises from 'fs/promises';
-import path from 'path';
 import randomQuotes from 'random-quotes';
 import {statusBedrock} from 'minecraft-server-util';
 import server from './server.js';
 import utils from '../../utils/index.js';
 
 const docker = server.docker;
-const __dirname = utils.__dirname(import.meta);
 
 const {DOCKER_HOST} = process.env;
 
@@ -24,9 +20,7 @@ export default class World {
     const description = randomQuotes.default().body;
     const port = 48001 + Math.floor(Math.random() * 1000);
     settings.by = settings.by || 'bob';
-    let datafolder = path.join(__dirname + '/../data/' + name);
-    if (process.platform === 'win32') datafolder = utils.toPosixPath(datafolder);
-    console.log('Creating container...', name, port, datafolder);
+    console.log('Creating container...', name, port);
     const container = await docker.createContainer({
       name,
       // Image: 'ubuntu:latest',
@@ -120,7 +114,12 @@ export default class World {
    */
   static async show() {
     console.log('World.show()');
-    const containers = await docker.listContainers({filters: {name: ['/rocky_world__']}});
+    docker.modem.timeout = 500;
+    let containers = [];
+    try {
+      containers = await docker.listContainers({filters: {name: ['/rocky_world__']}});
+    } catch (err) {/* do nothing */}
+    docker.modem.timeout = null;
     return containers
         .sort((c1, c2) => c1.Created - c2.Created)
         .map(World.simpleMap);
@@ -276,14 +275,14 @@ export default class World {
         console.log('Removing container...', c.name, c.id);
         await docker.getContainer(c.id).remove({force: true});
         console.log('Container removed', c.name, c.id);
-        // Step 2) Remove files
-        if (process.platform === 'win32') c.folder = utils.toWindowsPath(c.folder);
-        console.log('Checking data folder..', c.folder);
-        if (fs.existsSync(c.folder)) {
-          setTimeout(async () => {
-            console.log('Removing files from', c.folder);
-            await fsPromises.rm(c.folder, {recursive: true, force: true});
-          }, 3000);
+        // Step 2) Remove volumes
+        if (c.meta?.Mounts) {
+          for (const m of c.meta.Mounts) {
+            if (m?.Type === 'volume') {
+              console.log('Removing volume', m.Name);
+              await docker.getVolume(m.Name).remove();
+            }
+          }
         }
         output.push({state: undefined, ...c});
       } else {
@@ -308,14 +307,14 @@ export default class World {
     console.log('Removing container...', c.name, c.id);
     await docker.getContainer(c.id).remove({force: true});
     console.log('Container removed', c.name, c.id);
-    // Step 2) Remove files
-    if (process.platform === 'win32') c.folder = utils.toWindowsPath(c.folder);
-    console.log('Checking data folder..', c.folder);
-    if (fs.existsSync(c.folder)) {
-      setTimeout(async () => {
-        console.log('Removing files from', c.folder);
-        await fsPromises.rm(c.folder, {recursive: true, force: true});
-      }, 3000);
+    // Step 2) Remove volumes
+    if (c.meta?.Mounts) {
+      for (const m of c.meta.Mounts) {
+        if (m?.Type === 'volume') {
+          console.log('Removing volume', m.Name);
+          await docker.getVolume(m.Name).remove();
+        }
+      }
     }
     return {state: undefined, ...c};
   }

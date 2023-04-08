@@ -11,7 +11,7 @@ import {checkAdmin as ADMIN_ACCESS} from './middleware/index.js';
 import {healthcheck} from './routes/index.js';
 import {me} from './routes/user/index.js';
 import {create, show, get, list, start, status, logs, execute, stop, stopAll, remove, removeAll} from './routes/world/index.js';
-import {connected, info, version, containers} from './routes/server/index.js';
+import {connected, info, version, containers, prune} from './routes/server/index.js';
 
 const PORT = process.env.PORT || 48000;
 const app = express();
@@ -35,9 +35,10 @@ app.use(rateLimit({windowMs: 20000, max: 30}));
 
 app.get('/api/user/me', ADMIN_ACCESS, me);
 
-app.get('/api/server/', ADMIN_ACCESS, info);
+app.get('/api/server', ADMIN_ACCESS, info);
 app.get('/api/server/version', ADMIN_ACCESS, version);
 app.get('/api/server/containers', ADMIN_ACCESS, containers);
+app.post('/api/server/prune', ADMIN_ACCESS, prune);
 
 app.get('/api/world/list', ADMIN_ACCESS, list);
 app.post('/api/world/create', ADMIN_ACCESS, create);

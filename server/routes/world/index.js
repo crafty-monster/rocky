@@ -36,7 +36,6 @@ export const get = async (req, res) => {
   }
 };
 
-
 export const start = async (req, res) => {
   const {id} = req.params;
   if (!id) return res.status(400).send('No id');

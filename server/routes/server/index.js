@@ -19,15 +19,23 @@ export const version = async (req, res) => {
 export const connected = async (req, res) => {
   const connected = await server.connected();
   if (connected) {
-    res.status(200).send(connected);
+    res.status(200).send({connected});
   } else {
-    res.status(500).send(connected);
+    res.status(500).send({connected});
   }
 };
 
 export const containers = async (req, res) => {
   try {
     res.status(200).send(await server.containers());
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+export const prune = async (req, res) => {
+  try {
+    res.status(200).send(await server.prune());
   } catch (err) {
     res.status(500).send(err);
   }

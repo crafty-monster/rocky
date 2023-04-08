@@ -82,7 +82,9 @@ for (const path in assets) {
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- <span class="info"><i class="fa fa-circle-info fa-xl" on:click={() => dispatch('info')}></i></span> -->
       <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <span class="terminal"><i class="fa fa-terminal fa-sm" on:click={() => dispatch('settings')}></i></span>
+      {#if state !== 'new'}
+      <span class="terminal"><i class="fa fa-terminal fa-sm" on:click={() => dispatch('terminal')}></i></span>
+      {/if}
     </div>
   </div>
 </div>
