@@ -96,11 +96,11 @@ for (const path in assets) {
   border-radius: 10px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  width: 280px;
+  width: 300px;
 }
 .card-image img {
   width: 100%;
-  height: 160px;
+  height: 180px;
   object-fit: cover;
 }
 .card-image h4 {
