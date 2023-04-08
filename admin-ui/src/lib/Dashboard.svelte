@@ -35,7 +35,6 @@
     static async list() {
       try {
         worlds = await fetch('/api/world/list').then(r => r.json());
-        worlds.sort((w1, w2) => new Date(w1.created) - new Date(w2.created));
         if (worlds.length < 9) {
           worlds.push(newworld);
         }

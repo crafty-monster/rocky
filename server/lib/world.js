@@ -72,6 +72,7 @@ export default class World {
     console.log('World.list()');
     const containers = await docker.listContainers({all: true, filters: {name: ['/rocky_world__']}});
     return containers
+        .sort((c1, c2) => c1.Created - c2.Created)
         .map(c => {
           const id = c.Id;
           const name = String(c.Names?.[0]).replace('/rocky_world__', '');
@@ -94,6 +95,7 @@ export default class World {
     console.log('World.show()');
     const containers = await docker.listContainers({filters: {name: ['/rocky_world__']}});
     return containers
+        .sort((c1, c2) => c1.Created - c2.Created)
         .map(c => {
           const id = String(c.Id).substring(0, 12);
           const name = String(c.Names?.[0]).replace('/rocky_world__', '');
