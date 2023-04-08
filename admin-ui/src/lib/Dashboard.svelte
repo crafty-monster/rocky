@@ -95,7 +95,7 @@
   <section class="worlds">
     {#if (disconnected || !worlds)}
       <div class="disconnected">
-        <p><i class="fa fa-brands fa-docker fa-3x"></i></p>
+        <p><i class="fa fa-brands fa-docker"></i></p>
         <p><strong>Unable to connect!</strong></p>
         <p>Is Docker installed and running?</p>
       </div>
@@ -128,7 +128,7 @@
   }
   .disconnected {
     padding: 100px 0;
-    margin: 0 20px;
+    margin: 0 10px;
     text-align: center;
     width: 100%;
     background: white;
@@ -136,7 +136,8 @@
     box-shadow: 0 0 5px #ccc;
   }
   .disconnected i.fa {
-    opacity: 0.5;
+    opacity: 0.2;
+    font-size: 120px;
   }
   @media all and (max-width: 760px) { 
     .worlds {
