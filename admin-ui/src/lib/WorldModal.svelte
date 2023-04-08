@@ -5,7 +5,6 @@
 
   export let show = false;
   export let world = {};
-  export let view = 'console';
   let disabled = false;
   let loading = false;
 
@@ -19,14 +18,6 @@
   };
   let command = '';
 
-  function toggle(v) {
-    console.log('toggle()', v);
-    view = v;
-    if (v === 'console') {
-      fetchLogs();
-    }
-  }
-
   function clearLogs() {
     console.log('clearLogs()');
     logs = [];
@@ -36,7 +27,7 @@
     console.log('fetchLogs()', world.id);
     if (!world.id) return;
     loading = true;
-    logs = await fetch(`/api/world/${world.id}/logs/16`).then(r => r.json());
+    logs = await fetch(`/api/world/${world.id}/logs/18`).then(r => r.json());
     loading = false;
     setTimeout(scrollToBottom, 50);
   }
@@ -60,7 +51,7 @@
       const headers = {'Content-Type': 'application/json'};
       const body = JSON.stringify({command});
       await fetch(`/api/world/${world.id}/execute`, {method: 'POST', headers, body});
-      setTimeout(fetchLogs, 100);
+      setTimeout(fetchLogs, 500);
       command = '';
     }
   }
@@ -74,20 +65,16 @@
       {world.name}
     </h3>
     <ul class="nav nav-tabs">
-      <!-- <li class="nav-item">
-        <a href="javascript:;" on:click={() => toggle('actions')} on:keyup={() => toggle('actions')} class={'nav-link ' + (view === 'actions' ? 'active' : '')} >Actions</a>
-      </li> -->
       <li class="nav-item">
         <!-- svelte-ignore a11y-invalid-attribute -->
-        <a href="javascript:;" on:click={() => toggle('console')} on:keyup={() => toggle('console')} class={'nav-link ' + (view === 'console' ? 'active' : '')} >Console</a>
+        <a href="javascript:;"class="nav-link active">Console</a>
       </li>
       <li class="pt-1" style="margin-left: auto">
         <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={fetchLogs} on:keyup={fetchLogs}></i>
       </li>
     </ul>
-    {#if (view === 'console')}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <pre bind:this={el.pre} on:click={() => el.command.focus()}>{logs.join('\n')}</pre>
+    <pre class="terminal" bind:this={el.pre} on:click={() => el.command.focus()}>{logs.join('\n')}</pre>
     <input disabled={disabled} placeholder=">" bind:this={el.command} type="text" class="command" bind:value={command} on:keypress={keypress}>
     <small>Common commands:</small>
     <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('help')}>Help</button>
@@ -96,22 +83,13 @@
     <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('difficulty easy')}>Set Difficulty</button>
     <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('gamerule showcoordinates true')}>Show coordinates</button>
     <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('tell @a Hello guys')}>Message to all</button>
-    {:else}
-    <label for="difficulty" class="form-label">Difficulty</label>
-    <select id="difficulty" class="form-select">
-      <option selected value="peaceful">peaceful</option>
-      <option value="easy">easy</option>
-      <option value="medium">medium</option>
-      <option value="hard">hard</option>
-    </select>
-    {/if}
   </div>
 </Modal>
 
 <style>
   .main {
     width: 80vw;
-    height: 70vh;
+    min-height: 70vh;
     overflow: hidden;
   }
   img {
@@ -127,7 +105,7 @@
     cursor: pointer;
     color: #aaa;
   }
-  pre {
+  pre.terminal {
     font-size: 75%;
     background: #111;
     padding: 10px;
@@ -135,8 +113,18 @@
     border-radius: 5px;
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 40vh;
+    height: 46vh;
     margin-bottom: 0;
+  }
+  pre.terminal::-webkit-scrollbar {
+    width: 10px;
+  }
+  pre.terminal::-webkit-scrollbar-track {
+    background-color: rgba(255,255,255,0.2);
+  }
+  pre.terminal::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgba(255,255,255,0.5);
   }
   .state-exited pre {
     background: #333;
