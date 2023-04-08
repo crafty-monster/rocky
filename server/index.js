@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import basicAuth from 'express-basic-auth';
+import apicache from 'apicache';
+import rateLimit from 'express-rate-limit';
 
 import './lib/error.js';
 import User from './lib/user.js';
@@ -13,6 +15,7 @@ import {connected, info, version, containers} from './routes/server/index.js';
 
 const PORT = process.env.PORT || 48000;
 const app = express();
+const cache = apicache.middleware;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,11 +23,15 @@ app.use(express.static('www'));
 
 app.get('/api/healthcheck', healthcheck);
 app.get('/api/server/connected', connected);
-app.get('/api/world/', show);
+app.get('/api/world/', cache('5 seconds'), show);
 
 // Authentication from here onwards
 app.use(basicAuth({authorizer: User.auth, challenge: true}));
 app.use('/admin', express.static('www/admin'));
+
+// Rate limiting from here onwards
+// To avoid brute force attacks.
+app.use(rateLimit({windowMs: 20000, max: 30}));
 
 app.get('/api/user/me', ADMIN_ACCESS, me);
 

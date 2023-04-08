@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>My Minecraft SMP Server</title>
+  <title>Minecraft SMP Server</title>
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -49,7 +49,7 @@
             </div>
           </div>
           <div v-else>
-            <a href="/admin" class="btn btn-primary">Admin</a>
+            <a href="/admin" class="btn btn-primary">Start</a>
           </div>
         </div>
       </div>
@@ -83,8 +83,8 @@
         if (!this.worlds.length) {
           this.worlds.push({
             id: '--',
-            name: 'Nothing to see',
-            description: 'Please create some worlds for people to play with.',
+            name: 'No worlds created',
+            description: 'Please create some worlds for people to play with. You\'ll need your username and password.',
             port: 'blank',
             by: 'nobody'
           });
