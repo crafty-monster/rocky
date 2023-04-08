@@ -1,5 +1,7 @@
 <script>
   // @ts-nocheck
+  // TODO: Download backup
+  // TODO: Upload restore backup
   import { onMount } from 'svelte';
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
@@ -13,7 +15,7 @@
   let disconnected = false;
   let newworld = {id: '(new)', name: 'New World', state: 'new', port: 'survival', by: username};
   let worlds = null;
-  const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
+  const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'fantastic', 'amazing', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
   const terminalModal = {
     show: false,

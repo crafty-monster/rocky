@@ -111,6 +111,7 @@ for (const path in assets) {
 }
 .state-exited .card-image img {
   filter: grayscale();
+  opacity: 0.8;
 }
 .state-new .card-image img {
   filter: sepia();
