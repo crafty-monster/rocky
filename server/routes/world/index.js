@@ -37,10 +37,10 @@ export const start = async (req, res) => {
 };
 
 export const logs = async (req, res) => {
-  const {id} = req.params;
+  const {id, tail} = req.params;
   if (!id) return res.status(400).send('No id');
   try {
-    res.status(200).json(await World.logs(id));
+    res.status(200).json(await World.logs(id, tail));
   } catch (err) {
     res.status(500).send(err);
   }

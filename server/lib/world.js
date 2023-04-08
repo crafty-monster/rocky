@@ -128,9 +128,10 @@ export default class World {
   /**
    * Shows the logs for a container
    * @param {String} id The id of the world to show logs for
+   * @param {Integer} tail The last n of logs to return.
    * @return {Array} Details of the world to show logs for
    */
-  static async logs(id) {
+  static async logs(id, tail = 100) {
     console.log('World.logs(%s)', id);
     const containers = await World.list();
     const c = containers.find(c => c.id === id);
@@ -139,7 +140,7 @@ export default class World {
     }
     const logs = await docker
         .getContainer(c.id)
-        .logs({stdout: true, stderr: true, tail: 200});
+        .logs({stdout: true, stderr: true, tail});
     return logs.toString().split('\n').map(s => Buffer.from(s).slice(8).toString());
   }
 

@@ -5,6 +5,7 @@
   // TODO: Add `docker log container` functionality
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
+  import WorldModal from './WorldModal.svelte';
   import logo from '../assets/logo.transparentbg.png';
 
   export let username = null;
@@ -15,7 +16,11 @@
   let worlds = [newworld];
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
-  
+  const modal = {
+    show: false,
+    worldId: null,
+  };
+
   class Dashboard {
     static async create() {
       if (!confirm('Create new world?')) return;
@@ -44,6 +49,11 @@
         worlds = [];
       }
     }
+    static settings(world) {
+      console.log('Dashboard.settings()', world);
+      modal.show = true;
+      modal.world = world;
+    }
   }
   setTimeout(() => Dashboard.list(), 100);
 
@@ -54,6 +64,8 @@
     <h1><img src={logo} alt="ROCKY: minecraft bedrock server controller"/></h1>
     <div class="systeminfo d-flex justify-content-right align-items-end"><SystemInfo /></div>
   </div>
+
+  <WorldModal bind:show={modal.show} world={modal.world} />
 
   <section>
     <button class="btn btn-light" on:click={ () => fetch('/api/server/containers') }>
@@ -75,7 +87,7 @@
       <World id="disconnected" name="disconnected"/>
     {/if}
     {#each worlds as world}
-      <World {...world} on:stopped={Dashboard.list} on:started={Dashboard.list} on:deleted={Dashboard.list} on:create={Dashboard.create}/>
+      <World {...world} on:stopped={Dashboard.list} on:started={Dashboard.list} on:deleted={Dashboard.list} on:create={Dashboard.create} on:settings={() => Dashboard.settings(world)}/>
     {/each}
   </section>
 </main>

@@ -4,9 +4,9 @@
 import {createEventDispatcher} from 'svelte';
 import * as timeago from 'timeago.js';
 import {hashCode} from '../../../utils/index';
+const dispatch = createEventDispatcher();
 const assets = import.meta.glob("../assets/map.*.png");
 const hostname = window.location.hostname;
-const dispatch = createEventDispatcher();
 export let id = null;
 export let name = null;
 export let description = null;
@@ -40,7 +40,7 @@ for (const path in assets) {
       </a>
     {:else}
       <a href="minecraft://?addExternalServer={name}|{hostname}:{port}">
-        <img src="{'images/thumbs/map.' + String(id).substr(0,2) + '.jpg'}" alt="rover" onerror="this.onerror=null;this.src='images/thumbs/map.--.jpg'"/>
+        <img src="{'images/thumbs/map.' + String(id).substr(0,2) + '.jpg'}" alt={name} onerror="this.onerror=null;this.src='images/thumbs/map.--.jpg'"/>
       </a>
     {/if}
   </div>
@@ -80,7 +80,7 @@ for (const path in assets) {
         <button class="btn btn-warning" on:click={() => fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
       {/if}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <i class="fa fa-gear fa-xl" on:click={() => fetch(`/api/world/${id}/logs`)}></i>
+      <i class="fa fa-gear fa-xl" on:click={() => dispatch('settings')}></i>
     </div>
   </div>
 </div>

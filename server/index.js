@@ -45,6 +45,7 @@ app.post('/api/world/stopAll', ADMIN_ACCESS, stopAll);
 app.post('/api/world/:id/start', ADMIN_ACCESS, start);
 app.post('/api/world/:id/stop', ADMIN_ACCESS, stop);
 app.get('/api/world/:id/logs', ADMIN_ACCESS, logs);
+app.get('/api/world/:id/logs/:tail', ADMIN_ACCESS, logs);
 app.post('/api/world/:id/execute', ADMIN_ACCESS, execute);
 app.delete('/api/world/:id', ADMIN_ACCESS, remove);
 app.delete('/api/world', ADMIN_ACCESS, removeAll);
