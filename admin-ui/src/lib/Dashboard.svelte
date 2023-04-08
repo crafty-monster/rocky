@@ -3,7 +3,8 @@
   import { onMount } from 'svelte';
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
-  import WorldModal from './WorldModal.svelte';
+  import TerminalModal from './TerminalModal.svelte';
+  import StatusModal from './StatusModal.svelte';
   import logo from '../assets/logo.transparentbg.png';
 
   export let username = null;
@@ -14,10 +15,14 @@
   let worlds = null;
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
-  const modal = {
+  const terminalModal = {
     show: false,
     worldId: null,
   };
+  const statusModal = {
+    show: false,
+    worldId: null,
+  }
 
   class Dashboard {
     static async mounted() {
@@ -57,10 +62,15 @@
         console.error(err);
       }
     }
+    static status(world) {
+      console.log('Dashboard.status()', world);
+      statusModal.show = true;
+      statusModal.world = world;
+    }
     static terminal(world) {
       console.log('Dashboard.terminal()', world);
-      modal.show = true;
-      modal.world = world;
+      terminalModal.show = true;
+      terminalModal.world = world;
     }
   }
   onMount(Dashboard.mounted);
@@ -72,7 +82,8 @@
     <div class="systeminfo d-flex justify-content-right align-items-end"><SystemInfo /></div>
   </div>
 
-  <WorldModal bind:show={modal.show} world={modal.world} />
+  <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
+  <StatusModal bind:show={statusModal.show} world={statusModal.world} />
 
   <section>
     <button disabled={disconnected} class="btn btn-light" on:click={ () => fetch('/api/server/containers') }>
@@ -101,7 +112,7 @@
       </div>
     {:else}
       {#each worlds as world}
-        <World {...world} on:stopped={Dashboard.list} on:started={Dashboard.list} on:deleted={Dashboard.list} on:create={Dashboard.create} on:terminal={() => Dashboard.terminal(world)}/>
+        <World {...world} on:stopped={Dashboard.list} on:started={Dashboard.list} on:deleted={Dashboard.list} on:create={Dashboard.create} on:terminal={() => Dashboard.terminal(world)} on:status={() => Dashboard.status(world)}/>
       {/each}
     {/if}
   </section>

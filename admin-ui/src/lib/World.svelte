@@ -27,19 +27,15 @@ for (const path in assets) {
 <div id={id} class="card">
   <div class="card-image">
     <small>{String(id).substr(0,12)}</small>
-    <h4>{name}</h4>
     {#if state === 'new'}
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:;" on:click={() => dispatch('create')}>
+        <h4>{name}</h4>
         <img src="images/thumbs/map.(new).jpg" alt="new"/>
-      </a>
-    {:else if state === 'disconnected'}
-      <!-- svelte-ignore a11y-invalid-attribute -->
-      <a href="javascript:;">
-        <img src="images/thumbs/map.(disconnected).jpg" alt="disconnected"/>
       </a>
     {:else}
       <a href="minecraft://?addExternalServer={name}|{hostname}:{port}">
+        <h4>{name}</h4>
         <img src="{'images/thumbs/map.' + String(id).substr(0,2) + '.jpg'}" alt={name} onerror="this.onerror=null;this.src='images/thumbs/map.--.jpg'"/>
       </a>
     {/if}
@@ -71,20 +67,26 @@ for (const path in assets) {
     <div class="tools">
       {#if state === 'new'}
         <button class="btn btn-primary" on:click={() => dispatch('create')}>Generate</button>
-      {:else if state === 'disconnected'}
-        <button class="btn btn-primary" disabled>Create New</button>
       {:else if state === 'exited'}
         <button class="btn btn-success" on:click={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => dispatch('started', {id}))}>Start</button>
         <button class="btn btn-danger" on:click={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => dispatch('deleted', {id}))}>Delete</button>
       {:else}
         <button class="btn btn-warning" on:click={() => confirm(`Stop "${name}"?.`) && fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
       {/if}
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- <span class="info"><i class="fa fa-circle-info fa-xl" on:click={() => dispatch('info')}></i></span> -->
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      {#if state !== 'new'}
-      <span class="terminal"><i class="fa fa-terminal fa-sm" on:click={() => dispatch('terminal')}></i></span>
-      {/if}
+      <div class="tools-right">
+        {#if state === 'running'}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div class="info">
+          <i class="fa fa-circle-info fa-xl" on:click={() => dispatch('status')}></i>
+        </div>
+        {/if}
+        {#if state !== 'new'}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div class="terminal">
+          <span><i class="fa fa-terminal fa-sm" on:click={() => dispatch('terminal')}></i></span>
+        </div>
+        {/if}
+      </div>
     </div>
   </div>
 </div>
@@ -165,7 +167,6 @@ for (const path in assets) {
   display: flex;
   margin-bottom: 10px;
 }
-
 .user img {
   border-radius: 50%;
   width: 40px;
@@ -182,31 +183,39 @@ for (const path in assets) {
   color: #545d7a;
 }
 .tools {
+  width: 100%;
   margin-top: 10px;
   font-size: 80%;
+  display: flex;
 }
-.tools .info,
-.tools .terminal {
+.tools .btn {
+  margin-right: 5px;
+}
+.tools-right {
+  margin-left: auto;
+  display: flex;
+  padding-top: 14px;
+}
+.tools-right .info,
+.tools-right .terminal {
   cursor: pointer;
   opacity: 0.4;
 }
-.tools .info {
-  margin-left: auto;
+.tools-right .info {
   color: black;
+  font-size: 115%;
+  margin: 1px 14px 0 0;
 }
-.tools .terminal {
+.tools-right .terminal span {
   background: black;
-  padding: 0 5px;
+  padding: 3px 5px;
   margin-top: 14px;
   border-radius: 4px;
   color: white;
-  text-align: right;
-  position: absolute;
-  right: 20px;
-  line-height: 21px;
-
+  line-height: 22px;
 }
-.tools .terminal:hover {
+.tools-right .info:hover,
+.tools-right .terminal:hover {
   opacity: 0.8;
 }
 
