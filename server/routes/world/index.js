@@ -26,6 +26,17 @@ export const show = async (req, res) => {
   }
 };
 
+export const get = async (req, res) => {
+  const {id} = req.params;
+  if (!id) return res.status(400).send('No id');
+  try {
+    res.status(200).json(await World.get(id));
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+
 export const start = async (req, res) => {
   const {id} = req.params;
   if (!id) return res.status(400).send('No id');
@@ -41,6 +52,16 @@ export const logs = async (req, res) => {
   if (!id) return res.status(400).send('No id');
   try {
     res.status(200).json(await World.logs(id, tail));
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+export const status = async (req, res) => {
+  const {id} = req.params;
+  if (!id) return res.status(400).send('No id');
+  try {
+    res.status(200).json(await World.status(id));
   } catch (err) {
     res.status(500).send(err);
   }

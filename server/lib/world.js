@@ -3,11 +3,14 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 import randomQuotes from 'random-quotes';
+import {statusBedrock} from 'minecraft-server-util';
 import server from './server.js';
 import utils from '../../utils/index.js';
 
 const docker = server.docker;
 const __dirname = utils.__dirname(import.meta);
+
+const {DOCKER_HOST} = process.env;
 
 export default class World {
   /**
@@ -65,6 +68,41 @@ export default class World {
   }
 
   /**
+   * Maps a container to a world object
+   * @param {Object} c the container
+   * @return {Object} world
+   */
+  static map(c) {
+    if (!c || !c.Id) return null;
+    const id = c.Id;
+    const name = String(c.Names?.[0]).replace('/rocky_world__', '');
+    const description = c.Labels['monster.crafty.rocky.description'];
+    const port = c.Ports?.[0]?.PublicPort;
+    const state = c.State;
+    const folder = c.Mounts?.find(m => m.Type === 'bind')?.Source;
+    const created = new Date(c.Created * 1000).getTime();
+    const by = c.Labels['monster.crafty.rocky.by'];
+    const meta = c;
+    return {id, name, description, port, state, folder, created, by, meta};
+  }
+
+  /**
+   * Maps a container to a simplified world object
+   * @param {Object} c the container
+   * @return {Object} simplified world
+   */
+  static simpleMap(c) {
+    if (!c || !c.Id) return null;
+    const id = String(c.Id).substring(0, 12);
+    const name = String(c.Names?.[0]).replace('/rocky_world__', '');
+    const description = c.Labels['monster.crafty.rocky.description'];
+    const port = c.Ports?.[0]?.PublicPort;
+    const created = new Date(c.Created * 1000).toISOString();
+    const by = c.Labels['monster.crafty.rocky.by'];
+    return {id, name, description, created, port, by};
+  }
+
+  /**
    * Lists existing worlds
    * @return {Array} List of worlds
    */
@@ -73,22 +111,11 @@ export default class World {
     const containers = await docker.listContainers({all: true, filters: {name: ['/rocky_world__']}});
     return containers
         .sort((c1, c2) => c1.Created - c2.Created)
-        .map(c => {
-          const id = c.Id;
-          const name = String(c.Names?.[0]).replace('/rocky_world__', '');
-          const description = c.Labels['monster.crafty.rocky.description'];
-          const port = c.Ports?.[0]?.PublicPort;
-          const state = c.State;
-          const folder = c.Mounts?.find(m => m.Type === 'bind')?.Source;
-          const created = new Date(c.Created * 1000).toISOString();
-          const by = c.Labels['monster.crafty.rocky.by'];
-          const meta = c;
-          return {id, name, description, port, state, folder, created, by, meta};
-        });
+        .map(World.map);
   }
 
   /**
-   * Minimal listing of running worlds for public access
+   * Simplified listing of running worlds for public access
    * @return {Array} List of worlds
    */
   static async show() {
@@ -96,26 +123,28 @@ export default class World {
     const containers = await docker.listContainers({filters: {name: ['/rocky_world__']}});
     return containers
         .sort((c1, c2) => c1.Created - c2.Created)
-        .map(c => {
-          const id = String(c.Id).substring(0, 12);
-          const name = String(c.Names?.[0]).replace('/rocky_world__', '');
-          const description = c.Labels['monster.crafty.rocky.description'];
-          const port = c.Ports?.[0]?.PublicPort;
-          const created = new Date(c.Created * 1000).toISOString();
-          const by = c.Labels['monster.crafty.rocky.by'];
-          return {id, name, description, created, port, by};
-        });
+        .map(World.simpleMap);
+  }
+
+  /**
+   * Gets a single world
+   * @param {String} id the world/container id
+   * @return {Object} a single world
+   */
+  static async get(id) {
+    console.log('World.get(%s)', id);
+    const container = await docker.listContainers({all: true, filters: {id: [id]}});
+    return container.map(World.map).pop();
   }
 
   /**
    * Starts a world
-   * @param {String} id The id of the world to start
-   * @return {Array} Details of the world start
+   * @param {String} id The id of the world
+   * @return {Object} Details of the world
    */
   static async start(id) {
     console.log('World.start(%s)', id);
-    const containers = await World.list();
-    const c = containers.find(c => c.id === id);
+    const c = await World.get(id);
     if (!c) {
       throw new Error('Cannot find container to start:' + id);
     }
@@ -126,15 +155,39 @@ export default class World {
   }
 
   /**
+   * Gets extra status informtaion
+   * @param {String} id The id of the world
+   * @return {Object} response
+   */
+  static async status(id) {
+    console.log('World.status(%s)', id);
+    const c = await World.get(id);
+    if (!c) {
+      throw new Error('Cannot find container for status:' + id);
+    }
+    // Point to the gateway (as the ports are mapped in there)
+    const host = DOCKER_HOST || c.meta?.NetworkSettings?.Networks?.bridge?.Gateway;
+    console.log('Connecting to bedrock host ...', host, c.port);
+    const status = await statusBedrock(host, c.port);
+    console.log('Got some status info', status?.version, status?.players);
+    return {
+      version: status?.version?.name,
+      protocol: status?.version?.protocol,
+      onlinePlayers: status?.players?.online,
+      maxPlayers: status?.players?.max,
+      gameMode: status?.gameMode,
+    };
+  }
+
+  /**
    * Shows the logs for a container
-   * @param {String} id The id of the world to show logs for
+   * @param {String} id The id of the world
    * @param {Integer} tail The last n of logs to return.
-   * @return {Array} Details of the world to show logs for
+   * @return {Array} An array of logs
    */
   static async logs(id, tail = 100) {
     console.log('World.logs(%s)', id);
-    const containers = await World.list();
-    const c = containers.find(c => c.id === id);
+    const c = await World.get(id);
     if (!c) {
       throw new Error('Cannot find container to show logs:' + id);
     }
@@ -146,17 +199,16 @@ export default class World {
 
   /**
    * Executes console commands
-   * @param {String} cId the container id
+   * @param {String} id the container id
    * @param {String} command the console command
-   * @return {String} List of worlds
+   * @return {Object} response
    */
-  static async execute(cId, command) {
-    console.log('World.execute(%s, command)', cId, command);
+  static async execute(id, command) {
+    console.log('World.execute(%s, command)', id, command);
     if (!command) {
       throw new Error('No command to execute');
     }
-    const containers = await World.list();
-    const c = containers.find(c => c.id === cId);
+    const c = await World.get(id);
     if (c.state === 'running') {
       console.log('Running command on "%s" ...', c.name, command);
       const exec = await docker.getContainer(c.id).exec({
@@ -177,8 +229,7 @@ export default class World {
    */
   static async stop(id) {
     console.log('World.stop(%s)', id);
-    const containers = await World.list();
-    const c = containers.find(c => c.id === id);
+    const c = await World.get(id);
     if (c.state === 'running') {
       console.log('Stopping container...', c.name, c.id);
       await docker.getContainer(c.id).stop();
@@ -249,8 +300,7 @@ export default class World {
    */
   static async remove(id) {
     console.log('World.remove(%s)', id);
-    const containers = await World.list();
-    const c = containers.find(c => c.id === id);
+    const c = await World.get(id);
     if (!c) {
       throw new Error('Cannot find container to remove:' + id);
     }

@@ -10,7 +10,7 @@ import User from './lib/user.js';
 import {checkAdmin as ADMIN_ACCESS} from './middleware/index.js';
 import {healthcheck} from './routes/index.js';
 import {me} from './routes/user/index.js';
-import {create, show, list, start, logs, execute, stop, stopAll, remove, removeAll} from './routes/world/index.js';
+import {create, show, get, list, start, status, logs, execute, stop, stopAll, remove, removeAll} from './routes/world/index.js';
 import {connected, info, version, containers} from './routes/server/index.js';
 
 const PORT = process.env.PORT || 48000;
@@ -44,6 +44,8 @@ app.post('/api/world/create', ADMIN_ACCESS, create);
 app.post('/api/world/stopAll', ADMIN_ACCESS, stopAll);
 app.post('/api/world/:id/start', ADMIN_ACCESS, start);
 app.post('/api/world/:id/stop', ADMIN_ACCESS, stop);
+app.get('/api/world/:id', ADMIN_ACCESS, get);
+app.get('/api/world/:id/status', ADMIN_ACCESS, status);
 app.get('/api/world/:id/logs', ADMIN_ACCESS, logs);
 app.get('/api/world/:id/logs/:tail', ADMIN_ACCESS, logs);
 app.post('/api/world/:id/execute', ADMIN_ACCESS, execute);
