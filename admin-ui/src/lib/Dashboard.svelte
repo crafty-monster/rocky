@@ -1,4 +1,5 @@
 <script>
+  // @ts-nocheck
   // TODO: Add `docker system prune` functionality
   // TODO: Add `docker volume prune` functionality
   // TODO: Add `docker log container` functionality
@@ -33,9 +34,10 @@
     }
     static async list() {
       try {
-        worlds = [newworld].concat(await fetch('/api/world/list').then(r => r.json()));
-        if (worlds.length > 8) {
-          worlds.shift();
+        worlds = await fetch('/api/world/list').then(r => r.json());
+        worlds.sort((w1, w2) => new Date(w1.created) - new Date(w2.created));
+        if (worlds.length < 9) {
+          worlds.push(newworld);
         }
         console.log('Worlds loaded,all ready');
         setTimeout(() => ready = true, 100);
