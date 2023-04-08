@@ -92,8 +92,10 @@
     <small>Common commands:</small>
     <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('help')}>Help</button>
     <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('op Bob')}>Add Operator</button>
-      <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('difficulty easy')}>Set Difficulty</button>
+    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('teleport Bob Mary')}>Teleport</button>
+    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('difficulty easy')}>Set Difficulty</button>
     <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('gamerule showcoordinates true')}>Show coordinates</button>
+    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('tell @a Hello guys')}>Message to all</button>
     {:else}
     <label for="difficulty" class="form-label">Difficulty</label>
     <select id="difficulty" class="form-select">
