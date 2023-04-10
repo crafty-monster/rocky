@@ -78,26 +78,26 @@
   onMount(Dashboard.mounted);
 </script>
 
-<main class={ready ? 'd-block' : 'd-none'}>
-  <div class="heading pt-4 mx-auto d-flex justify-content-between">
+<main class={ready ? 'is-block' : 'is-hidden'}>
+  <header class="pt-4 mx-auto is-flex is-justify-content-space-between">
     <h1><img src={logo} alt="ROCKY: minecraft bedrock server controller"/></h1>
-    <div class="systeminfo d-flex justify-content-right align-items-end"><SystemInfo /></div>
-  </div>
+    <div class="systeminfo is-flex is-justify-content-right is-align-items-flex-end"><SystemInfo /></div>
+  </header>
 
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
   <StatusModal bind:show={statusModal.show} world={statusModal.world} />
 
-  <section>
-    <button disabled={disconnected} class="btn btn-light" on:click={Dashboard.list}>
+  <section class="px-3">
+    <button disabled={disconnected} class="button is-light" on:click={Dashboard.list}>
       refresh worlds
     </button>
-    <button disabled={disconnected} class="btn btn-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
+    <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
       stop worlds
     </button>
-    <button disabled={disconnected} class="btn btn-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
+    <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
       remove stopped worlds
     </button>
-    <button disabled={disconnected} class="btn btn-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
+    <button disabled={disconnected} class="button is-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
       cleanup unused space
     </button>
   </section>
@@ -122,7 +122,7 @@
     max-width: 1000px;
     margin: 0 auto;
   }
-  .heading h1 img {
+  header h1 img {
     width: 340px;
   }
   .systeminfo {
@@ -153,7 +153,7 @@
     .worlds {
       justify-content: space-evenly;
     }
-    .heading {
+    header {
       flex-direction: column;
       text-align: center;
     }

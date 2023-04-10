@@ -24,7 +24,7 @@ for (const path in assets) {
 }
 </script>
 
-<div id={id} class={`card state-${state}`}>
+<div id={id} class={`cards state-${state}`}>
   <div class="card-image">
     <small>{String(id).substr(0,12)}</small>
     {#if state === 'new'}
@@ -44,7 +44,7 @@ for (const path in assets) {
     <div style="display:flex; margin-bottom: 1rem;">
       <span class="tag tag-{state}">{state}</span>
       {#if port}
-      <span class="tag float-end">{port}</span>
+      <span class="tag">{port}</span>
       {/if}
     </div>
     <p>
@@ -55,10 +55,7 @@ for (const path in assets) {
       {/if}
     </p>
     <div class="user">
-      <img
-        src="images/user.2.png"
-        alt="user"
-        style={'background-color: ' + imageBackground(by)}/>
+      <img src="images/user.2.png" alt="user" style={'background-color: ' + imageBackground(by)}/>
       <div class="user-info">
         <h5>{by ?? 'you'}</h5>
         <small>{timeago.format(created)}</small>
@@ -66,12 +63,12 @@ for (const path in assets) {
     </div>
     <div class="tools">
       {#if state === 'new'}
-        <button class="btn btn-primary" on:click={() => dispatch('create')}>Generate</button>
+        <button class="button is-link" on:click={() => dispatch('create')}>Generate</button>
       {:else if state === 'exited'}
-        <button class="btn btn-success" on:click={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => dispatch('started', {id}))}>Start</button>
-        <button class="btn btn-danger" on:click={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => dispatch('deleted', {id}))}>Delete</button>
+        <button class="button is-success" on:click={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => dispatch('started', {id}))}>Start</button>
+        <button class="button is-danger" on:click={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => dispatch('deleted', {id}))}>Delete</button>
       {:else}
-        <button class="btn btn-warning" on:click={() => confirm(`Stop "${name}"?.`) && fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
+        <button class="button is-warning" on:click={() => confirm(`Stop "${name}"?.`) && fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
       {/if}
       <div class="tools-right">
         {#if state === '-----'}
@@ -96,7 +93,7 @@ for (const path in assets) {
 * {
   box-sizing: border-box;
 }
-.card {
+.cards {
   margin: 10px;
   background-color: #fff;
   border-radius: 10px;
@@ -190,6 +187,7 @@ for (const path in assets) {
 }
 .user-info small {
   color: #545d7a;
+  font-size: 80%;
 }
 .tools {
   width: 100%;
@@ -197,8 +195,8 @@ for (const path in assets) {
   font-size: 80%;
   display: flex;
 }
-.tools .btn {
-  margin-right: 5px;
+.tools .button {
+  margin-right: 6px;
 }
 .tools-right {
   margin-left: auto;

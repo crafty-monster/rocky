@@ -7,7 +7,7 @@
   setInterval(updateConnected, 20*1000);
 </script>
 
-<ul class="w-100 me-3" style="font-size: 12px; color: #666">
+<ul class="mr-4">
   <li class="connected {server?.up && 'on'}"><em></em>{server?.up ? 'Connected' : 'Disconnected'}</li>
   <li class="lighter">{server?.path}</li>
   <li class="lighter">Docker v{server?.info?.ServerVersion || 'N/A'}</li>
@@ -17,9 +17,12 @@
 
 <style>
   ul {
+    width: 100%; 
+    font-size: 12px; 
+    color: #666;
+    text-align: right;
     margin: 0;
     padding: 0;
-    text-align: right;
   }
   li {
     margin: 0;

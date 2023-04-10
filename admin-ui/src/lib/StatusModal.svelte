@@ -34,15 +34,17 @@
       <img src="{'images/thumbs/map.' + String(world.id).substr(0,2) + '.jpg'}" alt={world.name}/>
       {world.name}
     </h3>
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <!-- svelte-ignore a11y-invalid-attribute -->
-        <a href="javascript:;"class="nav-link active">Status</a>
-      </li>
-      <li class="pt-1" style="margin-left: auto">
-        <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={() => fetchLogs(100)} on:keyup={() => fetchLogs(100)}></i>
-      </li>
-    </ul>
+    <div class="tabs is-boxed">
+      <ul>
+        <li class="is-active">
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a href="javascript:;"class="nav-link active">Status</a>
+        </li>
+        <li class="pt-1" style="margin-left: auto">
+          <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={() => fetchStatus(100)} on:keyup={() => fetchStatus(100)}></i>
+        </li>
+      </ul>
+    </div>
     <div class="mb-3">
       <label for="version" class="form-label">Version</label>
       <input type="text" bind:value={version} class="form-control" id="version">

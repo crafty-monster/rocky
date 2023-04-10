@@ -21,7 +21,7 @@
   </div>
   <div class="buttons">
     {#if (buttonOk)}
-    <button class="btn btn-primary">Ok</button>
+    <button class="button button-link">Ok</button>
     {/if}
   </div>
 </div>

@@ -50,9 +50,9 @@
     if (event?.key === 'Enter' && command?.length) {
       const headers = {'Content-Type': 'application/json'};
       const body = JSON.stringify({command});
-      await fetch(`/api/world/${world.id}/execute`, {method: 'POST', headers, body});
-      setTimeout(fetchLogs, 500);
       command = '';
+      await fetch(`/api/world/${world.id}/execute`, {method: 'POST', headers, body});
+      setTimeout(fetchLogs, 1000);
     }
   }
 </script>
@@ -60,33 +60,38 @@
 
 <Modal bind:show={show} buttonOk={false}>
   <div class={`main state-${world.state}`}>
-    <h3>
+    <h3 class="is-flex is-align-items-center">
       <img src="{'images/thumbs/map.' + String(world.id).substr(0,2) + '.jpg'}" alt={world.name}/>
       {world.name}
     </h3>
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <!-- svelte-ignore a11y-invalid-attribute -->
-        <a href="javascript:;"class="nav-link active">Console</a>
-      </li>
-      <li class="pt-1" style="margin-left: auto">
-        <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={() => fetchLogs(100)} on:keyup={() => fetchLogs(100)}></i>
-      </li>
-    </ul>
+    <div class="tabs is-boxed mb-0 is-small">
+      <ul class="my-3">
+        <li class="is-active">
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a href="javascript:;"class="nav-link active">Console</a>
+        </li>
+        <li class="pt-1" style="margin-left: auto">
+          <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={() => fetchLogs(100)} on:keyup={() => fetchLogs(100)}></i>
+        </li>
+      </ul>
+    </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <pre class="terminal" bind:this={el.pre} on:click={() => el.command.focus()}>{logs.join('\n')}</pre>
     <input disabled={disabled} placeholder=">" bind:this={el.command} type="text" class="command" bind:value={command} on:keypress={keypress}>
-    <small>Common commands:</small>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('help')}>Help</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('list')}>List Players</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('op Bob')}>Add Operator</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('op @a')}>Add Operator x All</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('teleport Bob Mary')}>Teleport</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('difficulty easy')}>Set Difficulty</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('gamerule showcoordinates true')}>Show coordinates</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('gamerule doinsomnia false')}>Stop Phantoms Spawning</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('gamerule pvp false')}>Stop Player Fighting</button>
-    <button disabled={disabled} class="btn btn-light btn-sm" on:click={() => setCommand('tell @a Hello guys')}>Message to all</button>
+    <p class="buttons are-small" style="line-height: 35px">
+      <button disabled={disabled} class="button is-info" on:click={() => setCommand('help')}>Help</button>
+      <button disabled={disabled} class="button is-info" on:click={() => setCommand('list')}>List Players</button>
+      <button disabled={disabled} class="button is-danger" on:click={() => setCommand('op Bob')}>Add Operator</button>
+      <button disabled={disabled} class="button is-danger" on:click={() => setCommand('op @a')}>Add Operator x All</button>
+      <button disabled={disabled} class="button is-link" on:click={() => setCommand('teleport Bob Mary')}>Teleport</button>
+      <button disabled={disabled} class="button is-primary" on:click={() => setCommand('difficulty easy')}>Set Difficulty</button>
+      <button disabled={disabled} class="button is-primary" on:click={() => setCommand('time set day')}>Set Daytime</button>
+      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('changesetting allow-cheats true')}>Allow cheats</button>
+      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule showcoordinates true')}>Show coordinates</button>
+      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule doinsomnia false')}>No Phantoms</button>
+      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule pvp false')}>No Player Fighting</button>
+      <button disabled={disabled} class="button is-success" on:click={() => setCommand('tell @a Hello guys')}>Message Everyone</button>  
+    </p>
   </div>
 </Modal>
 
@@ -96,9 +101,17 @@
     min-height: 70vh;
     overflow: hidden;
   }
+
+  .main h3 {
+    font-size: 130%;
+    font-weight: bold;
+  }
+  .main .tabs {
+    overflow-x: hidden;
+  }
   img {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     margin-right: 10px;
     border-radius: 100%;
   }
@@ -110,7 +123,7 @@
     color: #aaa;
   }
   pre.terminal {
-    font-size: 75%;
+    font-size: 70%;
     background: #111;
     padding: 10px;
     color: #eee;
@@ -153,6 +166,13 @@
   .state-exited input.command {
     background: #333;
     color: #ccc;
+  }
+  p.buttons {
+    padding-bottom: 10px;
+  }
+  p.buttons .button {
+    height: 25px;
+    padding: 0 10px;
   }
   /* PHABLET STYLES */
   @media all and (max-width: 760px) { 
