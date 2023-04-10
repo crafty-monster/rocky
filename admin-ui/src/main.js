@@ -1,5 +1,5 @@
 // @ts-nocheck
-import 'bulma'
+import './bulma.scss'
 import './app.css'
 import App from './App.svelte'
 
