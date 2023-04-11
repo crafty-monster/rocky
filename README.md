@@ -36,7 +36,7 @@ You can also expose UDP ports 48000-49000 through your home router if you want t
 
 ### Do I really need to share `/var/run/docker.sock`?
 
-Yes. Without access to the docker daemon you will not be able to manage the minecraft containers for each of your worlds.
+Yes. Without this you will not be able to manage the minecraft containers for each of your worlds.
 
 # Updates
 
