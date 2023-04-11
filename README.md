@@ -24,18 +24,19 @@ You will need [Docker](https://docs.docker.com/get-docker/) installed since this
 
 It has been developed using version `1.19.03` but any newer version should work fine.
 
+Quick one liner:
+
 ```sh
-$ git clone https://github.com/crafty-monster/rocky.git
-$ cd rocky
-$ docker -v
-Docker version 19.03.1, build 74b1e89e8a
-$ docker build -t rocky .
-$ docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock rocky
+docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER=admin:123456 ghcr.io/crafty-monster/rocky
 ```
 
-Then open http://localhost:48000. 
+Then open http://localhost:48000/admin and type in user `admin` and password `123456`
 
-You can also expose ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
+You can also expose UDP ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
+
+### Do I need to share `-v /var/run/docker.sock:/var/run/docker.sock`?
+
+Yes. Without this you will not be able to manage the minecraft containers for each of your worlds.
 
 # Updates
 
