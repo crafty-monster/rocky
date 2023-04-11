@@ -27,16 +27,16 @@ It has been developed using version `1.19.03` but any newer version should work 
 Quick one liner:
 
 ```sh
-docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER=admin:123456 ghcr.io/crafty-monster/rocky
+docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER1=admin:123456 ghcr.io/crafty-monster/rocky
 ```
 
 Then open http://localhost:48000/admin and type in user `admin` and password `123456`
 
 You can also expose UDP ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
 
-### Do I need to share `-v /var/run/docker.sock:/var/run/docker.sock`?
+### Do I really need to share `/var/run/docker.sock`?
 
-Yes. Without this you will not be able to manage the minecraft containers for each of your worlds.
+Yes. Without access to the docker daemon you will not be able to manage the minecraft containers for each of your worlds.
 
 # Updates
 
