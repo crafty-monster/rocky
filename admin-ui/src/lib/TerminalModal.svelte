@@ -86,6 +86,7 @@
       <button disabled={disabled} class="button is-link" on:click={() => setCommand('teleport Bob Mary')}>Teleport</button>
       <button disabled={disabled} class="button is-primary" on:click={() => setCommand('difficulty easy')}>Set Difficulty</button>
       <button disabled={disabled} class="button is-primary" on:click={() => setCommand('time set day')}>Set Daytime</button>
+      <button disabled={disabled} class="button is-primary" on:click={() => setCommand('weather clear')}>Set Weather</button>
       <button disabled={disabled} class="button is-warning" on:click={() => setCommand('changesetting allow-cheats true')}>Allow cheats</button>
       <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule showcoordinates true')}>Show coordinates</button>
       <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule doinsomnia false')}>No Phantoms</button>
