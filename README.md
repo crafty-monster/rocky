@@ -8,6 +8,10 @@ Each world is a self-contained instance running an image of minecraft bedrock.
 
 ![branding/thumbnail.png](branding/thumbnail.png)
 
+## Why?
+
+I promised my kids they could have their own minecraft server. So I built one for them.
+
 ##  Powered by:
 
 ![docker](branding/vendor/logo.docker.png)
@@ -16,7 +20,6 @@ Each world is a self-contained instance running an image of minecraft bedrock.
 ![vite.js](branding/vendor/logo.vite.png)
 ![svelte](branding/vendor/logo.svelte.png)
 ![bootstrap](branding/vendor/logo.bootstrap.png)
-
 
 # Installation
 
