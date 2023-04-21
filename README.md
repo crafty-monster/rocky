@@ -10,7 +10,7 @@ Each world is a self-contained instance running an image of minecraft bedrock.
 
 ## Why?
 
-I promised my kids they could have their own minecraft server. So I built one for them.
+I promised my kids they could have their own minecraft server. 
 
 ##  Powered by:
 
