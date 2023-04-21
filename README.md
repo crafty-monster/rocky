@@ -88,7 +88,12 @@ Then open http://localhost:5173/.
 
 ## Environment variables
 
+### Required:
+
 - `ROCKY_USER1`: Admin UI user/password, separated by a colon `:`. Defaults to `admin:rocky`. You can have any number of users (ie `ROCKY_USER2`, `ROCKY_USER3` etc). Can be edited directly in the `docker-compose.yml`.
+
+### Optional:
+
 - `DOCKER_HOST`: For example `192.168.99.101`. Use if Docker is not running locally under `/var/run/docker.sock`.
 - `DOCKER_PORT`: For example `2376` (https) or `2375` (http). Use if docker is not running locally under `/var/run/docker.sock`.
 
