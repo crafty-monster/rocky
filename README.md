@@ -16,6 +16,8 @@ And that they could create new worlds to play with their cousins in US whenever 
 
 ##  Powered by:
 
+This is built on top of some really cool FOSS projects: Docker, Node.js, Express, Vite, Svelte, Bulma.
+
 ![docker](branding/vendor/logo.docker.png)
 ![node.js](branding/vendor/logo.nodejs.png)
 ![express.js](branding/vendor/logo.express.png)
