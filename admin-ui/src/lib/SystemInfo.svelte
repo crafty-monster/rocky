@@ -1,10 +1,11 @@
 <script>
-  let server = {};
+  export let server = {};
+  const THIRTY_SECONDS = 30*1000;
   const updateInfo = async () => server = await fetch('/api/server').then(r => r.json());
   const updateConnected = async () => server.up = await fetch('/api/server/connected').then(r => r.json()).then(s => s.connected);
 
   updateInfo();
-  setInterval(updateConnected, 20*1000);
+  setInterval(updateConnected, THIRTY_SECONDS);
 </script>
 
 <ul class="mr-4">

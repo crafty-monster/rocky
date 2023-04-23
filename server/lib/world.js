@@ -24,11 +24,11 @@ export default class World {
     // Check how many containers we're running
     const containers = await World.list();
     if (containers.length > ROCKY_MAX_WORLDS) {
-      throw new Error(`Reached limit of ${ROCKY_MAX_WORLDS} worlds (for all users)`);
+      throw new Error(`Cannot create more worlds!\nReached limit of ${ROCKY_MAX_WORLDS} worlds (for all users)`);
     }
     const containersByUser = containers.filter(c => c.by === settings.by);
     if (containersByUser.length > ROCKY_MAX_WORLDS_PER_USER) {
-      throw new Error(`Reached limit of ${ROCKY_MAX_WORLDS_PER_USER} world (for "${settings.by}")`);
+      throw new Error(`Cannot create more worlds!\nReached limit of ${ROCKY_MAX_WORLDS_PER_USER} worlds (for "${settings.by}")`);
     }
     console.log('Creating container...', name, port);
     const container = await docker.createContainer({

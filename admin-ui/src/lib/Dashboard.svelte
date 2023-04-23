@@ -15,6 +15,7 @@
   let disconnected = false;
   let newworld = {id: '(new)', name: 'New World', state: 'new', port: 'survival', by: username};
   let worlds = null;
+  let server = null;
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'fantastic', 'amazing', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
   const terminalModal = {
@@ -47,14 +48,22 @@
         'gamemode': 'survival',
         'difficulty': 'easy',
       };
-      await fetch('/api/world/create', { method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(settings) });
+      const response = await fetch('/api/world/create', { method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(settings) });
+      if (response.status !== 200) {
+        const json = await response.json();
+        console.error(json);
+        alert(json?.message);
+      }
       setTimeout(Dashboard.list, 2000);
     }
     static async list() {
       console.log('Dashboard.list()');
-      try {
+      try { 
         worlds = await fetch('/api/world/list').then(r => r.json());
-        if (worlds.length < 9) {
+        const worldsForUser = worlds.filter(w => w.by === username);
+        const {ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = server?.config || {};
+        const maxWorldsReached = (worlds.length >= ROCKY_MAX_WORLDS || worldsForUser.length >= ROCKY_MAX_WORLDS_PER_USER);
+        if (!maxWorldsReached) {
           worlds.push(newworld);
         }
         console.log('Worlds loaded,all ready');
@@ -81,7 +90,7 @@
 <main class={ready ? 'is-block' : 'is-hidden'}>
   <header class="pt-4 mx-auto is-flex is-justify-content-space-between">
     <h1><img src={logo} alt="ROCKY: minecraft bedrock server controller"/></h1>
-    <div class="systeminfo is-flex is-justify-content-right is-align-items-flex-end"><SystemInfo /></div>
+    <div class="systeminfo is-flex is-justify-content-right is-align-items-flex-end"><SystemInfo bind:server /></div>
   </header>
 
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
