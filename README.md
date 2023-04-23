@@ -14,7 +14,7 @@ I promised my kids they could have their own minecraft server.
 
 And that they could create new worlds to play with their cousins in US whenever they wished.
 
-##  Powered by:
+##  What did you use?
 
 This is built on top of some really cool FOSS projects: Docker, Node.js, Express, Vite, Svelte, Bulma.
 
@@ -23,7 +23,7 @@ This is built on top of some really cool FOSS projects: Docker, Node.js, Express
 ![express.js](branding/vendor/logo.express.png)
 ![vite.js](branding/vendor/logo.vite.png)
 ![svelte](branding/vendor/logo.svelte.png)
-![bootstrap](branding/vendor/logo.bootstrap.png)
+![bulma](branding/vendor/logo.bulma.png)
 
 # Installation
 
@@ -94,6 +94,8 @@ Then open http://localhost:5173/.
 
 ### Optional:
 
-- `DOCKER_HOST`: For example `192.168.99.101`. Use if Docker is not running locally under `/var/run/docker.sock`.
-- `DOCKER_PORT`: For example `2376` (https) or `2375` (http). Use if docker is not running locally under `/var/run/docker.sock`.
+- `ROCKY_MAX_WORLDS`: Maximum number of worlds/containers that can be created and managed (default is `9`).
+- `ROCKY_MAX_WORLDS_PER_USER`: Max number of worlds/containers that each user can create (default is `9`)
+- `DOCKER_HOST`: Use *only* if Docker not running on `/var/run/docker.sock` (example `192.168.99.101`, default is `blank`).
+- `DOCKER_PORT`: Use *only* if docker not running on `/var/run/docker.sock` (example `2376`/https or `2375`/http, default is `blank`)
 

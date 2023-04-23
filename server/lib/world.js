@@ -2,11 +2,11 @@
 import randomQuotes from 'random-quotes';
 import {statusBedrock} from 'minecraft-server-util';
 import server from './server.js';
+import config from './config.js';
 import utils from '../../utils/index.js';
 
+const {DOCKER_HOST, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
 const docker = server.docker;
-
-const {DOCKER_HOST} = process.env;
 
 export default class World {
   /**
@@ -16,10 +16,20 @@ export default class World {
    */
   static async create(settings) {
     console.log('Creating world with settings', settings);
+    if (!settings) throw new Error('To create world, please pass in some settings.');
     const name = 'rocky_world__' + settings.servername;
     const description = randomQuotes.default().body;
     const port = 48001 + Math.floor(Math.random() * 1000);
     settings.by = settings.by || 'bob';
+    // Check how many containers we're running
+    const containers = await World.list();
+    if (containers.length > ROCKY_MAX_WORLDS) {
+      throw new Error(`Reached limit of ${ROCKY_MAX_WORLDS} worlds (for all users)`);
+    }
+    const containersByUser = containers.filter(c => c.by === settings.by);
+    if (containersByUser.length > ROCKY_MAX_WORLDS_PER_USER) {
+      throw new Error(`Reached limit of ${ROCKY_MAX_WORLDS_PER_USER} world (for "${settings.by}")`);
+    }
     console.log('Creating container...', name, port);
     const container = await docker.createContainer({
       name,

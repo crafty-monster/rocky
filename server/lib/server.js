@@ -1,6 +1,8 @@
 import Docker from 'dockerode';
 
-const {DOCKER_HOST, DOCKER_PORT} = process.env;
+import config from './config.js';
+
+const {DOCKER_HOST, DOCKER_PORT} = config;
 
 /**
  * Server abstraction
@@ -38,7 +40,7 @@ class Server {
       up = true;
     } catch (e) {/* Do nothing */}
     this.docker.modem.timeout = null;
-    return {path, up, info};
+    return {path, up, info, config};
   }
   /**
    * Version information
