@@ -6,9 +6,9 @@ It uses the [Docker Engine API](https://docs.docker.com/engine/api/v1.38/) to cr
 
 Each world is a container instance running an image of minecraft bedrock.
 
-[Check out some Screenshots](https://github.com/crafty-monster/rocky/wiki/Screenshots)
+Click image below for some Screenshots:
 
-![branding/thumbnail.png](branding/thumbnail.png)
+[![branding/thumbnail.png](branding/thumbnail.png)](https://github.com/crafty-monster/rocky/wiki/Screenshots)
 
 ## Why?
 
