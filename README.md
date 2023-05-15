@@ -54,7 +54,6 @@ If you are running a proper server 24/7 you will want to minimize downtime when 
 Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server using `docker-compose up --build` command.
 
 ```sh
-# Download the `docker-compose.yml` file and execute it locally.
 # There is no need to download the rest of the codebase unless you are developing.
 $ curl -O https://raw.githubusercontent.com/crafty-monster/rocky/master/docker-compose.yml
 $ docker-compose up -d
@@ -113,8 +112,12 @@ You can automate updates to your Development Server by installing the updater.
 ```
 $ cd .updater
 $ ./install.sh
-*/1 * * * * cd /root/projects/rocky/.updater && ./check.sh >> update.log 2>&1
-0 * * * * cd /root/projects/rocky/.updater && tail -1000 update.log | cat > update.log
+ROCKY Minecraft Server Controller Updater
+
+crontab -----------------------------------------------------
+*/1 * * * * cd /home/lenovouser/projects/rocky/.updater && ./check.sh >> update.log 2>&1
+0 * * * * cd /home/lenovouser/projects/rocky/.updater && tail -1000 update.log | cat > update.log
+-------------------------------------------------------------
 
 Rocky updater installed. Check the 'update.log' in a minute or two.
 ```
