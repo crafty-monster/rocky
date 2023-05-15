@@ -20,7 +20,7 @@
 version: '3.7'
 
 services:
-  rocky:
+  rocky_server:
     image: ghcr.io/crafty-monster/rocky
     ports:
       - 48000:48000

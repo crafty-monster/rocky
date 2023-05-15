@@ -75,7 +75,7 @@
     cursor: pointer;
     color: #aaa;
   }
-  select, input {
+  input {
     background: #fffced
   }
   /* PHABLET STYLES */

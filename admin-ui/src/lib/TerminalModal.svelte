@@ -148,7 +148,7 @@
     background: #333;
     color: #ccc;
   }
-  select, input {
+  input {
     background: #fffced
   }
   input.command {

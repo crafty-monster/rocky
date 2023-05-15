@@ -8,7 +8,7 @@ Each world is a container instance running an image of minecraft bedrock.
 
 Click image below for some Screenshots:
 
-[![branding/thumbnail.png](branding/thumbnail.png)](https://github.com/crafty-monster/rocky/wiki/Screenshots)
+[![branding/thumbnail.lg.jpg](branding/thumbnail.lg.jpg)](https://github.com/crafty-monster/rocky/wiki/Screenshots)
 
 ## Why?
 
@@ -57,14 +57,15 @@ Install [Docker Compose](https://docs.docker.com/compose/install/) and then run 
 # Download the `docker-compose.yml` file and execute it locally.
 # There is no need to download the rest of the codebase unless you are developing.
 $ curl -O https://raw.githubusercontent.com/crafty-monster/rocky/master/docker-compose.yml
-$ docker-compose up
+$ docker-compose up -d
 ```
 
 Every time you want to update you can check for the latest package.
 
 ```sh
-# Update to latest version
-$ docker-compose up --pull
+# Update to latest version & restart
+$ docker-compose pull
+$ docker-compose up -d
 ```
 
 # Development
@@ -92,7 +93,7 @@ If you are developing actively I recommend using the `docker-compose-dev.yml` fi
 # Start the server from code in github
 $ git clone https://github.com/crafty-monster/rocky.git
 $ cd ./rocky
-$ docker-compose -f docker-compose-dev.yml up --build
+$ docker-compose -f docker-compose-dev.yml up --build -d
 ```
 
 # Manually updating your Development Server 
@@ -102,7 +103,7 @@ Every time you want to update you can download the latest code and run the serve
 ```sh
 # Update to latest version
 $ git pull
-$ docker-compose -f docker-compose-dev.yml up --build
+$ docker-compose -f docker-compose-dev.yml up --build -d
 ```
 
 # Automatic Updates
