@@ -15,7 +15,7 @@ body {
   align-items: center;
 }
 .head img {
-  width: 300px;
+  width: 400px;
 }
 .content {
   display: flex;
@@ -138,4 +138,5 @@ footer a img {
 }
 footer a:hover img {
   opacity: 0.9;
+  filter:none;
 }
