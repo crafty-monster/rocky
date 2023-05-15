@@ -47,9 +47,9 @@ You can also expose UDP ports 48000-49000 through your home router if you want t
 
 Yes. Without this you will not be able to manage the minecraft containers for each of your worlds.
 
-# Running a server with Docker Compose
+# Running a Server
 
-If you are running a server 24/7 you will want to minimize downtime when getting latest updates for your server. 
+If you are running a proper server 24/7 you will want to minimize downtime when getting latest patches. 
 
 Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server using `docker-compose up --build` command.
 
@@ -86,7 +86,7 @@ Then open http://localhost:5173/.
 
 # Running a Development Server
 
-If you are developing actively I recommend using the `docker-compose-dev.yml` file for running your own test version of the server.
+If you are developing actively I recommend using the `docker-compose-dev.yml` file for running your own test version of the server against `master` (instead of the github container registry).
 
 ```sh
 # Start the server from code in github
@@ -105,7 +105,7 @@ $ git pull
 $ docker-compose -f docker-compose-dev.yml up --build
 ```
 
-# Automatic updates for your Development Server
+# Automatic Updates
 
 You can automate updates to your Development Server by installing the updater. 
 
