@@ -4,15 +4,15 @@ ROCKY is a container manager for Minecraft Bedrock instances.
 
 It uses the [Docker Engine API](https://docs.docker.com/engine/api/v1.38/) to create, run, stop and manage existing containers.
 
-Each world is a self-contained instance running an image of minecraft bedrock.
+Each world is a container instance running an image of minecraft bedrock.
 
-![branding/thumbnail.png](branding/thumbnail.png)
+Click image below for some Screenshots:
+
+[![branding/thumbnail.png](branding/thumbnail.png)](https://github.com/crafty-monster/rocky/wiki/Screenshots)
 
 ## Why?
 
-I promised my kids they could have their own minecraft server.
-
-And that they could create new worlds to play with their cousins in US whenever they wished.
+I promised my kids they could have their own minecraft server. And that they could create new worlds to play with their cousins whenever they wished.
 
 ##  What did you use?
 
