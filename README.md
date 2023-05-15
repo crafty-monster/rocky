@@ -51,7 +51,7 @@ Yes. Without this you will not be able to manage the minecraft containers for ea
 
 If you are running a proper server 24/7 you will want to minimize downtime when getting latest patches. 
 
-Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server using `docker-compose up --build` command.
+Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server as a daemon using `docker-compose up -d` command.
 
 ```sh
 # There is no need to download the rest of the codebase unless you are developing.
@@ -97,7 +97,7 @@ $ docker-compose -f docker-compose-dev.yml up --build -d
 
 # Manually updating your Development Server 
 
-Every time you want to update you can download the latest code and run the server again.
+Every time you want to update you can download the latest code, rebuild run the server again.
 
 ```sh
 # Update to latest version
