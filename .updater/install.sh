@@ -9,7 +9,7 @@ echo ""
 echo "ROCKY Minecraft Server Controller Updater"
 echo ""
 echo "This updater script will elevate permissions to 'root' so it can sudo docker calls inside 'check.sh' without a problem."
-echo "If you dont feel comfortable with this feel free to do this some other way."
+echo "If you dont feel comfortable with this please try doing the same thing some other way."
 sleep 1
 # 1) Cron doesnt know the script directory so find out where it is
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
