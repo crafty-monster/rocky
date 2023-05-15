@@ -1,6 +1,6 @@
 # TL/DR
 
-ROCKY is a container manager, like Portainer, but for Minecraft Bedrock instances.
+ROCKY is a container manager, like [Portainer](https://github.com/portainer/portainer), but for Minecraft Bedrock instances.
 
 It uses the [Docker Engine API](https://docs.docker.com/engine/api/v1.38/) to create, run, stop and manage existing containers.
 
