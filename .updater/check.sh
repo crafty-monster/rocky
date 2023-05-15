@@ -16,7 +16,7 @@ function rebuild() {
     echo "rebuild()"
     cd ..
     git pull
-    docker-compose up -d --build
+    docker-compose -f docker-compose-dev.yml up -d --build
 }
 
 if [ "$2" = "--force" ]; then

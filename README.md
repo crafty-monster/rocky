@@ -31,7 +31,9 @@ You will need [Docker](https://docs.docker.com/get-docker/) installed since this
 
 It has been developed using version `1.19.03` but any newer version should work fine.
 
-Quick one liner:
+# Quick Start:
+
+To get off the ground quickly you dont even need to download the repository, just use the docker registry image.
 
 ```sh
 docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER1=admin:123456 ghcr.io/crafty-monster/rocky
@@ -45,24 +47,67 @@ You can also expose UDP ports 48000-49000 through your home router if you want t
 
 Yes. Without this you will not be able to manage the minecraft containers for each of your worlds.
 
-# Updates
+# Running a server with Docker Compose
 
-Install [Docker Compose](https://docs.docker.com/compose/install/) to make it easier to update your installation with `docker-compose build` and `docker-compose restart` commands.
+If you are running a server 24/7 you will want to minimize downtime when getting latest updates for your server. 
+
+Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server using `docker-compose up --build` command.
 
 ```sh
-# Install & start the server
-$ git clone https://github.com/crafty-monster/rocky.git
-$ cd rocky
-$ docker-compose up --build
+# Download the `docker-compose.yml` file and execute it locally.
+# There is no need to download the rest of the codebase unless you are developing.
+$ curl -O https://raw.githubusercontent.com/crafty-monster/rocky/master/docker-compose.yml
+$ docker-compose up
 ```
+
+Every time you want to update you can check for the latest package.
+
+```sh
+# Update to latest version
+$ docker-compose up --pull
+```
+
+# Development
+
+You will need `git` and `node.js` installed. Version `16.16.0`.
+
+```sh
+$ git --version
+git version 2.36.1
+$ node -v
+v16.16.0
+$ git clone https://github.com/crafty-monster/rocky.git
+$ cd ./rocky
+$ npm i
+$ npm run dev
+```
+
+Then open http://localhost:5173/.
+
+# Running a Development Server
+
+If you are developing actively I recommend using the `docker-compose-dev.yml` file for running your own test version of the server.
+
+```sh
+# Start the server from code in github
+$ git clone https://github.com/crafty-monster/rocky.git
+$ cd ./rocky
+$ docker-compose -f docker-compose-dev.yml up --build
+```
+
+# Manually updating your Development Server 
+
+Every time you want to update you can download the latest code and run the server again.
 
 ```sh
 # Update to latest version
 $ git pull
-$ docker-compose up --build
+$ docker-compose -f docker-compose-dev.yml up --build
 ```
 
-You can automate updates by installing the updater.
+# Automatic updates for your Development Server
+
+You can automate updates to your Development Server by installing the updater. 
 
 ```
 $ cd .updater
@@ -73,20 +118,9 @@ $ ./install.sh
 Rocky updater installed. Check the 'update.log' in a minute or two.
 ```
 
-# Development
-
-You will need `node.js` installed. Version `16.16.0`.
-
-```sh
-$ node -v
-v16.16.0
-$ npm i
-$ npm run dev
-```
-
-Then open http://localhost:5173/.
-
 ## Environment variables
+
+Rocky uses the following environment variables which can be updated for a customized experience.
 
 ### Required:
 

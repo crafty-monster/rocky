@@ -1,0 +1,36 @@
+# *********************************************
+# Rocky - Minecraft Bedrock Server Controller
+# 
+# Use this Docker Compose file for running a DEV server against the git repository code.
+#
+# This is only recommended for development/testing since it changes very often.
+#
+# Usage:
+#
+# 1) To run the server
+#    $ git clone https://github.com/crafty-monster/rocky.git
+#    $ cd ./rocky
+#    $ docker-compose -f docker-compose-dev.yml up --build
+#
+# 2) Get updates from time to time
+#    $ git pull
+#    $ docker-compose -f docker-compose-dev.yml up --build
+#
+version: '3.7'
+
+services:
+  rocky:
+    build:
+      context: .
+    ports:
+      - 48000:48000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ROCKY_USER1: admin:rocky
+    # healthcheck:
+    #   test: curl --fail http://localhost:48000/api/healthcheck || exit 1
+    #   interval: 30s
+    #   retries: 3
+    #   start_period: 20s
+    #   timeout: 5s

@@ -1,18 +1,30 @@
+# *********************************************
+# Rocky - Minecraft Bedrock Server Controller
+# 
+# Use this Docker Compose file for running your own LTS server.
+# It points to the github container registry (which is only updated from time to time)
+#
+# Usage:
+# 1) Download this file anywhere (you dont need the rest of the code)
+#    $ curl -O https://raw.githubusercontent.com/crafty-monster/rocky/master/docker-compose.yml
+#
+# 2) Modify the `ROCKY_USER1` server variable (if desired)
+#    $ nano ./docker-compose.yml
+#
+# 3) Execute in a host that has `docker` and `docker-compose` installed:
+#    $ docker-compose up
+#
+# 4) Get updates from time to time
+#    $ docker-compose up --pull 
+#
 version: '3.7'
 
 services:
   rocky:
-    build:
-      context: .
+    image: ghcr.io/crafty-monster/rocky
     ports:
       - 48000:48000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       ROCKY_USER1: admin:rocky
-    # healthcheck:
-    #   test: curl --fail http://localhost:48000/api/healthcheck || exit 1
-    #   interval: 30s
-    #   retries: 3
-    #   start_period: 20s
-    #   timeout: 5s
