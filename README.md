@@ -27,7 +27,7 @@ This is built on top of some really cool FOSS projects: Docker, Node.js, Express
 
 # Installation
 
-You will need [Docker](https://docs.docker.com/get-docker/) installed since this project is an extra UI for docker that manages minecraft server containers.
+You will need [Docker](https://docs.docker.com/get-docker/) installed since this project is an extra UI for docker that manages minecraft server containers. A bit like Portainer but specific to Minecraft docker images.
 
 It has been developed using version `1.19.03` but any newer version should work fine.
 
