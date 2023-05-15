@@ -39,7 +39,7 @@ To get off the ground quickly you dont even need to download the repository, jus
 docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER1=admin:123456 ghcr.io/crafty-monster/rocky
 ```
 
-Then open http://localhost:48000/admin and type in user `admin` and password `rocky`
+Then open http://localhost:48000/admin and type in user `admin` and password `123456`
 
 You can also expose UDP ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
 
