@@ -36,10 +36,10 @@ It has been developed using version `1.19.03` but any newer version should work 
 To get off the ground quickly you dont even need to download the repository, just use the docker registry image.
 
 ```sh
-docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER1=admin:123456 ghcr.io/crafty-monster/rocky
+docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER1=admin:rocky ghcr.io/crafty-monster/rocky
 ```
 
-Then open http://localhost:48000/admin and type in user `admin` and password `123456`
+Then open http://localhost:48000/admin and type in user `admin` and password `rocky`
 
 You can also expose UDP ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
 
@@ -53,9 +53,12 @@ If you are running a proper server 24/7 you will want to minimize downtime when 
 
 Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server as a daemon using `docker-compose up -d` command.
 
+There is no need to download the rest of the codebase unless you are developing.
+
 ```sh
-# There is no need to download the rest of the codebase unless you are developing.
+# Download the docker-compose file and edit it to modify the `admin` user password from the default `rocky`
 $ curl -O https://raw.githubusercontent.com/crafty-monster/rocky/master/docker-compose.yml
+$ nano docker-compose.yaml
 $ docker-compose up -d
 ```
 
