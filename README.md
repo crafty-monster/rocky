@@ -56,9 +56,11 @@ Install [Docker Compose](https://docs.docker.com/compose/install/) and then run 
 There is no need to download the rest of the codebase unless you are developing.
 
 ```sh
-# Download the docker-compose file and edit it to modify the `admin` user password from the default `rocky`
+# Download the docker-compose file
 $ curl -O https://raw.githubusercontent.com/crafty-monster/rocky/master/docker-compose.yml
+# Modify the admin password
 $ nano docker-compose.yaml
+# Run it as a daemon
 $ docker-compose up -d
 ```
 
