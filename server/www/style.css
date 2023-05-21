@@ -17,6 +17,7 @@ body {
 .head img {
   width: 400px;
 }
+
 .content {
   display: flex;
   justify-content: center;
@@ -139,4 +140,9 @@ footer a img {
 footer a:hover img {
   opacity: 0.9;
   filter:none;
+}
+@media all and (max-width: 480px) { 
+  .head img {
+    width: 90%;
+  }
 }
