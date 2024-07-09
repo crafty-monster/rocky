@@ -5,7 +5,7 @@ import server from './server.js';
 import config from './config.js';
 import utils from '../../utils/index.js';
 
-const {DOCKER_HOST, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
+const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
 const docker = server.docker;
 
 export default class World {
@@ -35,7 +35,7 @@ export default class World {
       name,
       // Image: 'ubuntu:latest',
       // Cmd: ['date'],
-      Image: 'itzg/minecraft-bedrock-server',
+      Image: ROCKY_SERVER_IMAGE,
       Env: [
         'EULA=true',
         `SERVER_NAME=${settings.servername}`,

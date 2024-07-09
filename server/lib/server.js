@@ -2,7 +2,7 @@ import Docker from 'dockerode';
 
 import config from './config.js';
 
-const {DOCKER_HOST, DOCKER_PORT} = config;
+const {DOCKER_HOST, DOCKER_PORT, ROCKY_SERVER_IMAGE} = config;
 
 /**
  * Server abstraction
@@ -20,6 +20,9 @@ class Server {
     } else {
       this.docker = new Docker(); // connect to pipe /var/run/docker.sock
     }
+    // Get image
+    console.log(`Pulling server image "${ROCKY_SERVER_IMAGE}" ...`)
+    this.docker.pull(ROCKY_SERVER_IMAGE); 
   }
   /**
    * Server information
@@ -63,7 +66,7 @@ class Server {
       this.docker.modem.timeout = 500;
       await this.docker.ping();
       ping = true;
-    } catch (e) {/* Do nothing */}
+    } catch (e) { console.log(e); /* Do nothing */}
     this.docker.modem.timeout = null;
     return ping;
   }
