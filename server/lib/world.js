@@ -55,6 +55,9 @@ export default class World {
         'monster.crafty.rocky.by': settings.by || 'bob',
       },
       HostConfig: {
+        RestartPolicy: {
+          Name: 'unless-stopped',
+        },
         PortBindings: {
           '19132/udp': [{
             HostPort: String(port),

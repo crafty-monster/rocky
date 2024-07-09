@@ -1,6 +1,6 @@
 # TL/DR
 
-ROCKY is a container manager for Minecraft Bedrock instances.
+ROCKY is a container manager, like [Portainer](https://github.com/portainer/portainer), but for Minecraft Bedrock instances.
 
 It uses the [Docker Engine API](https://docs.docker.com/engine/api/v1.38/) to create, run, stop and manage existing containers.
 
@@ -27,7 +27,7 @@ This is built on top of some really cool FOSS projects: Docker, Node.js, Express
 
 # Installation
 
-You will need [Docker](https://docs.docker.com/get-docker/) installed since this project is an extra UI for docker that manages minecraft server containers. A bit like Portainer but specific to Minecraft docker images.
+You will need [Docker](https://docs.docker.com/get-docker/) installed since this project is an extra UI for docker that manages minecraft server containers.
 
 It has been developed using version `1.19.03` but any newer version should work fine.
 
@@ -36,10 +36,10 @@ It has been developed using version `1.19.03` but any newer version should work 
 To get off the ground quickly you dont even need to download the repository, just use the docker registry image.
 
 ```sh
-docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER1=admin:123456 ghcr.io/crafty-monster/rocky
+docker run -p 48000:48000 -v /var/run/docker.sock:/var/run/docker.sock -e ROCKY_USER1=admin:rocky ghcr.io/crafty-monster/rocky
 ```
 
-Then open http://localhost:48000/admin and type in user `admin` and password `123456`
+Then open http://localhost:48000/admin and type in user `admin` and password `rocky`
 
 You can also expose UDP ports 48000-49000 through your home router if you want to share your minecraft worlds with your friends.
 
@@ -51,11 +51,16 @@ Yes. Without this you will not be able to manage the minecraft containers for ea
 
 If you are running a proper server 24/7 you will want to minimize downtime when getting latest patches. 
 
-Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server using `docker-compose up --build` command.
+Install [Docker Compose](https://docs.docker.com/compose/install/) and then run your server as a daemon using `docker-compose up -d` command.
+
+There is no need to download the rest of the codebase unless you are developing.
 
 ```sh
-# There is no need to download the rest of the codebase unless you are developing.
+# Download the docker-compose file
 $ curl -O https://raw.githubusercontent.com/crafty-monster/rocky/master/docker-compose.yml
+# Modify the admin password
+$ nano docker-compose.yaml
+# Run it as a daemon
 $ docker-compose up -d
 ```
 
@@ -97,7 +102,7 @@ $ docker-compose -f docker-compose-dev.yml up --build -d
 
 # Manually updating your Development Server 
 
-Every time you want to update you can download the latest code and run the server again.
+Every time you want to update you can download the latest code, rebuild run the server again.
 
 ```sh
 # Update to latest version
