@@ -112,3 +112,13 @@ export const removeAll = async (req, res) => {
     res.status(500).send(err);
   }
 };
+
+export const backup = async (req, res) => {
+  const {id} = req.params;
+  if (!id) return res.status(400).send('No id');
+  try {
+    res.status(200).json(await World.backup(id));
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};

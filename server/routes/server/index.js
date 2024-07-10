@@ -33,6 +33,14 @@ export const containers = async (req, res) => {
   }
 };
 
+export const images = async (req, res) => {
+  try {
+    res.status(200).send(await server.images());
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 export const prune = async (req, res) => {
   try {
     res.status(200).send(await server.prune());

@@ -5,7 +5,7 @@ import server from './server.js';
 import config from './config.js';
 import utils from '../../utils/index.js';
 
-const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
+const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_BACKUP_REPO, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
 const docker = server.docker;
 
 export default class World {
@@ -49,9 +49,11 @@ export default class World {
       },
       Labels: {
         'monster.crafty.rocky': 'true',
+        'monster.crafty.rocky.name': settings.servername,
         'monster.crafty.rocky.description': description,
         'monster.crafty.rocky.settings.gamemode': 'survival',
         'monster.crafty.rocky.settings.difficulty': 'easy',
+        'monster.crafty.rocky.port': String(port),
         'monster.crafty.rocky.by': settings.by || 'bob',
       },
       HostConfig: {
@@ -83,6 +85,7 @@ export default class World {
     if (!c || !c.Id) return null;
     const id = c.Id;
     const name = String(c.Names?.[0]).replace('/rocky_world__', '');
+    const image = `map.${utils.md5(name).substr(0, 2)}.jpg`;
     const description = c.Labels['monster.crafty.rocky.description'];
     const port = c.Ports?.[0]?.PublicPort;
     const state = c.State;
@@ -90,7 +93,7 @@ export default class World {
     const created = new Date(c.Created * 1000).getTime();
     const by = c.Labels['monster.crafty.rocky.by'];
     const meta = c;
-    return {id, name, description, port, state, folder, created, by, meta};
+    return {id, name, image, description, port, state, folder, created, by, meta};
   }
 
   /**
@@ -102,11 +105,12 @@ export default class World {
     if (!c || !c.Id) return null;
     const id = String(c.Id).substring(0, 12);
     const name = String(c.Names?.[0]).replace('/rocky_world__', '');
+    const image = `map.${utils.md5(name).substr(0, 2)}.jpg`;
     const description = c.Labels['monster.crafty.rocky.description'];
     const port = c.Ports?.[0]?.PublicPort;
     const created = new Date(c.Created * 1000).toISOString();
     const by = c.Labels['monster.crafty.rocky.by'];
-    return {id, name, description, created, port, by};
+    return {id, name, image, description, created, port, by};
   }
 
   /**
@@ -330,5 +334,36 @@ export default class World {
       }
     }
     return {state: undefined, ...c};
+  }
+
+  /**
+   * Backup a world
+   * @param {String} id The id of the world to backup
+   * @return {Array} Details of the world backed up
+   */
+  static async backup(id) {
+    console.log('World.backup(%s)', id);
+    // 1. Get container details
+    const c = await World.get(id);
+    const repo = ROCKY_BACKUP_REPO;
+    const tag = c.name;
+    console.log(`Creating ${repo}:${tag} image...`);
+    try {
+      // 2. Create new image from container
+      const imageId = await docker.getContainer(c.id).commit({
+        container: id,
+        repo,
+        tag,
+        pause: false,
+        Labels: {
+          'monster.crafty.rocky.name': c.name,
+          'monster.crafty.rocky.port': String(c.port),
+        },
+      });
+      return {id: imageId, tag: `${repo}:${tag}`};
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
   }
 }

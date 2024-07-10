@@ -2,6 +2,14 @@ import fs from 'fs';
 import * as url from 'url';
 import crypto from 'crypto';
 
+export const SECOND = 1000;
+export const MINUTE = 60*SECOND;
+export const HOUR = 60*MINUTE;
+export const DAY = 24*HOUR;
+export const WEEK = 7*DAY;
+export const MONTH = 30*DAY;
+export const YEAR = 52*WEEK;
+
 export function __dirname(meta) {
   url.fileURLToPath(new URL('.', meta.url));
 }
@@ -40,6 +48,36 @@ export async function streamToString(stream) {
     stream.on('error', (err) => reject(err));
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
+}
+
+export function timeAgo(date) {
+  const diff =  Date.now() - new Date(date).getTime();
+  if (!diff || diff < 0) return 'some time ago';
+  if (diff < 2*MINUTE) {
+    return `a moment ago`;
+  }
+  if (diff < 2*HOUR) {
+    const n = Math.round(diff/MINUTE);
+    return `${n} minutes ago`;
+  }
+  if (diff < 2*DAY) {
+    const n = Math.round(diff/HOUR);
+    return `${n} hours ago`;
+  }
+  if (diff < 2*WEEK) {
+    const n = Math.round(diff/DAY);
+    return `${n} days ago`;
+  }
+  if (diff < 2*MONTH) {
+    const n = Math.round(diff/WEEK);
+    return `${n} weeks ago`;
+  }
+  if (diff < 2*YEAR) {
+    const n = Math.round(diff/MONTH);
+    return `${n} months ago`;
+  }
+  const n = Math.round(diff/YEAR);
+  return `${n} years ago`;
 }
 
 export default {__dirname, toPosixPath, toWindowsPath, loadJSON, md5, hashCode, streamToString};
