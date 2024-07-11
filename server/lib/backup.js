@@ -1,9 +1,10 @@
-import server from './server.js';
 import config from './config.js';
 import utils from '../../utils/index.js';
+import Server from './server.js';
+import World from './world.js';
 
 const {ROCKY_BACKUP_REPO} = config;
-const docker = server.docker;
+const docker = Server.docker;
 
 /**
  * Backup abstraction.
@@ -29,7 +30,7 @@ export default class Backup {
   static map(i) {
     if (!i || !i.Id) return null;
     const id = i.Id;
-    const name = i.Labels?.['monster.crafty.rocky.name'];
+    const name = i.Labels?.['monster.crafty.rocky.servername'];
     const image = i.Labels?.['monster.crafty.rocky.image'] ?? `map.${utils.md5(name).substr(0, 2)}.jpg`;
     const description = i.Labels?.['monster.crafty.rocky.description'];
     const port = Number(i.Labels?.['monster.crafty.rocky.port']);
@@ -49,7 +50,7 @@ export default class Backup {
       const image = await docker.getImage(id);
       return image.get();
     } catch (e) {
-      throw new Error('Cannot download image ' + id + ': ' + String(e));
+      throw new Error('Cannot download backup ' + id + ': ' + String(e));
     }
   }
 
@@ -65,7 +66,7 @@ export default class Backup {
       await image.remove();
       return image;
     } catch (e) {
-      throw new Error('Cannot remove image ' + id + ': ' + String(e));
+      throw new Error('Cannot remove backup ' + id + ': ' + String(e));
     }
   }
 
@@ -76,5 +77,29 @@ export default class Backup {
    */
   static async restore(id) {
     console.log('Backup.restore(%s)', id);
+    // 1. Check to see if image exists
+    const image = await Server.image(id);
+    const labels = image?.Config?.Labels;
+    const settings = Object.keys(labels).reduce((settings, key) => {
+      if (String(key).startsWith('monster.crafty.rocky.')) {
+        const prop = key.replace('monster.crafty.rocky.', '');
+        settings[prop] = labels[key];
+      }
+      return settings;
+    }, {});
+    if (!settings.servername || !settings.port) throw new Error('Backup not available!');
+    // 2. Does container exist already? If so delete it.
+    const match = (await World.list()).find(w => w.name === settings.servername);
+    if (match) {
+      console.log(`Found a container match for ${settings.servername}. Deleting container id ${match.id}`);
+      await World.remove(match.id);
+      console.log(`Container "${match.name}" deleted due to restore.`);
+    } else {
+      console.log(`No match for ${settings.servername}, continuing with restore..`);
+    }
+    // 3 Create new container, using backup as base image.
+    settings.image = id;
+    console.log('Creating world with settings', settings);
+    return await World.create(settings);
   }
 }

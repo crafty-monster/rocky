@@ -3,12 +3,16 @@
 
   import Modal from './Modal.svelte';
   import {timeAgo} from '../../../utils/index';
+  import {createEventDispatcher} from 'svelte';
 
   export let show = false;
   export let worlds = [];
+  
   let loading = false;
   let backups = [];
   let missing = [];
+
+  const dispatch = createEventDispatcher();
 
   $: fetchBackups(show);
   
@@ -30,20 +34,20 @@
       Backups
     </h3>
     <ul class="backups">
-      {#if (!backups?.length)}
+      {#if (!backups?.length && !missing?.length)}
         <li>No backups</li>
       {:else}
         {#each backups as backup}
         <li style="diplay:flex;">
           <div class="thumb inactive">
-            <a target="_new" href={`/api/backup/` + backup.id}><img src="{'images/thumbs/' + backup.image}" alt={backup.name}/></a>
+            <img src="{'images/thumbs/' + backup.image}" alt={backup.name}/>
             <i class="fa fa-file-zipper fa-xl"></i>
           </div>
           <div>
             <em>{backup.name}</em>
             <small>{timeAgo(backup.created)}</small>
             <div class="tools">
-              <button class="button is-warning" on:click={() => confirm(`Restore "${backup.name}" backup?.`) && fetch('/api/backup/' + backup.id, {method: 'PUT'}).then(fetchBackups)}>Restore</button>
+              <button class="button is-warning" on:click={() => confirm(`Restore "${backup.name}" backup?.`) && fetch('/api/backup/' + backup.id, {method: 'PUT'}).then(() => dispatch('restored'))}>Restore</button>
               <button class="button is-danger" on:click={() => confirm(`Delete "${backup.name}" backup?.`) && fetch('/api/backup/' + backup.id, {method: 'DELETE'}).then(fetchBackups)}>Delete</button>
             </div>
           </div>
@@ -53,7 +57,6 @@
         <li style="diplay:flex;">
           <div class="thumb">
             <img src="{'images/thumbs/' + world.image}" alt={world.name}/>
-            <i class="fa fa-circle-plus fa-xl"></i>
           </div>
           <div>
             <em>{world.name}</em>
@@ -82,7 +85,6 @@
     border-bottom: 1px solid #ccc;
   }
   ul.backups img {
-    cursor: pointer;
     width: 150px;
     height: 110px;
     margin-right: 1em;

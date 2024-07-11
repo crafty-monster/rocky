@@ -1,12 +1,12 @@
 /* eslint-disable require-jsdoc */
 import randomQuotes from 'random-quotes';
 import {statusBedrock} from 'minecraft-server-util';
-import server from './server.js';
+import Server from './server.js';
 import config from './config.js';
 import utils from '../../utils/index.js';
 
 const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_BACKUP_REPO, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
-const docker = server.docker;
+const docker = Server.docker;
 
 export default class World {
   /**
@@ -18,8 +18,7 @@ export default class World {
     console.log('Creating world with settings', settings);
     if (!settings) throw new Error('To create world, please pass in some settings.');
     const name = 'rocky_world__' + settings.servername;
-    const description = randomQuotes.default().body;
-    const port = 48001 + Math.floor(Math.random() * 1000);
+    const port = Number(settings.port) || 48001 + Math.floor(Math.random() * 1000);
     settings.by = settings.by || 'bob';
     // Check how many containers we're running
     const containers = await World.list();
@@ -35,7 +34,7 @@ export default class World {
       name,
       // Image: 'ubuntu:latest',
       // Cmd: ['date'],
-      Image: ROCKY_SERVER_IMAGE,
+      Image: settings.image || ROCKY_SERVER_IMAGE,
       Env: [
         'EULA=true',
         `SERVER_NAME=${settings.servername}`,
@@ -49,10 +48,10 @@ export default class World {
       },
       Labels: {
         'monster.crafty.rocky': 'true',
-        'monster.crafty.rocky.name': settings.servername,
-        'monster.crafty.rocky.description': description,
-        'monster.crafty.rocky.settings.gamemode': 'survival',
-        'monster.crafty.rocky.settings.difficulty': 'easy',
+        'monster.crafty.rocky.servername': settings.servername,
+        'monster.crafty.rocky.description': settings.description || randomQuotes.default().body,
+        'monster.crafty.rocky.settings.gamemode': settings.gamemode ?? 'survival',
+        'monster.crafty.rocky.settings.difficulty': settings.difficulty ?? 'easy',
         'monster.crafty.rocky.port': String(port),
         'monster.crafty.rocky.by': settings.by || 'bob',
       },
@@ -65,9 +64,7 @@ export default class World {
             HostPort: String(port),
           }],
         },
-        Binds: [
-          // `${datafolder}:/data`,
-        ],
+        Binds: [],
       },
     });
     console.log(`Container ${name} created. Starting...`);
@@ -356,7 +353,7 @@ export default class World {
         tag,
         pause: false,
         Labels: {
-          'monster.crafty.rocky.name': c.name,
+          'monster.crafty.rocky.servername': c.name,
           'monster.crafty.rocky.port': String(c.port),
         },
       });

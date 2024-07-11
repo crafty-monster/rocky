@@ -105,7 +105,7 @@
 
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
   <StatusModal bind:show={statusModal.show} world={statusModal.world} />
-  <BackupModal bind:show={backupModal.show} worlds={backupModal.worlds} />
+  <BackupModal bind:show={backupModal.show} worlds={backupModal.worlds} on:restored={Dashboard.list} />
 
   <section class="px-3">
     <button disabled={disconnected} class="button is-light" on:click={Dashboard.list}>
@@ -114,14 +114,14 @@
     <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
       stop worlds
     </button>
-    <button disabled={disconnected} class="button is-light" on:click={Dashboard.backups}>
-      backups
-    </button>
     <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
       remove stopped worlds
     </button>
     <button disabled={disconnected} class="button is-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
       cleanup unused space
+    </button>
+    <button disabled={disconnected} class="button is-light" on:click={Dashboard.backups}>
+      backups
     </button>
   </section>
 

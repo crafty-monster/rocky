@@ -53,31 +53,13 @@ export async function streamToString(stream) {
 export function timeAgo(date) {
   const diff =  Date.now() - new Date(date).getTime();
   if (!diff || diff < 0) return 'some time ago';
-  if (diff < 2*MINUTE) {
-    return `a moment ago`;
-  }
-  if (diff < 2*HOUR) {
-    const n = Math.round(diff/MINUTE);
-    return `${n} minutes ago`;
-  }
-  if (diff < 2*DAY) {
-    const n = Math.round(diff/HOUR);
-    return `${n} hours ago`;
-  }
-  if (diff < 2*WEEK) {
-    const n = Math.round(diff/DAY);
-    return `${n} days ago`;
-  }
-  if (diff < 2*MONTH) {
-    const n = Math.round(diff/WEEK);
-    return `${n} weeks ago`;
-  }
-  if (diff < 2*YEAR) {
-    const n = Math.round(diff/MONTH);
-    return `${n} months ago`;
-  }
-  const n = Math.round(diff/YEAR);
-  return `${n} years ago`;
+  if (diff < 1.5*MINUTE) return `just now`;
+  if (diff < 1.5*HOUR) return Math.round(diff/MINUTE) + ' minutes ago';
+  if (diff < 1.5*DAY) return Math.round(diff/HOUR) + ' hours ago';
+  if (diff < 1.5*WEEK) return Math.round(diff/DAY) + ' days ago';
+  if (diff < 1.5*MONTH) return Math.round(diff/WEEK) + ' weeks ago';
+  if (diff < 1.5*YEAR) return Math.round(diff/MONTH) + ' months ago';
+  return Math.round(diff/YEAR) + ' years ago';
 }
 
 export default {__dirname, toPosixPath, toWindowsPath, loadJSON, md5, hashCode, streamToString};

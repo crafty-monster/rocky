@@ -34,6 +34,7 @@ export const restore = async (req, res) => {
 export const download = async (req, res) => {
   const {id} = req.params;
   if (!id) return res.status(400).send('No id');
+  let stream;
   try {
     // Docker images are stored in TAR format
     // here we download them using on-the-fly compression
@@ -42,8 +43,8 @@ export const download = async (req, res) => {
     const image = await Server.image(id);
     if (!image) throw new Error('Image not found');
     console.log('Downloading image', JSON.stringify(image, null, 4));
-    const stream = await Backup.download(id);
-    const name = image.Config?.Labels?.['monster.crafty.rocky.name'] || 'backup';
+    stream = await Backup.download(id);
+    const name = image.Config?.Labels?.['monster.crafty.rocky.servername'] || 'backup';
     const timestamp = new Date(image.Created).getTime();
     const filename = `${name}@${timestamp}.tar`;
     const encodings = req.headers['accept-encoding'] || '';
@@ -62,6 +63,7 @@ export const download = async (req, res) => {
       await streams.pipeline(stream, res);
     }
   } catch (err) {
+    if (stream) stream.cancel();
     console.error(err);
     if (!res.headersSent) {
       res.status(500).send(err);
