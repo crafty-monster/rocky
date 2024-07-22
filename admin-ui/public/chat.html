@@ -52,7 +52,7 @@ document.addEventListener('alpine:init', () => {
     peerConnection: undefined,
 
     async init() {
-      const socket = this.socket = io.connect("localhost:48000", { path: '/chat' });
+      const socket = this.socket = io({ path: '/chat' });
       socket.on("update-user-list", ({ users }) => {
         this.users  = users;
       });
