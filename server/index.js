@@ -64,3 +64,5 @@ httpServer.listen(PORT, (err) => {
   console.log('Server listening on PORT', PORT);
 });
 
+// Handle promise rejection
+process.on('unhandledRejection', (err) => console.log(err));
