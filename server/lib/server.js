@@ -80,6 +80,25 @@ class Server {
     return await this.docker.listContainers({all: true});
   }
   /**
+   * List Images
+   * @see https://docs.docker.com/engine/api/v1.37/#tag/Image/operation/ImageList
+   * @return {Array}
+   */
+  async images() {
+    console.log('Server.images()');
+    return await this.docker.listImages();
+  }
+  /**
+   * Inspect an Image
+   * @see https://docs.docker.com/engine/api/v1.37/#tag/Image/operation/ImageInspect
+   * @param {String} id the image id
+   * @return {Object}
+   */
+  async image(id) {
+    console.log('Server.image(%s)', id);
+    return await this.docker.getImage(id).inspect();
+  }
+  /**
    * System prune (containers, images and volumes)
    * @see https://docs.docker.com/engine/api/v1.37/#operation/ContainerPrune
    * @see https://docs.docker.com/engine/api/v1.37/#operation/ImagePrune

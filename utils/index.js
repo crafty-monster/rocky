@@ -2,6 +2,14 @@ import fs from 'fs';
 import * as url from 'url';
 import crypto from 'crypto';
 
+export const SECOND = 1000;
+export const MINUTE = 60*SECOND;
+export const HOUR = 60*MINUTE;
+export const DAY = 24*HOUR;
+export const WEEK = 7*DAY;
+export const MONTH = 30*DAY;
+export const YEAR = 52*WEEK;
+
 export function __dirname(meta) {
   url.fileURLToPath(new URL('.', meta.url));
 }
@@ -40,6 +48,18 @@ export async function streamToString(stream) {
     stream.on('error', (err) => reject(err));
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
+}
+
+export function timeAgo(date) {
+  const diff =  Date.now() - new Date(date).getTime();
+  if (!diff || diff < 0) return 'some time ago';
+  if (diff < 1.5*MINUTE) return `just now`;
+  if (diff < 1.5*HOUR) return Math.round(diff/MINUTE) + ' minutes ago';
+  if (diff < 1.5*DAY) return Math.round(diff/HOUR) + ' hours ago';
+  if (diff < 1.5*WEEK) return Math.round(diff/DAY) + ' days ago';
+  if (diff < 1.5*MONTH) return Math.round(diff/WEEK) + ' weeks ago';
+  if (diff < 1.5*YEAR) return Math.round(diff/MONTH) + ' months ago';
+  return Math.round(diff/YEAR) + ' years ago';
 }
 
 export default {__dirname, toPosixPath, toWindowsPath, loadJSON, md5, hashCode, streamToString};

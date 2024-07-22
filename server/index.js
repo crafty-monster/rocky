@@ -10,8 +10,9 @@ import User from './lib/user.js';
 import {checkAdmin as ADMIN_ACCESS} from './middleware/index.js';
 import {healthcheck} from './routes/index.js';
 import {me} from './routes/user/index.js';
-import {create, show, get, list, start, status, logs, execute, stop, stopAll, remove, removeAll} from './routes/world/index.js';
-import {connected, info, version, containers, prune} from './routes/server/index.js';
+import * as world from './routes/world/index.js';
+import * as backup from './routes/backup/index.js';
+import * as server from './routes/server/index.js';
 
 const PORT = process.env.PORT || 48000;
 const app = express();
@@ -22,8 +23,8 @@ app.use(bodyParser.json());
 app.use(express.static('www'));
 
 app.get('/api/healthcheck', healthcheck);
-app.get('/api/server/connected', connected);
-app.get('/api/world/', cache('5 seconds'), show);
+app.get('/api/server/connected', server.connected);
+app.get('/api/world/', cache('5 seconds'), world.show);
 
 // Authentication from here onwards
 app.use(basicAuth({authorizer: User.auth, challenge: true}));
@@ -35,23 +36,30 @@ app.use(rateLimit({windowMs: 20000, max: 30}));
 
 app.get('/api/user/me', ADMIN_ACCESS, me);
 
-app.get('/api/server', ADMIN_ACCESS, info);
-app.get('/api/server/version', ADMIN_ACCESS, version);
-app.get('/api/server/containers', ADMIN_ACCESS, containers);
-app.post('/api/server/prune', ADMIN_ACCESS, prune);
+app.get('/api/server', ADMIN_ACCESS, server.info);
+app.get('/api/server/version', ADMIN_ACCESS, server.version);
+app.get('/api/server/containers', ADMIN_ACCESS, server.containers);
+app.get('/api/server/images', ADMIN_ACCESS, server.images);
+app.post('/api/server/prune', ADMIN_ACCESS, server.prune);
 
-app.get('/api/world/list', ADMIN_ACCESS, list);
-app.post('/api/world/create', ADMIN_ACCESS, create);
-app.post('/api/world/stopAll', ADMIN_ACCESS, stopAll);
-app.post('/api/world/:id/start', ADMIN_ACCESS, start);
-app.post('/api/world/:id/stop', ADMIN_ACCESS, stop);
-app.get('/api/world/:id', ADMIN_ACCESS, get);
-app.get('/api/world/:id/status', ADMIN_ACCESS, status);
-app.get('/api/world/:id/logs', ADMIN_ACCESS, logs);
-app.get('/api/world/:id/logs/:tail', ADMIN_ACCESS, logs);
-app.post('/api/world/:id/execute', ADMIN_ACCESS, execute);
-app.delete('/api/world/:id', ADMIN_ACCESS, remove);
-app.delete('/api/world', ADMIN_ACCESS, removeAll);
+app.get('/api/backup/', ADMIN_ACCESS, backup.list);
+app.get('/api/backup/:id', ADMIN_ACCESS, backup.download);
+app.delete('/api/backup/:id', ADMIN_ACCESS, backup.remove);
+app.put('/api/backup/:id', ADMIN_ACCESS, backup.restore);
+
+app.get('/api/world/list', ADMIN_ACCESS, world.list);
+app.post('/api/world/create', ADMIN_ACCESS, world.create);
+app.post('/api/world/stopAll', ADMIN_ACCESS, world.stopAll);
+app.post('/api/world/:id/start', ADMIN_ACCESS, world.start);
+app.post('/api/world/:id/stop', ADMIN_ACCESS, world.stop);
+app.post('/api/world/:id/backup', ADMIN_ACCESS, world.backup);
+app.get('/api/world/:id', ADMIN_ACCESS, world.get);
+app.get('/api/world/:id/status', ADMIN_ACCESS, world.status);
+app.get('/api/world/:id/logs', ADMIN_ACCESS, world.logs);
+app.get('/api/world/:id/logs/:tail', ADMIN_ACCESS, world.logs);
+app.post('/api/world/:id/execute', ADMIN_ACCESS, world.execute);
+app.delete('/api/world/:id', ADMIN_ACCESS, world.remove);
+app.delete('/api/world', ADMIN_ACCESS, world.removeAll);
 
 app.listen(PORT, (err) => {
   if (err) console.log(err);

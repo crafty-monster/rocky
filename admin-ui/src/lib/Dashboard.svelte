@@ -7,6 +7,7 @@
   import SystemInfo from './SystemInfo.svelte';
   import TerminalModal from './TerminalModal.svelte';
   import StatusModal from './StatusModal.svelte';
+  import BackupModal from './BackupModal.svelte';
   import logo from '../assets/logo.transparentbg.png';
 
   export let username = null;
@@ -20,11 +21,15 @@
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
   const terminalModal = {
     show: false,
-    worldId: null,
+    world: {},
   };
   const statusModal = {
     show: false,
-    worldId: null,
+    world: {},
+  }
+  const backupModal = {
+    show: false,
+    worlds: [],
   }
 
   class Dashboard {
@@ -73,6 +78,11 @@
         console.error(err);
       }
     }
+    static backups() {
+      console.log('Dashboard.backups()');
+      backupModal.show = true;
+      backupModal.worlds = worlds?.filter(w => w != newworld);
+    }
     static status(world) {
       console.log('Dashboard.status()', world);
       statusModal.show = true;
@@ -95,6 +105,7 @@
 
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
   <StatusModal bind:show={statusModal.show} world={statusModal.world} />
+  <BackupModal bind:show={backupModal.show} worlds={backupModal.worlds} on:restored={Dashboard.list} />
 
   <section class="px-3">
     <button disabled={disconnected} class="button is-light" on:click={Dashboard.list}>
@@ -108,6 +119,9 @@
     </button>
     <button disabled={disconnected} class="button is-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
       cleanup unused space
+    </button>
+    <button disabled={disconnected} class="button is-light" on:click={Dashboard.backups}>
+      backups
     </button>
   </section>
 
