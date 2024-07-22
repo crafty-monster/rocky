@@ -76,7 +76,7 @@
   .main {
     width: 80vw;
     min-height: 60vh;
-    overflow: hidden;
+    overflow-y: scroll;
   }
   h3 {
     font-size: 120%;

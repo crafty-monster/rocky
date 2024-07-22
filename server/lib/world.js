@@ -351,7 +351,6 @@ export default class World {
         container: id,
         repo,
         tag,
-        pause: false,
         Labels: {
           'monster.crafty.rocky.servername': c.name,
           'monster.crafty.rocky.port': String(c.port),
