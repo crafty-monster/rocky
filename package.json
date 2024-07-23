@@ -21,5 +21,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.0.1"
+  },
+  "dependencies": {
+    "node-turn": "^0.0.6"
   }
 }

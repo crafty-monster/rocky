@@ -1,6 +1,9 @@
 import {Server as IO} from 'socket.io';
+import Turn from 'node-turn';
+import config from '../lib/config.js';
 
 const MAX_CHAT_USERS = 5;
+const CHAT_TURN_CREDS = config.CHAT_TURN_CREDS || 'webrtc:rocky';
 
 /**
  * A WebRTC chat socket server abstraction, uses socket.io internally for coordination.
@@ -8,6 +11,8 @@ const MAX_CHAT_USERS = 5;
 export default class Chat {
   /**
    * Creates a new chat session
+   * Need to open ports 3478, 5349, and UDP 49150-49250
+   * for TURN (ie WebRTC UDP forwarding)
    * @param {HttpServer} httpServer a server instance created with http.createServer();
    */
   constructor(httpServer) {
@@ -15,6 +20,17 @@ export default class Chat {
     this.sockets = [];
     this.io = new IO(httpServer, {allowEIO3: true, path: '/chat'});
     this.io.on('connect', socket => this.start(socket));
+    // Add TURN server in case RTC peer cannot traverse UDP
+    const opts = {
+      maxPort: 49250,
+      debugLevel: 'INFO',
+    };
+    // if (CHAT_TURN_CREDS) {
+    //   opts.authMech: 'long-term';
+    //   const [user, pass] = String(CHAT_TURN_CREDS).split(':');
+    //   opts.credentials = {[user]: pass};
+    // }
+    new Turn().start(opts);
   }
   /**
    * Creates a new chat session
@@ -31,11 +47,11 @@ export default class Chat {
         return;
       }
       this.sockets.push(socket.id);
-      socket.emit('update-user-list', {users: this.sockets.filter(id => id !== socket.id)});
       console.log('New connection, sending list', this.sockets);
-      socket.broadcast.emit('update-user-list', {
-        users: [socket.id],
-      });
+      const users = this.sockets;
+      const rtcCredentials = CHAT_TURN_CREDS;
+      socket.emit('init-user', {users, rtcCredentials});
+      socket.broadcast.emit('update-users', {users});
     }
 
     socket.on('call-user', data => {
@@ -62,6 +78,6 @@ export default class Chat {
   finish(socket) {
     console.log('Chat.finish()', socket.id);
     this.sockets.splice(this.sockets.indexOf(socket.id), 1);
-    this.io?.emit('remove-user', {socketId: socket.id});
+    this.io?.emit('update-users', {users: this.sockets});
   }
 }

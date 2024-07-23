@@ -16,7 +16,7 @@
    <script src="./scripts/socket.io@4.7.5.min.js"></script>
  </head>
  <body>
-    <div x-data="app" class="container">
+    <div x-data="app" :class="'container ' + ready ? 'ready' : ''">
       <ul class="users">
         <template x-for="socketId in users">
           <li @click="() => call(socketId)">
@@ -42,6 +42,7 @@ const { RTCPeerConnection, RTCSessionDescription } = window;
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('app', () => ({
+    ready: false,
     socket: undefined,
     remoteSocket: undefined,
     users: [],
@@ -50,17 +51,30 @@ document.addEventListener('alpine:init', () => {
     connected: false,
     localStream: undefined,
     peerConnection: undefined,
+    rtcCredentials: undefined,
 
     async init() {
+      // Wait a bit before starting session. This is to work around window refresh which
+      // will trigger a disconnect/connect event series, so we want to wait a bit to allow events
+      // to be received in right order.
+      await new Promise(r => setTimeout(r, 2000));
       const socket = this.socket = io({ path: '/chat' });
-      socket.on("update-user-list", ({ users }) => {
+      socket.on("init-user", ({users, rtcCredentials}) => {
+        this.users  = users;
+        this.rtcCredentials = rtcCredentials; // ie `user:pass`
+        // Start video only after creds have been received
+        this.startVideo();
+        this.ready = true;
+      });
+      socket.on("update-users", ({ users }) => {
         this.users  = users;
       });
-      socket.on("remove-user", ({ socketId }) => {
-        this.users.splice(this.users.indexOf(socketId), 1);
-      });
+      // socket.on("remove-user", ({ socketId }) => {
+      //   this.users.splice(this.users.indexOf(socketId), 1);
+      // });
 
       socket.on("call-made", async data => {
+        console.log('Received offer:', data.offer);
         if (this.getCalled) {
           const confirmed = confirm(`User "Socket: ${data.socket}" wants to call you. Do accept this call?`);
           if (!confirmed) {
@@ -93,11 +107,19 @@ document.addEventListener('alpine:init', () => {
         alert(`Too many users! We reached the maximum of ${count} users on this chat. Please try again later.`);
         setTimeout(() => this.disconnect(), 1000);
       });
-      this.startVideo();
     },
 
     startVideo() {
-      const peerConnection = this.peerConnection = this.peerConnection || new RTCPeerConnection();
+      const [username, credential] = this.rtcCredentials;
+      const peerConnection = this.peerConnection = this.peerConnection || new RTCPeerConnection({
+        'iceServers': [
+          // { urls: "stun:stun.l.google.com:19302" },
+          // { urls: "stun:stun.l.google.com:5349" },
+          // { urls: "stun:stun1.l.google.com:3478" },
+          // { urls: "stun:stun1.l.google.com:5349" },
+          {'url': `turn:${location.host}`, username, credential},
+        ],
+      });
       peerConnection.ontrack = ({ streams: [stream] }) => {
         console.log('received stream', stream);
         const selector = `remote-video-${this.remoteSocket}`; 
@@ -125,7 +147,7 @@ document.addEventListener('alpine:init', () => {
 
     async call(socketId) {
       console.log('call', socketId);
-      const offer = await this.peerConnection.createOffer();
+      const offer = await this.peerConnection.createOffer({ iceRestart: true });
       await this.peerConnection.setLocalDescription(new RTCSessionDescription(offer));
 
       this.socket.emit("call-user", { offer, to: socketId });

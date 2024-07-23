@@ -14,6 +14,12 @@ body {
   display: flex;
   justify-content: space-between;
   overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.container.ready {
+  opacity: 1;
 }
 
 ul.users {
