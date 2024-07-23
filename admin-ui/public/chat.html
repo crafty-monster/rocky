@@ -67,12 +67,9 @@ document.addEventListener('alpine:init', () => {
         this.ready = true;
       });
       socket.on("update-users", ({ users }) => {
-        this.users  = users;
+        // Make sure we remove ourselves.
+        this.users  = users.filter(u => u !== socket?.id);
       });
-      // socket.on("remove-user", ({ socketId }) => {
-      //   this.users.splice(this.users.indexOf(socketId), 1);
-      // });
-
       socket.on("call-made", async data => {
         console.log('Received offer:', data.offer);
         if (this.getCalled) {
