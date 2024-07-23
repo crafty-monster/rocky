@@ -21,7 +21,7 @@
         <template x-for="socketId in users">
           <li @click="() => call(socketId)">
             <i class="fa-regular fa-user fa-2xl"></i>
-            <div class="avatar-name" x-text="socketId"></div>
+            <div class="avatar-name" x-text="String(socketId).substr(0,4)"></div>
             <div class="remote-video">
               <video autoplay :id="'remote-video-' + socketId"></video>
             </div>
@@ -29,7 +29,12 @@
         </template>
       </ul>
       <div class="local-video">
-        <div class="avatar-name">Me</div>
+        <div class="avatar-name">
+          Me
+          <p x-show="socketId">
+            (<span x-text="String(socketId).substr(0,4)" ></span>)
+          </p>
+        </div>
         <video autoplay muted id="local-video" :class="connected ? '' : 'disconnected'"></video>
       </div>
       <div class="toggle" @click="() => connected ? disconnect() : startVideo()" :class="connected ? 'connected' : ''">
@@ -44,6 +49,7 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('app', () => ({
     ready: false,
     socket: undefined,
+    socketId: undefined,
     remoteSocket: undefined,
     users: [],
     isAlreadyCalling: false,
@@ -60,8 +66,9 @@ document.addEventListener('alpine:init', () => {
       await new Promise(r => setTimeout(r, 2000));
       const socket = this.socket = io({ path: '/chat' });
       socket.on("init-user", ({users, rtcCredentials}) => {
-        this.users  = users;
+        this.users  = users.filter(u => u !== socket?.id);
         this.rtcCredentials = rtcCredentials; // ie `user:pass`
+        this.socketId = socket.id;
         // Start video only after creds have been received
         this.startVideo();
         this.ready = true;

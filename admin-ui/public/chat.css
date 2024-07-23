@@ -95,9 +95,17 @@ ul.users li .avatar-name {
 .local-video .avatar-name {
   font-size: 130%;
   position: absolute;
+  text-align: center;
   bottom: 20px;
   color: white;
   text-shadow: 0 0 5px black, 0 0 5px black, 0 0 5px black;
+}
+
+.local-video .avatar-name p {
+  margin:0;
+  padding:0;
+  font-size:50%;
+  opacity: 0.7;
 }
 
 .remote-video {
