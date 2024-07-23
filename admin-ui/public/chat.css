@@ -40,9 +40,24 @@ ul.users li {
   width: 100px;
   height: 100px;
   overflow: hidden;
-  margin: 10px 30px;
+  margin: 10px 50px;
   cursor: pointer;
   position: relative;
+}
+
+ul.users li:first-child {
+  cursor: default;
+  width: 140px;
+  height: 140px;
+  margin-left: 30px;
+}
+
+ul.users li:first-child:hover {
+  cursor: default;
+  width: 140px;
+  height: 140px;
+  margin-left: 30px;
+  box-shadow: none;
 }
 
 ul.users li:hover, ul.users li.selected {
@@ -64,6 +79,10 @@ ul.users li .remote-video {
 
 ul.users li i {
   margin: 1.4em 0 0.7em;
+}
+
+ul.users li:first-child i {
+  opacity: 0;
 }
 
 ul.users li .avatar-name {

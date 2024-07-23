@@ -47,14 +47,15 @@ export default class Chat {
         return;
       }
       this.sockets.push(socket.id);
-      console.log('New connection, sending list', this.sockets);
       const users = this.sockets;
       const rtcCredentials = CHAT_TURN_CREDS;
+      console.log('init-user', users);
       socket.emit('init-user', {users, rtcCredentials});
       socket.broadcast.emit('update-users', {users});
     }
 
     socket.on('call-user', data => {
+      console.log('call-made', data.to);
       socket.to(data.to).emit('call-made', {
         offer: data.offer,
         socket: socket.id,
@@ -62,10 +63,16 @@ export default class Chat {
     });
 
     socket.on('make-answer', data => {
+      console.log('answer-made', data.to);
       socket.to(data.to).emit('answer-made', {
         socket: socket.id,
         answer: data.answer,
       });
+    });
+
+    socket.on('reject-call', data => {
+      console.log('call-rejected', data.from);
+      socket.to(data.from).emit('call-rejected', {socket: socket.id});
     });
 
     socket.on('disconnect', () => this.finish(socket));

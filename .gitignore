@@ -106,3 +106,4 @@ dist
 # Project files
 server/www/admin/
 **/db.json
+chatold.html

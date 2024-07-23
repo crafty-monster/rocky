@@ -18,8 +18,15 @@
  <body>
     <div x-data="app" :class="'container ' + ready ? 'ready' : ''">
       <ul class="users">
+        <li @click.debounce="() => call(socketId)">
+          <i class="fa-regular fa-user fa-2xl"></i>
+          <div class="avatar-name">Talking to</div>
+          <div class="remote-video">
+            <video autoplay id="remote-video"></video>
+          </div>
+        </li>
         <template x-for="socketId in users">
-          <li @click="() => call(socketId)">
+          <li @click.debounce="() => call(socketId)">
             <i class="fa-regular fa-user fa-2xl"></i>
             <div class="avatar-name" x-text="String(socketId).substr(0,4)"></div>
             <div class="remote-video">
@@ -37,7 +44,7 @@
         </div>
         <video autoplay muted id="local-video" :class="connected ? '' : 'disconnected'"></video>
       </div>
-      <div class="toggle" @click="() => connected ? disconnect() : startVideo()" :class="connected ? 'connected' : ''">
+      <div class="toggle" @click.debounce="() => connected ? disconnect() : startVideo()" :class="connected ? 'connected' : ''">
         <i class="fa-solid fa-phone fa-2xl"></i>
       </div>
     </div>
@@ -98,7 +105,7 @@ document.addEventListener('alpine:init', () => {
         this.remoteSocket = data.socket;
         await this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
         if (!this.isAlreadyCalling) {
-          this.call(data.socket);
+          await this.call(data.socket);
           this.isAlreadyCalling = true;
         }
       });
@@ -121,17 +128,16 @@ document.addEventListener('alpine:init', () => {
           { urls: "stun:stun.l.google.com:5349" },
           { urls: "stun:stun1.l.google.com:3478" },
           { urls: "stun:stun1.l.google.com:5349" },
-          {'url': `turn:${location.host}`, username, credential},
+          { urls: `turn:${location.host}`, username, credential},
         ],
       });
       peerConnection.ontrack = ({ streams: [stream] }) => {
         console.log('received stream', stream);
-        const selector = `remote-video-${this.remoteSocket}`; 
-        const remoteVideo = document.getElementById(selector);
+        const remoteVideo = document.getElementById('remote-video'); // `remote-video-${this.remoteSocket}`; 
         if (remoteVideo) {
           remoteVideo.srcObject = stream;
-        } else {
-          console.log('Cannot find video tag', selector);
+        // } else {
+        //   console.log('Cannot find video tag', selector);
         }
       };
       navigator.getUserMedia(
@@ -151,7 +157,7 @@ document.addEventListener('alpine:init', () => {
 
     async call(socketId) {
       console.log('call', socketId);
-      const offer = await this.peerConnection.createOffer({ iceRestart: true });
+      const offer = await this.peerConnection.createOffer();
       await this.peerConnection.setLocalDescription(new RTCSessionDescription(offer));
 
       this.socket.emit("call-user", { offer, to: socketId });
