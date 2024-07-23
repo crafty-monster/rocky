@@ -117,10 +117,10 @@ document.addEventListener('alpine:init', () => {
       const [username, credential] = this.rtcCredentials;
       const peerConnection = this.peerConnection = this.peerConnection || new RTCPeerConnection({
         'iceServers': [
-          // { urls: "stun:stun.l.google.com:19302" },
-          // { urls: "stun:stun.l.google.com:5349" },
-          // { urls: "stun:stun1.l.google.com:3478" },
-          // { urls: "stun:stun1.l.google.com:5349" },
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun.l.google.com:5349" },
+          { urls: "stun:stun1.l.google.com:3478" },
+          { urls: "stun:stun1.l.google.com:5349" },
           {'url': `turn:${location.host}`, username, credential},
         ],
       });
