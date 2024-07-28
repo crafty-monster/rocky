@@ -136,6 +136,7 @@ ul.users li .avatar-name {
 
 div.toggle {
   position: absolute;
+  z-index: 100;
   top: 60vh;
   right: 12vw;
   background: #263528;
@@ -163,4 +164,19 @@ div.toggle.connected {
 
 div.toggle.connected i {
   color: red;
+}
+
+div.chat {
+  display: flex;
+  justify-content: space-around;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 2em;
+  width: 100vw;
+}
+
+div.chat textarea {
+  width: 50vw;
+  height: 30vh;
 }

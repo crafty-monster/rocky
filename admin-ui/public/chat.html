@@ -47,10 +47,20 @@
       <div class="toggle" @click.debounce="() => connected ? disconnect() : startVideo()" :class="connected ? 'connected' : ''">
         <i class="fa-solid fa-phone fa-2xl"></i>
       </div>
+      <div class="chat">
+        <textarea id="remoteDescription" x-model="remoteDescription"></textarea>
+        <textarea id="localDescription" x-model="localDescription"></textarea>
+      </div>
     </div>
    <script>
 
 const { RTCPeerConnection, RTCSessionDescription } = window;
+
+navigator.mediaDevices.enumerateDevices().then(function (devices) {
+  devices.forEach(function (device) {
+    console.log(device.kind + ": " + device.label + " id = " + device.deviceId);
+  });
+});
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('app', () => ({
@@ -65,6 +75,8 @@ document.addEventListener('alpine:init', () => {
     localStream: undefined,
     peerConnection: undefined,
     rtcCredentials: undefined,
+    remoteDescription: undefined,
+    localDescription: undefined,
 
     async init() {
       // Wait a bit before starting session. This is to work around window refresh which
@@ -95,8 +107,10 @@ document.addEventListener('alpine:init', () => {
         }
         const peerConnection = this.peerConnection;
         await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+        this.remoteDescription = 'REMOTE DESCRIPTION:\n' + JSON.stringify(this.peerConnection.remoteDescription, null, 2);
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(new RTCSessionDescription(answer));
+        this.localDescription = 'LOCAL DESCRIPTION:\n' + JSON.stringify(this.peerConnection.localDescription, null, 2);
         socket.emit("make-answer", { answer, to: data.socket });
         this.getCalled = true;
       });
@@ -104,6 +118,7 @@ document.addEventListener('alpine:init', () => {
         console.log('answer-made', data);
         this.remoteSocket = data.socket;
         await this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+        this.remoteDescription = 'REMOTE DESCRIPTION:\n' + JSON.stringify(this.peerConnection.remoteDescription, null, 2);
         if (!this.isAlreadyCalling) {
           await this.call(data.socket);
           this.isAlreadyCalling = true;
@@ -122,7 +137,7 @@ document.addEventListener('alpine:init', () => {
 
     startVideo() {
       const [username, credential] = this.rtcCredentials;
-      const peerConnection = this.peerConnection = this.peerConnection || new RTCPeerConnection({
+      const peerConnection = window.peerConnection = this.peerConnection = this.peerConnection || new RTCPeerConnection({
         'iceServers': [
           { urls: "stun:stun.l.google.com:19302" },
           { urls: "stun:stun.l.google.com:5349" },
@@ -159,7 +174,7 @@ document.addEventListener('alpine:init', () => {
       console.log('call', socketId);
       const offer = await this.peerConnection.createOffer();
       await this.peerConnection.setLocalDescription(new RTCSessionDescription(offer));
-
+      this.localDescription = 'LOCAL DESCRIPTION:\n' + JSON.stringify(this.peerConnection.localDescription, null, 2);
       this.socket.emit("call-user", { offer, to: socketId });
     },
 
