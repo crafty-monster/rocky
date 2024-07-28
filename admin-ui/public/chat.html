@@ -156,7 +156,7 @@ document.addEventListener('alpine:init', () => {
         }
       };
       navigator.getUserMedia(
-        { video: true, audio: false },
+        { video: false, audio: true },
         stream => {
           this.localStream = stream;
           const localVideo = document.getElementById("local-video");
