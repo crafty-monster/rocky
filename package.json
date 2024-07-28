@@ -17,7 +17,9 @@
     "inspect": "concurrently \"npm run dev:app\" \"npm run inspect -w @rocky/server\"",
     "build": "npm run build -w @rocky/admin-ui && rm -rf ./server/www/admin && sleep 1 && mv ./admin-ui/dist ./server/www/admin",
     "build:ui": "npm run build -w @rocky/admin-ui",
-    "preview": "npm run preview -w @rocky/admin-ui"
+    "preview": "npm run preview -w @rocky/admin-ui",
+    "docker:start": "docker-compose -f docker-compose-dev.yml up --build -d",
+    "docker:restart": "npm run docker:start"
   },
   "devDependencies": {
     "concurrently": "^8.0.1"
