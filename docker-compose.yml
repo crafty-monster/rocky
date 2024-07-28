@@ -24,6 +24,9 @@ services:
     image: ghcr.io/crafty-monster/rocky
     ports:
       - 48000:48000
+      - 3478:3478
+      - 3478:3478/udp
+      - 49150-49250:49150-49250/udp
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
