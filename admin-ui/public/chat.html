@@ -136,7 +136,7 @@ document.addEventListener('alpine:init', () => {
     },
 
     startVideo() {
-      const [username, credential] = this.rtcCredentials;
+      const [username, credential] = String(this.rtcCredentials).split(':');
       const peerConnection = window.peerConnection = this.peerConnection = this.peerConnection || new RTCPeerConnection({
         'iceServers': [
           // { urls: "stun:stun.l.google.com:19302" },
