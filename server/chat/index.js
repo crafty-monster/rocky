@@ -26,11 +26,11 @@ export default class Chat {
       debugLevel: 'TRACE',
       debug: (level, msg) => console.log(`node-turn ${level}: ${msg}`),
     };
-    // if (CHAT_TURN_CREDS) {
-    //   opts.authMech: 'long-term';
-    //   const [user, pass] = String(CHAT_TURN_CREDS).split(':');
-    //   opts.credentials = {[user]: pass};
-    // }
+    if (CHAT_TURN_CREDS) {
+      opts.authMech = 'long-term';
+      const [user, pass] = String(CHAT_TURN_CREDS).split(':');
+      opts.credentials = {[user]: pass};
+    }
     new Turn(opts).start();
   }
   /**
