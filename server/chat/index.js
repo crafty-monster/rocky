@@ -23,7 +23,7 @@ export default class Chat {
     // Add TURN server in case RTC peer cannot traverse UDP
     const opts = {
       maxPort: 49250,
-      debugLevel: 'INFO',
+      debugLevel: 'DEBUG',
     };
     // if (CHAT_TURN_CREDS) {
     //   opts.authMech: 'long-term';
