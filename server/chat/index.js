@@ -23,14 +23,15 @@ export default class Chat {
     // Add TURN server in case RTC peer cannot traverse UDP
     const opts = {
       maxPort: 49250,
-      debugLevel: 'DEBUG',
+      debugLevel: 'TRACE',
+      debug: (level, msg) => console.log(`node-turn ${level}: ${msg}`),
     };
     // if (CHAT_TURN_CREDS) {
     //   opts.authMech: 'long-term';
     //   const [user, pass] = String(CHAT_TURN_CREDS).split(':');
     //   opts.credentials = {[user]: pass};
     // }
-    new Turn().start(opts);
+    new Turn(opts).start();
   }
   /**
    * Creates a new chat session
