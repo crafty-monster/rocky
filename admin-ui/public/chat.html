@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   <title>Rocky Chat | Minecraft Bedrock Server Controller</title>
+   <link
+     href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap"
+     rel="stylesheet" />
+   <link rel="stylesheet" href="./css/fontawesome/all.css" />
+   <link rel="stylesheet" href="./chat.css" />
+   <style>
+  </style>
+  <script src="./scripts/alpinejs@3.14.1.min.js" defer></script>
+   <script src="./scripts/socket.io@4.7.5.min.js"></script>
+ </head>
+ <body>
+    <div x-data="app" :class="'container ' + ready ? 'ready' : ''">
+      <ul class="users">
+        <li @click.debounce="() => call(socketId)">
+          <i class="fa-regular fa-user fa-2xl"></i>
+          <div class="avatar-name">Talking to</div>
+          <div class="remote-video">
+            <video autoplay id="remote-video"></video>
+          </div>
+        </li>
+        <template x-for="socketId in users">
+          <li @click.debounce="() => call(socketId)">
+            <i class="fa-regular fa-user fa-2xl"></i>
+            <div class="avatar-name" x-text="String(socketId).substr(0,4)"></div>
+            <div class="remote-video">
+              <video autoplay :id="'remote-video-' + socketId"></video>
+            </div>
+          </li>
+        </template>
+      </ul>
+      <div class="local-video">
+        <div class="avatar-name">
+          Me
+          <p x-show="socketId">
+            (<span x-text="String(socketId).substr(0,4)" ></span>)
+          </p>
+        </div>
+        <video autoplay muted id="local-video" :class="connected ? '' : 'disconnected'"></video>
+      </div>
+      <div class="toggle" @click.debounce="() => connected ? disconnect() : startVideo()" :class="connected ? 'connected' : ''">
+        <i class="fa-solid fa-phone fa-2xl"></i>
+      </div>
+      <div class="chat">
+        <textarea id="remoteDescription" x-model="remoteDescription"></textarea>
+        <textarea id="localDescription" x-model="localDescription"></textarea>
+      </div>
+    </div>
+   <script>
+
+const { RTCPeerConnection, RTCSessionDescription } = window;
+
+navigator.mediaDevices.enumerateDevices().then(function (devices) {
+  devices.forEach(function (device) {
+    console.log(device.kind + ": " + device.label + " id = " + device.deviceId);
+  });
+});
+
+document.addEventListener('alpine:init', () => {
+  Alpine.data('app', () => ({
+    ready: false,
+    socket: undefined,
+    socketId: undefined,
+    remoteSocket: undefined,
+    users: [],
+    isAlreadyCalling: false,
+    getCalled: false,
+    connected: false,
+    localStream: undefined,
+    peerConnection: undefined,
+    rtcCredentials: undefined,
+    remoteDescription: undefined,
+    localDescription: undefined,
+
+    async init() {
+      // Wait a bit before starting session. This is to work around window refresh which
+      // will trigger a disconnect/connect event series, so we want to wait a bit to allow events
+      // to be received in right order.
+      await new Promise(r => setTimeout(r, 2000));
+      const socket = this.socket = io({ path: '/chat' });
+      socket.on("init-user", ({users, rtcCredentials}) => {
+        this.users  = users.filter(u => u !== socket?.id);
+        this.rtcCredentials = rtcCredentials; // ie `user:pass`
+        this.socketId = socket.id;
+        // Start video only after creds have been received
+        this.startVideo();
+        this.ready = true;
+      });
+      socket.on("update-users", ({ users }) => {
+        // Make sure we remove ourselves.
+        this.users  = users.filter(u => u !== socket?.id);
+      });
+      socket.on("call-made", async data => {
+        console.log('Received offer:', data.offer);
+        if (this.getCalled) {
+          const confirmed = confirm(`User "Socket: ${data.socket}" wants to call you. Do accept this call?`);
+          if (!confirmed) {
+            return socket.emit("reject-call", { from: data.socket });
+          }
+          this.remoteSocket = data.socket;
+        }
+        const peerConnection = this.peerConnection;
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+        this.remoteDescription = 'REMOTE DESCRIPTION:\n' + JSON.stringify(this.peerConnection.remoteDescription, null, 2);
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(new RTCSessionDescription(answer));
+        this.localDescription = 'LOCAL DESCRIPTION:\n' + JSON.stringify(this.peerConnection.localDescription, null, 2);
+        socket.emit("make-answer", { answer, to: data.socket });
+        this.getCalled = true;
+      });
+      socket.on("answer-made", async data => {
+        console.log('answer-made', data);
+        this.remoteSocket = data.socket;
+        await this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+        this.remoteDescription = 'REMOTE DESCRIPTION:\n' + JSON.stringify(this.peerConnection.remoteDescription, null, 2);
+        if (!this.isAlreadyCalling) {
+          await this.call(data.socket);
+          this.isAlreadyCalling = true;
+        }
+      });
+      socket.on("call-rejected", data => {
+        alert(`User: "Socket: ${data.socket}" rejected your call.`);
+        this.remoteSocket = undefined;
+        // unselectUsersFromList();
+      });
+      socket.on("too-many-users", (count) => {
+        alert(`Too many users! We reached the maximum of ${count} users on this chat. Please try again later.`);
+        setTimeout(() => this.disconnect(), 1000);
+      });
+    },
+
+    startVideo() {
+      const [username, credential] = String(this.rtcCredentials).split(':');
+      const peerConnection = window.peerConnection = this.peerConnection = this.peerConnection || new RTCPeerConnection({
+        'iceServers': [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun.l.google.com:5349" },
+          { urls: "stun:stun1.l.google.com:3478" },
+          { urls: "stun:stun1.l.google.com:5349" },
+          { urls: `turn:${location.host}`, username, credential},
+        ],
+      });
+      peerConnection.ontrack = ({ streams: [stream] }) => {
+        console.log('received stream', stream);
+        const remoteVideo = document.getElementById('remote-video'); // `remote-video-${this.remoteSocket}`; 
+        if (remoteVideo) {
+          remoteVideo.srcObject = stream;
+        // } else {
+        //   console.log('Cannot find video tag', selector);
+        }
+      };
+      navigator.getUserMedia(
+        { video: true, audio: false },
+        stream => {
+          this.localStream = stream;
+          const localVideo = document.getElementById("local-video");
+          if (localVideo) {
+            localVideo.srcObject = stream;
+          }
+          stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+          this.connected = true;
+        },
+        e => console.warn(e.message)
+      );
+    },
+
+    async call(socketId) {
+      console.log('call', socketId);
+      const offer = await this.peerConnection.createOffer();
+      await this.peerConnection.setLocalDescription(new RTCSessionDescription(offer));
+      this.localDescription = 'LOCAL DESCRIPTION:\n' + JSON.stringify(this.peerConnection.localDescription, null, 2);
+      this.socket.emit("call-user", { offer, to: socketId });
+    },
+
+    disconnect() {
+      const localVideo = document.getElementById("local-video");
+      if (localVideo) { 
+        localVideo.pause();
+      }
+      if (this.localStream) {
+        this.localStream.getTracks().forEach(t => t.stop());
+      }
+      this.connected = false;
+    }
+  }));
+});
+
+   </script>
+ </body>
+</html>
