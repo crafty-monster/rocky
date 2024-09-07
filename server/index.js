@@ -21,7 +21,7 @@ const cache = apicache.middleware;
 app.use(cors());
 app.use(bodyParser.json());
 app.set('view engine', 'ejs');
-app.get('/', (req, res) => res.render('index', UI.data)); // , (err, html) => console.log(`Rendered UI.data ${JSON.stringify(UI.data)}`, {err, html})));
+app.get('/', (req, res) => res.render('index', UI.data)); // SSR using EJS
 app.use(express.static('www'));
 
 app.get('/api/healthcheck', healthcheck);
