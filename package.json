@@ -15,7 +15,7 @@
     "dev:ui": "npm run dev -w @rocky/admin-ui",
     "dev:server": "npm run dev -w @rocky/server",
     "inspect": "concurrently \"npm run dev:app\" \"npm run inspect -w @rocky/server\"",
-    "build": "npm run build -w @rocky/admin-ui && sleep 1 && mv ./admin-ui/dist ./server/www/admin",
+    "build": "npm run build -w @rocky/admin-ui && sleep 1 && rm -rf ./server/www/admin && mv ./admin-ui/dist ./server/www/admin",
     "build:ui": "npm run build -w @rocky/admin-ui",
     "preview": "npm run preview -w @rocky/admin-ui"
   },

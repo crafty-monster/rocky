@@ -18,9 +18,11 @@
 </head>
 
 <body>
-  <div class="head">
-    <img src="logo.png">
-  </div>
+  <% if (typeof header !== 'undefined' && header) { %>
+    <%- header %>
+  <% } else { %>
+    <div class="head"><img src="logo.png"></div>
+  <% } %>
   <div id="app" class="content">
     <div class="container">
       <div v-for="w in worlds" class="card">
@@ -54,9 +56,11 @@
       </div>
     </div>
   </div>
-  <footer>
-    <a href="/admin"><img src="craft.png" width="48" alt="start crafting"/></a>
-  </footer>
+  <% if (typeof footer !== 'undefined' && footer) { %>
+    <%- footer %>
+  <% } else { %>
+  <footer><a href="/admin"><img src="craft.png" width="48" alt="start crafting"/></a></footer>
+  <% } %>
   <script>
     const app = new Vue({
       el: '#app',

@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
+  import UIModal from './UIModal.svelte';
   import TerminalModal from './TerminalModal.svelte';
   import StatusModal from './StatusModal.svelte';
   import logo from '../assets/logo.transparentbg.png';
@@ -26,6 +27,9 @@
     show: false,
     worldId: null,
   }
+  const uiModal = {
+    show: false
+  };
 
   class Dashboard {
     static async mounted() {
@@ -95,6 +99,7 @@
 
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
   <StatusModal bind:show={statusModal.show} world={statusModal.world} />
+  <UIModal bind:show={uiModal.show} />
 
   <section class="px-3">
     <button disabled={disconnected} class="button is-light" on:click={Dashboard.list}>
@@ -108,6 +113,9 @@
     </button>
     <button disabled={disconnected} class="button is-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
       cleanup unused space
+    </button>
+    <button disabled={disconnected} class="button is-light" on:click={ () => uiModal.show = true }>
+      branding
     </button>
   </section>
 

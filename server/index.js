@@ -12,6 +12,7 @@ import {healthcheck} from './routes/index.js';
 import {me} from './routes/user/index.js';
 import {create, show, get, list, start, status, logs, execute, stop, stopAll, remove, removeAll} from './routes/world/index.js';
 import {connected, info, version, containers, prune} from './routes/server/index.js';
+import {UI} from './lib/lowdb.js';
 
 const PORT = process.env.PORT || 48000;
 const app = express();
@@ -19,6 +20,8 @@ const cache = apicache.middleware;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.set('view engine', 'ejs');
+app.get('/', (req, res) => res.render('index', UI.data)); // , (err, html) => console.log(`Rendered UI.data ${JSON.stringify(UI.data)}`, {err, html})));
 app.use(express.static('www'));
 
 app.get('/api/healthcheck', healthcheck);
@@ -32,6 +35,10 @@ app.use('/admin', express.static('www/admin'));
 // Rate limiting from here onwards
 // To avoid brute force attacks.
 app.use(rateLimit({windowMs: 20000, max: 30}));
+
+// Db
+app.get('/db/ui', ADMIN_ACCESS, UI.get);
+app.put('/db/ui', ADMIN_ACCESS, UI.put);
 
 app.get('/api/user/me', ADMIN_ACCESS, me);
 
