@@ -1,28 +1,29 @@
-import {join, dirname} from 'node:path';
-import {fileURLToPath} from 'node:url';
+/* eslint-disable new-cap */
+/* eslint-disable require-jsdoc */
+import {JSONFilePreset} from 'lowdb/node';
 
-import {Low} from 'lowdb';
-import {JSONFile} from 'lowdb/node';
+// Read or create db.json
+const defaultData = {ui: {}};
+const low = {};
 
-// File path
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(__dirname, '../data/db.json');
+(async () => {
+  low.db = await JSONFilePreset('data/db.json', defaultData);
+  UI.data = low.db.data.ui;
+})();
 
-// Configure lowdb to write to JSONFile
-const adapter = new JSONFile(file);
-const db = new Low(adapter);
-
-db.read().then(() => {
-  db.data = db.data || {};
-  db.write();
-});
-
-db.ready = async () => {
-  let ready = false;
-  while (!ready) {
-    ready = !!db.data;
-    await new Promise(resolve => setTimeout(resolve, 100));
+export class UI {
+  static async get(req, res) {
+    console.log('UI.get(req, res, next)', req.path);
+    return res.send(low.db.data.ui);
   }
-};
+  static async put(req, res) {
+    console.log('UI.put(req, res, next)', req.body);
+    if (req.body) {
+      UI.data = low.db.data.ui = req.body;
+      await low.db.write();
+      return res.send(low.db.data.ui);
+    }
+    res.status(400).send();
+  }
+}
 
-export default db;
