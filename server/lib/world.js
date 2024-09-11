@@ -90,8 +90,11 @@ export default class World {
     const folder = c.Mounts?.find(m => m.Type === 'bind')?.Source;
     const created = new Date(c.Created * 1000).getTime();
     const by = c.Labels['monster.crafty.rocky.by'];
+    const players = c.status?.count;
+    const max = c.status?.max;
+    const version = c.status?.version;
     const meta = c;
-    return {id, name, description, port, state, folder, created, by, meta};
+    return {id, name, description, port, state, folder, created, by, players, max, version, meta};
   }
 
   /**
@@ -107,7 +110,24 @@ export default class World {
     const port = c.Ports?.[0]?.PublicPort;
     const created = new Date(c.Created * 1000).toISOString();
     const by = c.Labels['monster.crafty.rocky.by'];
-    return {id, name, description, created, port, by};
+    const players = c.status?.count;
+    const max = c.status?.max;
+    const version = c.status?.version;
+    return {id, name, description, created, port, by, players, max, version};
+  }
+
+  /**
+   * Adds the status for each container
+   * @param {Object} c the container
+   * @return {Object} the container, with status information
+   */
+  static async addStatus(c) {
+    const ip = c.NetworkSettings?.Networks?.bridge?.IPAddress;
+    const port = c.Ports?.[0]?.PrivatePort;
+    if (ip && port) {
+      c.status = await Status.check(ip, port);
+    }
+    return c;
   }
 
   /**
@@ -117,6 +137,9 @@ export default class World {
   static async list() {
     console.log('World.list()');
     const containers = await docker.listContainers({all: true, filters: {name: ['/rocky_world__']}});
+    for (const c of containers) {
+      await World.addStatus(c);
+    }
     return containers
         .sort((c1, c2) => c1.Created - c2.Created)
         .map(World.map);
@@ -133,14 +156,13 @@ export default class World {
     try {
       containers = await docker.listContainers({filters: {name: ['/rocky_world__']}});
     } catch (err) {/* do nothing */}
+    for (const c of containers) {
+      await World.addStatus(c);
+    }
     docker.modem.timeout = null;
-    containers = containers
+    return containers
         .sort((c1, c2) => c1.Created - c2.Created)
         .map(World.simpleMap);
-    for (const c of containers) {
-      c.status = await Status.fetch('host.docker.internal', c.port);
-    }
-    return containers;
   }
 
   /**
