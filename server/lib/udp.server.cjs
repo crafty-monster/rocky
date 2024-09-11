@@ -10,7 +10,7 @@ const udp = require('dgram');
 
 // creating a udp server
 const server = udp.createSocket('udp4');
-const PORT = 19132;
+const PORT = 19000;
 
 // emits when any error occurs
 server.on('error', function(error) {
@@ -24,10 +24,12 @@ server.on('message', function(msg, info) {
   console.log('Received %d bytes from %s:%d', msg.length, info.address, info.port);
   console.log(msg.toString());
 
-  // sending msg
-  server.send(msg, info.port, 'localhost', function(error) {
+  // echo msg back to client
+  server.send(msg, info.port, info.address, function(error, bytes) {
     if (error) {
       console.error('Error sending response');
+    } else {
+      console.log(`${bytes} bytes sent back to client!`);
     }
     console.log('---------------------------');
   });
