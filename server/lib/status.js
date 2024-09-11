@@ -1,7 +1,7 @@
 import udp from 'dgram';
 import Cache from 'ttl';
 
-const MAX_WAIT_MS = 2 * 1000;
+const MAX_WAIT_MS = 1 * 1000;
 const OFFLINE_MESSAGE_DATA_ID = '00ffff00fefefefefdfdfdfd12345678';
 const UNCONNECTED_PING = // see https://wiki.vg/Raknet_Protocol#Unconnected_Ping
     '01' + '0000000000000000' + OFFLINE_MESSAGE_DATA_ID + '0000000000000000'; // fmt: skip;
