@@ -1,12 +1,13 @@
 /* eslint-disable require-jsdoc */
 import randomQuotes from 'random-quotes';
 import {statusBedrock} from 'minecraft-server-util';
-import server from './server.js';
+import Server from './server.js';
+import Status from './status.js';
 import config from './config.js';
 import utils from '../../utils/index.js';
 
 const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
-const docker = server.docker;
+const docker = Server.docker;
 
 export default class World {
   /**
@@ -133,9 +134,13 @@ export default class World {
       containers = await docker.listContainers({filters: {name: ['/rocky_world__']}});
     } catch (err) {/* do nothing */}
     docker.modem.timeout = null;
-    return containers
+    containers = containers
         .sort((c1, c2) => c1.Created - c2.Created)
         .map(World.simpleMap);
+    for (const c of containers) {
+      c.status = await Status.fetch('host.docker.internal', c.port);
+    }
+    return containers;
   }
 
   /**
