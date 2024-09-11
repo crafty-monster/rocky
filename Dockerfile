@@ -1,6 +1,6 @@
-FROM node:16.16-slim
+FROM node:20.17-slim
 WORKDIR /var/task
-COPY . /
+COPY . /var/task/
 RUN npm ci
 RUN npm run build
 # We copied the static files during `npm run build`

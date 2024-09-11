@@ -9,15 +9,15 @@
   ],
   "scripts": {
     "start": "concurrently \"npm run start:*\"",
-    "start:ui": "npm start -w @rocky/admin-ui",
-    "start:server": "npm start -w @rocky/server",
+    "start:ui": "npm start -w ./admin-ui",
+    "start:server": "npm start -w ./server",
     "dev": "concurrently \"npm run dev:*\"",
-    "dev:ui": "npm run dev -w @rocky/admin-ui",
-    "dev:server": "npm run dev -w @rocky/server",
-    "inspect": "concurrently \"npm run dev:app\" \"npm run inspect -w @rocky/server\"",
-    "build": "npm run build -w @rocky/admin-ui && sleep 1 && rm -rf ./server/www/admin && mv ./admin-ui/dist ./server/www/admin",
-    "build:ui": "npm run build -w @rocky/admin-ui",
-    "preview": "npm run preview -w @rocky/admin-ui"
+    "dev:ui": "npm run dev -w ./admin-ui",
+    "dev:server": "npm run dev -w ./server",
+    "inspect": "concurrently \"npm run dev:app\" \"npm run inspect -w ./server\"",
+    "build": "npm run build -w ./admin-ui && sleep 1 && rm -rf ./server/www/admin && mv ./admin-ui/dist ./server/www/admin",
+    "build:ui": "npm run build -w ./admin-ui",
+    "preview": "npm run preview -w ./admin-ui"
   },
   "devDependencies": {
     "concurrently": "^8.0.1"
