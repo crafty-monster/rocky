@@ -1,4 +1,4 @@
-FROM node:20.17-slim
+FROM node:24.18-slim
 WORKDIR /var/task
 COPY . /var/task/
 RUN npm ci
