@@ -43,6 +43,10 @@ export default class World {
         `DIFFICULTY=${settings.difficulty ?? 'easy'}`,
         `ALLOW_CHEATS=${settings.allowCheats ?? 'true'}`,
         `LEVEL_NAME=${settings.servername}`,
+        `ALLOW_LIST=false`,
+        `SERVER_PORT=19132`,
+        `SERVER_PORT_V6=19132`,
+        `ENABLE_BDS_V6BIND_FIX=true`,
       ],
       Volumes: {
         '/data': {},
