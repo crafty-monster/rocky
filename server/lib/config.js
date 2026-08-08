@@ -1,7 +1,8 @@
 
 const {DOCKER_HOST, DOCKER_PORT} = process.env;
 const ROCKY_SERVER_IMAGE = 'itzg/minecraft-bedrock-server';
-const ROCKY_BACKUP_REPO = 'rocky.local/backup';
+const ROCKY_DATA_PATH = process.env.ROCKY_DATA_PATH || '/rocky-data';
+const ROCKY_BACKUP_PATH = process.env.ROCKY_BACKUP_PATH || '/rocky-backups';
 const ROCKY_MAX_WORLDS = Number(process.env.ROCKY_MAX_WORLDS) || 9;
 const ROCKY_MAX_WORLDS_PER_USER = Number(process.env.ROCKY_MAX_WORLDS_PER_USER) || 9;
 
@@ -11,7 +12,8 @@ const config = {
   DOCKER_HOST,
   DOCKER_PORT,
   ROCKY_SERVER_IMAGE,
-  ROCKY_BACKUP_REPO,
+  ROCKY_DATA_PATH,
+  ROCKY_BACKUP_PATH,
   ROCKY_MAX_WORLDS,
   ROCKY_MAX_WORLDS_PER_USER,
 };

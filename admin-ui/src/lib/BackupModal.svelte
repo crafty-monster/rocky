@@ -26,6 +26,23 @@
     loading = false;
   }
   fetchBackups();
+
+  let fileInput;
+
+  async function handleUpload(e) {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    loading = true;
+    const id = file.name.replace(/\.tar\.gz$/, '');
+    const res = await fetch('/api/backup/' + encodeURIComponent(id), {method: 'POST', body: file});
+    loading = false;
+    if (!res.ok) {
+      alert(`Upload failed: ${await res.text()}`);
+      return;
+    }
+    fetchBackups();
+  }
 </script>
 
 <Modal bind:show={show} buttonOk={false}>
@@ -39,10 +56,10 @@
       {:else}
         {#each backups as backup}
         <li style="diplay:flex;">
-          <div class="thumb inactive">
+          <a class="thumb inactive" href={'/api/backup/' + backup.id} download title="Download {backup.name} backup">
             <img src="{'images/thumbs/' + backup.image}" alt={backup.name}/>
             <i class="fa fa-file-zipper fa-xl"></i>
-          </div>
+          </a>
           <div>
             <em>{backup.name}</em>
             <small>{timeAgo(backup.created)}</small>
@@ -69,6 +86,10 @@
         {/each}
       {/if}
     </ul>
+    <div class="upload">
+      <input bind:this={fileInput} type="file" accept=".gz" style="display:none" on:change={handleUpload} />
+      <button class="button is-info" on:click={() => fileInput.click()}>Upload Backup</button>
+    </div>
   </div>
 </Modal>
 
@@ -94,7 +115,12 @@
     opacity: 0.8;
   }
   ul.backups .thumb {
-    position: relative
+    display: block;
+    position: relative;
+  }
+  ul.backups .thumb.inactive:hover img {
+    filter: grayscale(0);
+    opacity: 1;
   }
   ul.backups .thumb i {
     position: absolute;

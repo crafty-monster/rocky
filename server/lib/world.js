@@ -1,14 +1,25 @@
 /* eslint-disable require-jsdoc */
+import fs from 'fs';
+import path from 'path';
 import randomQuotes from 'random-quotes';
 import {statusBedrock} from 'minecraft-server-util';
 import Server from './server.js';
 import config from './config.js';
 import utils from '../../utils/index.js';
 
-const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_BACKUP_REPO, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
+const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_DATA_PATH, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
 const docker = Server.docker;
 
 export default class World {
+  /**
+   * Host folder where a world's data lives
+   * @param {String} servername the server name
+   * @return {String} folder path
+   */
+  static folder(servername) {
+    return path.join(ROCKY_DATA_PATH, servername);
+  }
+
   /**
    * Creates a world
    * @param {Object} settings settings
@@ -29,11 +40,11 @@ export default class World {
     if (containersByUser.length > ROCKY_MAX_WORLDS_PER_USER) {
       throw new Error(`Cannot create more worlds!\nReached limit of ${ROCKY_MAX_WORLDS_PER_USER} worlds (for "${settings.by}")`);
     }
-    console.log('Creating container...', name, port);
+    const folder = World.folder(settings.servername);
+    fs.mkdirSync(folder, {recursive: true});
+    console.log('Creating container...', name, port, folder);
     const container = await docker.createContainer({
       name,
-      // Image: 'ubuntu:latest',
-      // Cmd: ['date'],
       Image: settings.image || ROCKY_SERVER_IMAGE,
       Env: [
         'EULA=true',
@@ -43,9 +54,6 @@ export default class World {
         `ALLOW_CHEATS=${settings.allowCheats ?? 'true'}`,
         `LEVEL_NAME=${settings.servername}`,
       ],
-      Volumes: {
-        '/data': {},
-      },
       Labels: {
         'monster.crafty.rocky': 'true',
         'monster.crafty.rocky.servername': settings.servername,
@@ -64,7 +72,7 @@ export default class World {
             HostPort: String(port),
           }],
         },
-        Binds: [],
+        Binds: [`${utils.toPosixPath(folder)}:/data`],
       },
     });
     console.log(`Container ${name} created. Starting...`);
@@ -289,15 +297,7 @@ export default class World {
         console.log('Removing container...', c.name, c.id);
         await docker.getContainer(c.id).remove({force: true});
         console.log('Container removed', c.name, c.id);
-        // Step 2) Remove volumes
-        if (c.meta?.Mounts) {
-          for (const m of c.meta.Mounts) {
-            if (m?.Type === 'volume') {
-              console.log('Removing volume', m.Name);
-              await docker.getVolume(m.Name).remove();
-            }
-          }
-        }
+        fs.rmSync(World.folder(c.name), {recursive: true, force: true});
         output.push({state: undefined, ...c});
       } else {
         console.log('Skipping container..', c.name);
@@ -321,15 +321,7 @@ export default class World {
     console.log('Removing container...', c.name, c.id);
     await docker.getContainer(c.id).remove({force: true});
     console.log('Container removed', c.name, c.id);
-    // Step 2) Remove volumes
-    if (c.meta?.Mounts) {
-      for (const m of c.meta.Mounts) {
-        if (m?.Type === 'volume') {
-          console.log('Removing volume', m.Name);
-          await docker.getVolume(m.Name).remove();
-        }
-      }
-    }
+    fs.rmSync(World.folder(c.name), {recursive: true, force: true});
     return {state: undefined, ...c};
   }
 
@@ -340,26 +332,9 @@ export default class World {
    */
   static async backup(id) {
     console.log('World.backup(%s)', id);
-    // 1. Get container details
     const c = await World.get(id);
-    const repo = ROCKY_BACKUP_REPO;
-    const tag = c.name;
-    console.log(`Creating ${repo}:${tag} image...`);
-    try {
-      // 2. Create new image from container
-      const imageId = await docker.getContainer(c.id).commit({
-        container: id,
-        repo,
-        tag,
-        Labels: {
-          'monster.crafty.rocky.servername': c.name,
-          'monster.crafty.rocky.port': String(c.port),
-        },
-      });
-      return {id: imageId, tag: `${repo}:${tag}`};
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
+    if (!c) throw new Error('Cannot find container to backup:' + id);
+    const Backup = (await import('./backup.js')).default;
+    return await Backup.create(c);
   }
 }

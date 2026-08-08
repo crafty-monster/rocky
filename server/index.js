@@ -43,6 +43,7 @@ app.get('/api/server/images', ADMIN_ACCESS, server.images);
 app.post('/api/server/prune', ADMIN_ACCESS, server.prune);
 
 app.get('/api/backup/', ADMIN_ACCESS, backup.list);
+app.post('/api/backup/:id', ADMIN_ACCESS, backup.upload);
 app.get('/api/backup/:id', ADMIN_ACCESS, backup.download);
 app.delete('/api/backup/:id', ADMIN_ACCESS, backup.remove);
 app.put('/api/backup/:id', ADMIN_ACCESS, backup.restore);
