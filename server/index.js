@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import basicAuth from 'express-basic-auth';
@@ -17,7 +18,14 @@ import {UI} from './lib/lowdb.js';
 const PORT = process.env.PORT || 48000;
 const app = express();
 const cache = apicache.middleware;
+const contentSecurityPolicy = {
+  directives: {
+    ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+    'script-src': ['\'self\'', '\'unsafe-eval\'', 'https://cdn.jsdelivr.net'],
+  },
+};
 
+app.use(helmet({contentSecurityPolicy}));
 app.use(cors());
 app.use(bodyParser.json());
 app.set('view engine', 'ejs');
