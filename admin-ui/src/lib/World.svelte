@@ -9,6 +9,7 @@ const assets = import.meta.glob("../assets/map.*.png");
 const hostname = window.location.hostname;
 export let id = null;
 export let name = null;
+export let image = null;
 export let description = null;
 export let state = null;
 export let port = null;
@@ -36,7 +37,7 @@ for (const path in assets) {
     {:else}
       <a href="minecraft://?addExternalServer={name}|{hostname}:{port}">
         <h4>{name}</h4>
-        <img src="{'images/thumbs/map.' + String(id).substr(0,2) + '.jpg'}" alt={name} onerror="this.onerror=null;this.src='images/thumbs/map.--.jpg'"/>
+        <img src="{'images/thumbs/' + image}" alt={name} onerror="this.onerror=null;this.src='images/thumbs/map.--.jpg'"/>
       </a>
     {/if}
   </div>

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "env $(cat .env | xargs) node index.js",
     "dev": "env $(cat .env | xargs) nodemon --ignore **/db.json index.js",
-    "inspect": "env $(cat .env | xargs) nodemon --ignore **/db.json --inspect index.js"
+    "inspect": "env $(cat .env | xargs) nodemon --ignore **/db.json --inspect index.js",
+    "lint": "eslint ."
   },
   "dependencies": {
     "apicache": "^1.6.3",
