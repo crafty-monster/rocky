@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
+  import UIModal from './UIModal.svelte';
   import TerminalModal from './TerminalModal.svelte';
   import StatusModal from './StatusModal.svelte';
   import BackupModal from './BackupModal.svelte';
@@ -31,6 +32,9 @@
     show: false,
     worlds: [],
   }
+  const uiModal = {
+    show: false
+  };
 
   class Dashboard {
     static async mounted() {
@@ -106,6 +110,7 @@
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
   <StatusModal bind:show={statusModal.show} world={statusModal.world} />
   <BackupModal bind:show={backupModal.show} worlds={backupModal.worlds} on:restored={Dashboard.list} />
+  <UIModal bind:show={uiModal.show} />
 
   <section class="px-3">
     <button disabled={disconnected} class="button is-light" on:click={Dashboard.list}>
@@ -122,6 +127,8 @@
     </button>
     <button disabled={disconnected} class="button is-light" on:click={Dashboard.backups}>
       backups
+    <button disabled={disconnected} class="button is-light" on:click={ () => uiModal.show = true }>
+      branding
     </button>
   </section>
 

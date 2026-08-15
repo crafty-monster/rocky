@@ -6,13 +6,22 @@ import {md5} from '../../utils/index.js';
 // ROCKY_USER1=admin:123456
 // ROCKY_USER2=bob:456789
 // etc...
-const users = Object.keys(process.env)
-    .filter(k => k.startsWith('ROCKY_USER'))
-    .reduce((acc, k) => {
-      const [user, pass] = String(process.env[k]).split(':');
-      acc[user] = pass;
-      return acc;
-    }, {});
+const USERS = {};
+for (const k of Object.keys(process.env)) {
+  if (k.startsWith('ROCKY_USER')) {
+    const [user, password] = process.env[k].split(':');
+    console.info(`${k} is "${user}"`);
+    USERS[user] = password;
+  }
+}
+
+// Warn if there are no users configured.
+if (Object.keys(USERS).length === 0) {
+  setTimeout(() => {
+    console.warn('WARNING: No users configured!');
+    console.warn('Please use env variable ROCKY_USER1 to configure.');
+  }, 1000);
+}
 
 export default class User {
   static me(req) {
@@ -27,6 +36,6 @@ export default class User {
     console.log('User.auth(%s, *******)', username);
     if (!username || !password) return false;
     // eslint-disable-next-line no-prototype-builtins
-    return (users.hasOwnProperty(username) && users[username] === String(password));
+    return (USERS.hasOwnProperty(username) && USERS[username] === String(password));
   }
 }

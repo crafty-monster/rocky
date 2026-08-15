@@ -26,6 +26,7 @@ services:
       - 48000:48000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - .data:/var/task/server/data
     restart: unless-stopped
     environment:
       ROCKY_USER1: admin:rocky
