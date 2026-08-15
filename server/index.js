@@ -23,6 +23,7 @@ const contentSecurityPolicy = {
   directives: {
     ...helmet.contentSecurityPolicy.getDefaultDirectives(),
     'script-src': ['\'self\'', '\'unsafe-eval\'', 'https://cdn.jsdelivr.net'],
+    'upgrade-insecure-requests': null,
   },
 };
 
