@@ -13,14 +13,16 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
   <script src="timeago.min.js"></script>
 </head>
 
 <body>
-  <div class="head">
-    <img src="logo.png">
-  </div>
+  <% if (typeof header !== 'undefined' && header) { %>
+    <%- header %>
+  <% } else { %>
+    <div class="head"><img src="logo.png"></div>
+  <% } %>
   <div id="app" class="content">
     <div class="container">
       <div v-for="w in worlds" class="card">
@@ -54,45 +56,12 @@
       </div>
     </div>
   </div>
-  <footer>
-    <a href="/admin"><img src="craft.png" width="48" alt="start crafting"/></a>
-  </footer>
-  <script>
-    const app = new Vue({
-      el: '#app',
-      data: { 
-        worlds: [],
-        hostname: location.hostname,
-      },
-      methods: {
-        timeago: (d) => timeago.format(d),
-        imageBackground (username) {
-          return `hsl(${Math.abs(this.hashCode(username))%359}, 70%, 90%)`; // hsl(250, 69%, 90%),
-        },
-        hashCode(str) {
-          let hash = 0;
-          for (let i = 0, len = str.length; i < len; i++) {
-              let chr = str.charCodeAt(i);
-              hash = (hash << 5) - hash + chr;
-              hash |= 0; // Convert to 32bit integer
-          }
-          return hash;
-        }
-      },
-      async mounted() {
-        this.worlds = await fetch('/api/world').then(r => r.json());
-        if (!this.worlds.length) {
-          this.worlds.push({
-            id: '--',
-            name: 'No worlds created',
-            description: 'Please create some worlds for people to play with. You\'ll need your username and password.',
-            port: 'blank',
-            by: 'nobody'
-          });
-        }
-      },
-    });
-    </script>
+  <% if (typeof footer !== 'undefined' && footer) { %>
+    <%- footer %>
+  <% } else { %>
+  <footer><a href="/admin"><img src="craft.png" width="48" alt="start crafting"/></a></footer>
+  <% } %>
+  <script src="init.js"></script>
 </body>
 
 </html>

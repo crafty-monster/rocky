@@ -28,6 +28,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /rocky-data:/rocky-data
       - /rocky-backups:/rocky-backups
+      - .data:/var/task/server/data
     restart: unless-stopped
     environment:
       ROCKY_USER1: admin:rocky

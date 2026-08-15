@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import basicAuth from 'express-basic-auth';
@@ -13,13 +14,23 @@ import {me} from './routes/user/index.js';
 import * as world from './routes/world/index.js';
 import * as backup from './routes/backup/index.js';
 import * as server from './routes/server/index.js';
+import {UI} from './lib/lowdb.js';
 
 const PORT = process.env.PORT || 48000;
 const app = express();
 const cache = apicache.middleware;
+const contentSecurityPolicy = {
+  directives: {
+    ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+    'script-src': ['\'self\'', '\'unsafe-eval\'', 'https://cdn.jsdelivr.net'],
+  },
+};
 
+app.use(helmet({contentSecurityPolicy}));
 app.use(cors());
 app.use(bodyParser.json());
+app.set('view engine', 'ejs');
+app.get('/', (req, res) => res.render('index', UI.data)); // SSR using EJS
 app.use(express.static('www'));
 
 app.get('/api/healthcheck', healthcheck);
@@ -33,6 +44,10 @@ app.use('/admin', express.static('www/admin'));
 // Rate limiting from here onwards
 // To avoid brute force attacks.
 app.use(rateLimit({windowMs: 20000, max: 30}));
+
+// Db
+app.get('/db/ui', ADMIN_ACCESS, UI.get);
+app.put('/db/ui', ADMIN_ACCESS, UI.put);
 
 app.get('/api/user/me', ADMIN_ACCESS, me);
 

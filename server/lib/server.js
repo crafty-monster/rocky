@@ -39,7 +39,8 @@ class Server {
     }
     try {
       this.docker.modem.timeout = 500;
-      info = await this.docker.info();
+      const {ServerVersion, OperatingSystem, Architecture, NCPU, MemTotal} = await this.docker.info();
+      info = {ServerVersion, OperatingSystem, Architecture, NCPU, MemTotal};
       up = true;
     } catch (e) {/* Do nothing */}
     this.docker.modem.timeout = null;
