@@ -7,6 +7,8 @@ import utils from '../../utils/index.js';
 import World from './world.js';
 
 const {ROCKY_BACKUP_PATH} = config;
+// Bundled meta inside the archive so port and other info survives a download/upload round trip.
+const BACKUP_META_FILE = '.rocky-backup-meta.json';
 
 /**
  * Guards against path traversal in ids coming from the URL
@@ -60,7 +62,6 @@ export default class Backup {
     console.log('Backup.create(%s)', world.name);
     fs.mkdirSync(ROCKY_BACKUP_PATH, {recursive: true});
     const id = `${world.name}@${new Date().toISOString().split('.')[0].replace(/:/g, '-')}Z`;
-    await tar.create({gzip: true, file: path.join(ROCKY_BACKUP_PATH, `${id}.tar.gz`), cwd: world.folder}, ['.']);
     const meta = {
       id,
       name: world.name,
@@ -71,6 +72,13 @@ export default class Backup {
       difficulty: world.meta?.Labels?.['monster.crafty.rocky.settings.difficulty'],
       created: new Date().toISOString(),
     };
+    const metaFile = path.join(world.folder, BACKUP_META_FILE);
+    fs.writeFileSync(metaFile, JSON.stringify(meta));
+    try {
+      await tar.create({gzip: true, file: path.join(ROCKY_BACKUP_PATH, `${id}.tar.gz`), cwd: world.folder}, ['.']);
+    } finally {
+      fs.rmSync(metaFile, {force: true});
+    }
     fs.writeFileSync(path.join(ROCKY_BACKUP_PATH, `${id}.json`), JSON.stringify(meta));
     return Backup.map(meta);
   }
@@ -158,7 +166,18 @@ export default class Backup {
     const folder = World.folder(meta.name);
     fs.mkdirSync(folder, {recursive: true});
     await tar.extract({file: path.join(ROCKY_BACKUP_PATH, `${name}.tar.gz`), cwd: folder});
-    // 3. Create new container, bind-mounted onto the restored folder.
+    // 3. Fill in any metadata missing from the sidecar (e.g. an uploaded backup) from the archive itself.
+    const metaFile = path.join(folder, BACKUP_META_FILE);
+    if (fs.existsSync(metaFile)) {
+      const embedded = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
+      fs.rmSync(metaFile, {force: true});
+      meta.port = meta.port ?? embedded.port;
+      meta.description = meta.description ?? embedded.description;
+      meta.by = meta.by ?? embedded.by;
+      meta.gamemode = meta.gamemode ?? embedded.gamemode;
+      meta.difficulty = meta.difficulty ?? embedded.difficulty;
+    }
+    // 4. Create new container, bind-mounted onto the restored folder.
     return await World.create({
       servername: meta.name,
       port: meta.port,

@@ -2,12 +2,12 @@
 import fs from 'fs';
 import path from 'path';
 import randomQuotes from 'random-quotes';
-import {statusBedrock} from 'minecraft-server-util';
 import Server from './server.js';
 import config from './config.js';
 import utils from '../../utils/index.js';
+import {readLevelDat} from './leveldat.js';
 
-const {DOCKER_HOST, ROCKY_SERVER_IMAGE, ROCKY_DATA_PATH, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
+const {ROCKY_SERVER_IMAGE, ROCKY_DATA_PATH, ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = config;
 const docker = Server.docker;
 
 export default class World {
@@ -190,18 +190,8 @@ export default class World {
     if (!c) {
       throw new Error('Cannot find container for status:' + id);
     }
-    // Point to the gateway (as the ports are mapped in there)
-    const host = DOCKER_HOST || c.meta?.NetworkSettings?.Networks?.bridge?.Gateway;
-    console.log('Connecting to bedrock host ...', host, c.port);
-    const status = await statusBedrock(host, c.port);
-    console.log('Got some status info', status?.version, status?.players);
-    return {
-      version: status?.version?.name,
-      protocol: status?.version?.protocol,
-      onlinePlayers: status?.players?.online,
-      maxPlayers: status?.players?.max,
-      gameMode: status?.gameMode,
-    };
+    const levelFile = path.join(World.folder(c.name), 'worlds', c.name, 'level.dat');
+    return readLevelDat(levelFile);
   }
 
   /**

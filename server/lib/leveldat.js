@@ -1,23 +1,12 @@
-#!/usr/bin/env node
-/**
- * Extract the world seed from a Minecraft Bedrock level.dat file.
- * No dependencies — pure Node.js.
- *
- * Usage:
- *   node get-seed.js /path/to/worlds/MyWorld/level.dat
- *
- * Bedrock's level.dat starts with an 8-byte header:
- *   [4 bytes: file format version, little-endian int32]
- *   [4 bytes: length of NBT payload, little-endian int32]
- * followed by little-endian, uncompressed NBT data.
- */
-
-const fs = require('fs');
+import fs from 'fs';
 
 const TAG = {
   End: 0, Byte: 1, Short: 2, Int: 3, Long: 4, Float: 5, Double: 6,
   ByteArray: 7, String: 8, List: 9, Compound: 10, IntArray: 11, LongArray: 12,
 };
+
+const DIFFICULTY_NAMES = ['peaceful', 'easy', 'normal', 'hard'];
+const GAME_TYPE_NAMES = ['survival', 'creative', 'adventure', 'spectator'];
 
 class NbtReader {
   constructor(buffer, offset) {
@@ -34,7 +23,7 @@ class NbtReader {
   readDouble() { const v = this.buf.readDoubleLE(this.off); this.off += 8; return v; }
 
   readString() {
-    const len = this.readShort(); // unsigned short in spec, but LE short is fine for typical lengths
+    const len = this.readShort();
     const str = this.buf.toString('utf8', this.off, this.off + len);
     this.off += len;
     return str;
@@ -100,53 +89,49 @@ class NbtReader {
   }
 }
 
-function parseLevelDat(filePath) {
+/**
+ * Recursively converts NBT payload values (BigInt, Buffer) into
+ * JSON-serializable equivalents.
+ * @param {*} value the value to sanitize
+ * @return {*} a JSON-serializable value
+ */
+function sanitize(value) {
+  if (typeof value === 'bigint') return value.toString();
+  if (Buffer.isBuffer(value)) return value.toString('base64');
+  if (Array.isArray(value)) return value.map(sanitize);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, sanitize(v)]));
+  }
+  return value;
+}
+
+/**
+ * Parses a Bedrock level.dat file.
+ * @param {String} filePath path to level.dat
+ * @return {Object} the parsed contents, JSON-serializable
+ */
+export function readLevelDat(filePath) {
   const fileBuf = fs.readFileSync(filePath);
 
-  // Skip the 8-byte Bedrock header (version int32 + length int32)
+  // 8-byte header: [version int32 LE][payload length int32 LE], then NBT data.
   const version = fileBuf.readInt32LE(0);
-  const payloadLength = fileBuf.readInt32LE(4);
-  const nbtStart = 8;
+  const reader = new NbtReader(fileBuf, 8);
 
-  const reader = new NbtReader(fileBuf, nbtStart);
-
-  // Root tag: type byte + name string + compound payload
   const rootType = reader.readUByte();
   if (rootType !== TAG.Compound) {
     throw new Error(`Expected root Compound tag, got type ${rootType}`);
   }
-  const rootName = reader.readString(); // usually empty string
-  const root = reader.readCompound();
+  reader.readString(); // root name, usually empty
+  const data = sanitize(reader.readCompound());
 
-  return { version, payloadLength, rootName, data: root };
-}
-
-// --- Main ---
-const filePath = process.argv[2];
-
-if (!filePath) {
-  console.error('Usage: node get-seed.js /path/to/worlds/<WorldName>/level.dat');
-  process.exit(1);
-}
-
-if (!fs.existsSync(filePath)) {
-  console.error(`File not found: ${filePath}`);
-  process.exit(1);
-}
-
-try {
-  const { version, data } = parseLevelDat(filePath);
-
-  if (data.RandomSeed === undefined) {
-    console.error('RandomSeed tag not found in level.dat. Dumping top-level keys for debugging:');
-    console.error(Object.keys(data));
-    process.exit(1);
-  }
-
-  console.log(`Bedrock level.dat format version: ${version}`);
-  console.log(`World name (LevelName): ${data.LevelName ?? '(not set)'}`);
-  console.log(`Seed (RandomSeed): ${data.RandomSeed.toString()}`);
-} catch (err) {
-  console.error('Failed to parse level.dat:', err.message);
-  process.exit(1);
+  return {
+    version,
+    name: data.LevelName,
+    seed: data.RandomSeed,
+    difficulty: DIFFICULTY_NAMES[data.Difficulty] ?? null,
+    gameType: GAME_TYPE_NAMES[data.GameType] ?? null,
+    baseGameVersion: data.BaseGameVersion,
+    lastPlayed: data.LastPlayed !== undefined ? new Date(Number(data.LastPlayed) * 1000).toISOString() : null,
+    data,
+  };
 }
