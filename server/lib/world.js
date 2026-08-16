@@ -33,11 +33,11 @@ export default class World {
     settings.by = settings.by || 'bob';
     // Check how many containers we're running
     const containers = await World.list();
-    if (containers.length > ROCKY_MAX_WORLDS) {
+    if (containers.length >= ROCKY_MAX_WORLDS) {
       throw new Error(`Cannot create more worlds!\nReached limit of ${ROCKY_MAX_WORLDS} worlds (for all users)`);
     }
     const containersByUser = containers.filter(c => c.by === settings.by);
-    if (containersByUser.length > ROCKY_MAX_WORLDS_PER_USER) {
+    if (containersByUser.length >= ROCKY_MAX_WORLDS_PER_USER) {
       throw new Error(`Cannot create more worlds!\nReached limit of ${ROCKY_MAX_WORLDS_PER_USER} worlds (for "${settings.by}")`);
     }
     const folder = World.folder(settings.servername);
