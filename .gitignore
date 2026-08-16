@@ -106,4 +106,4 @@ dist
 # Project files
 server/www/admin/
 **/db.json
-todo.md
+todo.kanban.md
