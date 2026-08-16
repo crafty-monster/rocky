@@ -1,7 +1,5 @@
 <script>
   // @ts-nocheck
-  // TODO: Download backup
-  // TODO: Upload restore backup
   import { onMount } from 'svelte';
   import World from './World.svelte';
   import SystemInfo from './SystemInfo.svelte';
