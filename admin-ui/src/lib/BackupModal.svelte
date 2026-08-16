@@ -14,6 +14,18 @@
 
   const dispatch = createEventDispatcher();
 
+  function track(item, action, promise) {
+    item.busy = action;
+    backups = backups;
+    missing = missing;
+    promise.finally(() => {
+      item.busy = null;
+      backups = backups;
+      missing = missing;
+    });
+    return promise;
+  }
+
   $: fetchBackups(show);
   
   async function fetchBackups() {
@@ -21,6 +33,7 @@
     loading = true;
     backups = await fetch(`/api/backup`).then(r => r.json());
     missing = worlds.filter(w => {
+      if (w.id === '(new)') return false;
       return !backups.find(b => b.name === w.name);
     });
     loading = false;
@@ -34,8 +47,7 @@
     e.target.value = '';
     if (!file) return;
     loading = true;
-    const id = file.name.replace(/\.tar\.gz$/, '');
-    const res = await fetch('/api/backup/' + encodeURIComponent(id), {method: 'POST', body: file});
+    const res = await fetch('/api/backup/' + encodeURIComponent(file.name), {method: 'POST', body: file});
     loading = false;
     if (!res.ok) {
       alert(`Upload failed: ${await res.text()}`);
@@ -59,13 +71,14 @@
           <a class="thumb inactive" href={'/api/backup/' + backup.id} download title="Download {backup.name} backup">
             <img src="{'images/thumbs/' + backup.image}" alt={backup.name}/>
             <i class="fa fa-file-zipper fa-xl"></i>
+            <i class="fa fa-download fa-xl download-hint"></i>
           </a>
           <div>
             <em>{backup.name}</em>
             <small>{timeAgo(backup.created)}</small>
             <div class="tools">
-              <button class="button is-warning" on:click={() => confirm(`Restore "${backup.name}" backup?.`) && fetch('/api/backup/' + backup.id, {method: 'PUT'}).then(() => dispatch('restored'))}>Restore</button>
-              <button class="button is-danger" on:click={() => confirm(`Delete "${backup.name}" backup?.`) && fetch('/api/backup/' + backup.id, {method: 'DELETE'}).then(fetchBackups)}>Delete</button>
+              <button class="button is-warning" disabled={backup.busy} on:click={() => confirm(`Restore "${backup.name}" backup?.`) && track(backup, 'restore', fetch('/api/backup/' + backup.id, {method: 'PUT'}).then(() => dispatch('restored')))}>{#if backup.busy === 'restore'}<i class="fa fa-spinner fa-spin"></i>{/if} Restore</button>
+              <button class="button is-danger" disabled={backup.busy} on:click={() => confirm(`Delete "${backup.name}" backup?.`) && track(backup, 'delete', fetch('/api/backup/' + backup.id, {method: 'DELETE'}).then(fetchBackups))}>{#if backup.busy === 'delete'}<i class="fa fa-spinner fa-spin"></i>{/if} Delete</button>
             </div>
           </div>
         </li>
@@ -79,7 +92,7 @@
             <em>{world.name}</em>
             <small>n/a</small>
             <div class="tools">
-              <button class="button is-success" on:click={() => confirm(`Create "${world.name}" backup?.`) && fetch('/api/world/' + world.id + '/backup', {method: 'POST'}).then(fetchBackups)}>Create</button>
+              <button class="button is-success" disabled={world.busy} on:click={() => confirm(`Create "${world.name}" backup?.`) && track(world, 'create', fetch('/api/world/' + world.id + '/backup', {method: 'POST'}).then(fetchBackups))}>{#if world.busy === 'create'}<i class="fa fa-spinner fa-spin"></i>{/if} Create</button>
             </div>
           </div>
         </li>
@@ -87,8 +100,8 @@
       {/if}
     </ul>
     <div class="upload">
-      <input bind:this={fileInput} type="file" accept=".gz" style="display:none" on:change={handleUpload} />
-      <button class="button is-info" on:click={() => fileInput.click()}>Upload Backup</button>
+      <input bind:this={fileInput} type="file" style="display:none" on:change={handleUpload} />
+      <button class="button is-info is-small" on:click={() => fileInput.click()}><i class="fa fa-upload"></i> Upload Backup</button>
     </div>
   </div>
 </Modal>
@@ -96,14 +109,20 @@
 <style>
   .main {
     width: 80vw;
-    min-height: 60vh;
-    overflow-y: scroll;
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
   }
   h3 {
+    flex-shrink: 0;
     font-size: 120%;
     font-weight: bolder;
     padding: 0 0 10px;
     border-bottom: 1px solid #ccc;
+  }
+  ul.backups {
+    overflow-y: scroll;
+    min-height: 0;
   }
   ul.backups img {
     width: 150px;
@@ -128,6 +147,17 @@
     bottom: 30px;
     left: 30px;
   }
+  ul.backups .thumb .download-hint {
+    top: 50%;
+    left: 50%;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0;
+  }
+  ul.backups .thumb.inactive:hover .download-hint {
+    opacity: 1;
+  }
   ul.backups li {
     display: flex;
     padding: 20px 0 16px;
@@ -148,6 +178,10 @@
   }
   ul.backups div.tools {
     margin-top: 18px;
+  }
+  .upload {
+    flex-shrink: 0;
+    padding-top: 1em;
   }
   /* PHABLET STYLES */
   @media all and (max-width: 760px) { 

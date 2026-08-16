@@ -92,7 +92,11 @@ export default class Backup {
    */
   static async upload(id, stream) {
     console.log('Backup.upload(%s)', id);
-    const name = safeId(id);
+    const filename = safeId(id);
+    if (!filename.endsWith('.rockyworld')) {
+      throw new Error('Invalid file.');
+    }
+    const name = filename.slice(0, -'.rockyworld'.length);
     if (Backup.exists(name)) {
       throw new Error(`Backup "${name}" already exists. Delete it first.`);
     }

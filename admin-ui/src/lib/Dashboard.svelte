@@ -15,6 +15,7 @@
   
   let ready = false;
   let disconnected = false;
+  let refreshing = false;
   let newworld = {id: '(new)', name: 'New World', state: 'new', port: 'survival', by: username};
   let worlds = null;
   let server = null;
@@ -65,9 +66,14 @@
       }
       setTimeout(Dashboard.list, 2000);
     }
+    static async refresh() {
+      refreshing = true;
+      await Dashboard.list();
+      refreshing = false;
+    }
     static async list() {
       console.log('Dashboard.list()');
-      try { 
+      try {
         worlds = await fetch('/api/world/list').then(r => r.json());
         const worldsForUser = worlds.filter(w => w.by === username);
         const {ROCKY_MAX_WORLDS, ROCKY_MAX_WORLDS_PER_USER} = server?.config || {};
@@ -112,23 +118,26 @@
   <BackupModal bind:show={backupModal.show} worlds={backupModal.worlds} on:restored={Dashboard.list} />
   <UIModal bind:show={uiModal.show} />
 
-  <section class="px-3">
-    <button disabled={disconnected} class="button is-light" on:click={Dashboard.list}>
-      refresh worlds
-    </button>
-    <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
-      stop worlds
-    </button>
-    <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
-      remove stopped worlds
-    </button>
-    <button disabled={disconnected} class="button is-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
-      cleanup unused space
-    </button>
-    <button disabled={disconnected} class="button is-light" on:click={Dashboard.backups}>
-      backups
-    <button disabled={disconnected} class="button is-light" on:click={ () => uiModal.show = true }>
-      branding
+  <section class="px-3 toolbar">
+    <div class="toolbar-buttons">
+      <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
+        stop worlds
+      </button>
+      <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
+        remove stopped worlds
+      </button>
+      <button disabled={disconnected} class="button is-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
+        cleanup unused space
+      </button>
+      <button disabled={disconnected} class="button is-light" on:click={Dashboard.backups}>
+        backups
+      </button>
+      <button disabled={disconnected} class="button is-light" on:click={ () => uiModal.show = true }>
+        branding
+      </button>
+    </div>
+    <button disabled={disconnected} class="button is-light" on:click={Dashboard.refresh} title="Refresh worlds">
+      <i class="fa fa-refresh {refreshing ? 'fa-spin' : ''}"></i>
     </button>
   </section>
 
@@ -161,6 +170,18 @@
   }
   section {
     padding-top: 1.5em;
+  }
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
+  }
+  .toolbar-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: inherit;
   }
   .worlds {
     display: flex;

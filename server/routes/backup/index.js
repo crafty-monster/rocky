@@ -35,7 +35,8 @@ export const upload = async (req, res) => {
   try {
     res.status(200).json(await Backup.upload(id, req));
   } catch (err) {
-    const status = /already exists/.test(err.message) ? 409 : 500;
+    const status = /already exists/.test(err.message) ? 409 :
+      /Invalid file/.test(err.message) ? 400 : 500;
     res.status(status).send(err.message || String(err));
   }
 };
@@ -47,7 +48,7 @@ export const download = async (req, res) => {
     const stream = await Backup.download(id);
     res.status(200);
     res.type('gz');
-    res.setHeader('Content-Disposition', `attachment; filename="${id}.tar.gz"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${id}.rockyworld"`);
     await streams.pipeline(stream, res);
   } catch (err) {
     console.error(err);
