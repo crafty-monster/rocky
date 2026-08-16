@@ -1,21 +1,12 @@
 <script>
 // @ts-nocheck
 
-import {createEventDispatcher} from 'svelte';
 import * as timeago from 'timeago.js';
 import {hashCode} from '../../../utils/index';
-const dispatch = createEventDispatcher();
 const assets = import.meta.glob("../assets/map.*.png");
 const hostname = window.location.hostname;
-export let id = null;
-export let name = null;
-export let image = null;
-export let description = null;
-export let state = null;
-export let port = null;
-export let created = null;
-export let by = null;
-const images = {}; 
+let { id = null, name = null, image = null, description = null, state = null, port = null, created = null, by = null, oncreate, onstarted, ondeleted, onstopped, onstatus, onterminal } = $props();
+const images = {};
 const imageBackground = (username) => `hsl(${Math.abs(hashCode(username))%359}, 70%, 90%)`; // hsl(250, 69%, 90%)
 
 for (const path in assets) {
@@ -29,15 +20,15 @@ for (const path in assets) {
   <div class="card-image">
     <small>{String(id).substr(0,12)}</small>
     {#if state === 'new'}
-      <!-- svelte-ignore a11y-invalid-attribute -->
-      <a href="javascript:;" on:click={() => dispatch('create')}>
+      <!-- svelte-ignore a11y_invalid_attribute -->
+      <a href="javascript:;" onclick={() => oncreate?.()}>
         <h4>{name}</h4>
         <img src="images/thumbs/map.(new).jpg" alt="new"/>
       </a>
     {:else}
       <a href="minecraft://?addExternalServer={name}|{hostname}:{port}">
         <h4>{name}</h4>
-        <img src="{'images/thumbs/' + image}" alt={name} onerror="this.onerror=null;this.src='images/thumbs/map.--.jpg'"/>
+        <img src="{'images/thumbs/' + image}" alt={name} onerror={(e) => { e.target.onerror = null; e.target.src = 'images/thumbs/map.--.jpg'; }}/>
       </a>
     {/if}
   </div>
@@ -64,24 +55,24 @@ for (const path in assets) {
     </div>
     <div class="tools">
       {#if state === 'new'}
-        <button class="button is-link" on:click={() => dispatch('create')}>Generate</button>
+        <button class="button is-link" onclick={() => oncreate?.()}>Generate</button>
       {:else if state === 'exited'}
-        <button class="button is-success" on:click={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => dispatch('started', {id}))}>Start</button>
-        <button class="button is-danger" on:click={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => dispatch('deleted', {id}))}>Delete</button>
+        <button class="button is-success" onclick={() => fetch(`/api/world/${id}/start`, {method: 'POST'}).then(() => onstarted?.({id}))}>Start</button>
+        <button class="button is-danger" onclick={() => confirm(`Delete "${name}"?\n\nYou will lose all your data.`) && fetch(`/api/world/${id}`, {method: 'DELETE'}).then(() => ondeleted?.({id}))}>Delete</button>
       {:else}
-        <button class="button is-warning" on:click={() => confirm(`Stop "${name}"?.`) && fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => dispatch('stopped', {id}))}>Stop</button>
+        <button class="button is-warning" onclick={() => confirm(`Stop "${name}"?.`) && fetch(`/api/world/${id}/stop`, {method: 'POST'}).then(() => onstopped?.({id}))}>Stop</button>
       {/if}
       <div class="tools-right">
         {#if state === '-----'}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="info">
-          <i class="fa fa-circle-info fa-xl" on:click={() => dispatch('status')}></i>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <div class="info" role="button" tabindex="0" onclick={() => onstatus?.()}>
+          <i class="fa fa-circle-info fa-xl"></i>
         </div>
         {/if}
         {#if state !== 'new'}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="terminal">
-          <span><i class="fa fa-terminal fa-sm" on:click={() => dispatch('terminal')}></i></span>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <div class="terminal" role="button" tabindex="0" onclick={() => onterminal?.()}>
+          <span><i class="fa fa-terminal fa-sm"></i></span>
         </div>
         {/if}
       </div>

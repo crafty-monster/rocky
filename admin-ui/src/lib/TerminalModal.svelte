@@ -3,20 +3,22 @@
 
   import Modal from './Modal.svelte';
 
-  export let show = false;
-  export let world = {};
-  let disabled = false;
-  let loading = false;
+  let { show = $bindable(false), world = {} } = $props();
+  let disabled = $state(false);
+  let loading = $state(false);
 
-  $: fetchLogs(undefined, world), disabled = (world.state !== 'running');
-  $: clearLogs(show);
-  
-  let logs = [];
+  $effect(() => {
+    fetchLogs(undefined, world);
+    disabled = (world.state !== 'running');
+  });
+  $effect(() => { clearLogs(show); });
+
+  let logs = $state([]);
   const el = {
     pre: null,
     command: null,
   };
-  let command = '';
+  let command = $state('');
 
   function clearLogs() {
     console.log('clearLogs()');
@@ -67,31 +69,32 @@
     <div class="tabs is-boxed mb-0 is-small">
       <ul class="my-3">
         <li class="is-active">
-          <!-- svelte-ignore a11y-invalid-attribute -->
+          <!-- svelte-ignore a11y_invalid_attribute -->
           <a href="javascript:;"class="nav-link active">Console</a>
         </li>
         <li class="pt-1" style="margin-left: auto">
-          <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={() => fetchLogs(100)} on:keyup={() => fetchLogs(100)}></i>
+          <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} role="button" tabindex="0" onclick={() => fetchLogs(100)} onkeyup={() => fetchLogs(100)}></i>
         </li>
       </ul>
     </div>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <pre class="terminal" bind:this={el.pre} on:click={() => el.command.focus()}>{logs.join('\n')}</pre>
-    <input disabled={disabled} placeholder=">" bind:this={el.command} type="text" class="command" bind:value={command} on:keypress={keypress}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <pre class="terminal" bind:this={el.pre} onclick={() => el.command.focus()}>{logs.join('\n')}</pre>
+    <input disabled={disabled} placeholder=">" bind:this={el.command} type="text" class="command" bind:value={command} onkeypress={keypress}>
     <p class="buttons are-small" style="line-height: 35px">
-      <button disabled={disabled} class="button is-info" on:click={() => setCommand('help')}>Help</button>
-      <button disabled={disabled} class="button is-info" on:click={() => setCommand('list')}>List Players</button>
-      <button disabled={disabled} class="button is-danger" on:click={() => setCommand('op Bob')}>Add Operator</button>
-      <button disabled={disabled} class="button is-danger" on:click={() => setCommand('op @a')}>Add Operator x All</button>
-      <button disabled={disabled} class="button is-link" on:click={() => setCommand('teleport Bob Mary')}>Teleport</button>
-      <button disabled={disabled} class="button is-primary" on:click={() => setCommand('difficulty easy')}>Set Difficulty</button>
-      <button disabled={disabled} class="button is-primary" on:click={() => setCommand('time set day')}>Set Daytime</button>
-      <button disabled={disabled} class="button is-primary" on:click={() => setCommand('weather clear')}>Set Weather</button>
-      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('changesetting allow-cheats true')}>Allow cheats</button>
-      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule showcoordinates true')}>Show coordinates</button>
-      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule doinsomnia false')}>No Phantoms</button>
-      <button disabled={disabled} class="button is-warning" on:click={() => setCommand('gamerule pvp false')}>No Player Fighting</button>
-      <button disabled={disabled} class="button is-success" on:click={() => setCommand('tell @a Hello guys')}>Message Everyone</button>  
+      <button disabled={disabled} class="button is-info" onclick={() => setCommand('help')}>Help</button>
+      <button disabled={disabled} class="button is-info" onclick={() => setCommand('list')}>List Players</button>
+      <button disabled={disabled} class="button is-danger" onclick={() => setCommand('op Bob')}>Add Operator</button>
+      <button disabled={disabled} class="button is-danger" onclick={() => setCommand('op @a')}>Add Operator x All</button>
+      <button disabled={disabled} class="button is-link" onclick={() => setCommand('teleport Bob Mary')}>Teleport</button>
+      <button disabled={disabled} class="button is-primary" onclick={() => setCommand('difficulty easy')}>Set Difficulty</button>
+      <button disabled={disabled} class="button is-primary" onclick={() => setCommand('time set day')}>Set Daytime</button>
+      <button disabled={disabled} class="button is-primary" onclick={() => setCommand('weather clear')}>Set Weather</button>
+      <button disabled={disabled} class="button is-warning" onclick={() => setCommand('changesetting allow-cheats true')}>Allow cheats</button>
+      <button disabled={disabled} class="button is-warning" onclick={() => setCommand('gamerule showcoordinates true')}>Show coordinates</button>
+      <button disabled={disabled} class="button is-warning" onclick={() => setCommand('gamerule doinsomnia false')}>No Phantoms</button>
+      <button disabled={disabled} class="button is-warning" onclick={() => setCommand('gamerule pvp false')}>No Player Fighting</button>
+      <button disabled={disabled} class="button is-success" onclick={() => setCommand('tell @a Hello guys')}>Message Everyone</button>  
     </p>
   </div>
 </Modal>

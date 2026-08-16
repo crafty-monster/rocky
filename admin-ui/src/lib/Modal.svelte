@@ -1,23 +1,19 @@
 <script>
-  import {createEventDispatcher} from 'svelte';
-  const dispatch = createEventDispatcher();
-  export let show = false;
-  export let title = '';
-  export let buttonOk = true;
+  let { show = $bindable(false), title = '', buttonOk = true, onclose, children } = $props();
 
   function close() {
     show = false;
-    dispatch('close');
+    onclose?.();
   }
 </script>
 
 {#if (show)}
 <div class="mask"></div>
 <div class="main">
-  <i class="close-modal fa fa-times fa-2x" on:click={close} on:keyup={close}></i>
+  <i class="close-modal fa fa-times fa-2x" role="button" tabindex="0" onclick={close} onkeyup={close}></i>
   <h2>{title}</h2>
   <div class="main-body">
-    <slot></slot>
+    {@render children?.()}
   </div>
   <div class="buttons">
     {#if (buttonOk)}

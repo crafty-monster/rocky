@@ -3,15 +3,14 @@
 
   import Modal from './Modal.svelte';
 
-  export let show = false;
-  export let world = {};
-  let loading = false;
+  let { show = $bindable(false), world = {} } = $props();
+  let loading = $state(false);
   let status = {};
-  let players = '0 of 10';
-  let version = '';
+  let players = $state('0 of 10');
+  let version = $state('');
 
-  $: fetchStatus(world);
-  
+  $effect(() => { fetchStatus(world); });
+
   async function fetchStatus() {
     console.log('fetchStatus()', world.id);
     if (!world.id) return;
@@ -37,11 +36,11 @@
     <div class="tabs is-boxed">
       <ul>
         <li class="is-active">
-          <!-- svelte-ignore a11y-invalid-attribute -->
+          <!-- svelte-ignore a11y_invalid_attribute -->
           <a href="javascript:;"class="nav-link active">Status</a>
         </li>
         <li class="pt-1" style="margin-left: auto">
-          <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} on:click={() => fetchStatus(100)} on:keyup={() => fetchStatus(100)}></i>
+          <i class={`fa fa-refresh fa-lg ${loading ? 'fa-spin': ''}`} role="button" tabindex="0" onclick={() => fetchStatus(100)} onkeyup={() => fetchStatus(100)}></i>
         </li>
       </ul>
     </div>

@@ -4,8 +4,8 @@
 
     fetch('/api/user/me').then(r => r.json()).then(start);
 
-    let loading = true;
-    let username = null;
+    let loading = $state(true);
+    let username = $state(null);
 
     async function start(user) {
       if (user?.id && user?.username) {

@@ -1,5 +1,5 @@
 <script>
-  export let server = {};
+  let { server = $bindable({}) } = $props();
   const THIRTY_SECONDS = 30*1000;
   const updateInfo = async () => server = await fetch('/api/server').then(r => r.json());
   const updateConnected = async () => server.up = await fetch('/api/server/connected').then(r => r.json()).then(s => s.connected);
