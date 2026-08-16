@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
   <script src="timeago.min.js"></script>
+  <script src="md5.js"></script>
 </head>
 
 <body>
@@ -40,10 +41,11 @@
             {{w.description}}
           </p>
           <div v-if="w.created" class="user">
-            <img
-              src="/admin/images/user.2.png"
-              alt="user" 
-              :style="`background-color: ${imageBackground(w.by)}`"/>
+            <span class="avatar">
+              <img
+                :src="`/admin/images/profile/${spriteIndex(w.by)}.png`"
+                alt="user"/>
+            </span>
             <div class="user-info">
               <h5>{{w.by}}</h5>
               <small>{{timeago(w.created)}}</small>

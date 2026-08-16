@@ -1,6 +1,6 @@
 import fs from 'fs';
 import * as url from 'url';
-import crypto from 'crypto';
+import {md5} from './md5.js';
 
 export const SECOND = 1000;
 export const MINUTE = 60*SECOND;
@@ -27,8 +27,17 @@ export function loadJSON(path) {
   return JSON.parse(fs.readFileSync(new URL(path, import.meta.url)));
 };
 
-export function md5 (str) {
-  return crypto.createHash('md5').update(str).digest('hex')
+export {md5};
+
+/**
+ * Deterministically picks one of the 256 pre-generated avatar sprites
+ * (admin-ui/public/images/profile/{00..ff}.png) for a given username.
+ * @param {String} username
+ * @return {String} 2-digit hex sprite index, e.g. "4a"
+ */
+export function spriteIndex(username) {
+  const hash = parseInt(md5(username || '').slice(0, 8), 16);
+  return (hash % 256).toString(16).padStart(2, '0');
 };
 
 export function hashCode(str) {
@@ -62,5 +71,5 @@ export function timeAgo(date) {
   return Math.round(diff/YEAR) + ' years ago';
 }
 
-export default {__dirname, toPosixPath, toWindowsPath, loadJSON, md5, hashCode, streamToString};
+export default {__dirname, toPosixPath, toWindowsPath, loadJSON, md5, spriteIndex, hashCode, streamToString};
 

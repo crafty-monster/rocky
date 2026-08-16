@@ -6,18 +6,13 @@ new Vue({
   },
   methods: {
     timeago: (d) => timeago.format(d),
-    imageBackground(username) {
-      return `hsl(${Math.abs(this.hashCode(username))%359}, 70%, 90%)`; // hsl(250, 69%, 90%),
+    // Deterministically picks one of the 256 pre-generated avatar sprites
+    // (/admin/images/profile/{00..ff}.png) for a given username.
+    // md5() comes from the vendored md5.js (loaded before this script).
+    spriteIndex(username) {
+      const hash = parseInt(md5(username || '').slice(0, 8), 16);
+      return (hash % 256).toString(16).padStart(2, '0');
     },
-    hashCode(str) {
-      let hash = 0;
-      for (let i = 0, len = str.length; i < len; i++) {
-        const chr = str.charCodeAt(i);
-        hash = (hash << 5) - hash + chr;
-        hash |= 0; // Convert to 32bit integer
-      }
-      return hash;
-    }
   },
   async mounted() {
     this.worlds = await fetch('/api/world').then(r => r.json());

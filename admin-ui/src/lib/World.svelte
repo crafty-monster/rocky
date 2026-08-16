@@ -2,12 +2,11 @@
 // @ts-nocheck
 
 import * as timeago from 'timeago.js';
-import {hashCode} from '../../../utils/index';
+import {spriteIndex} from '../../../utils/index';
 const assets = import.meta.glob("../assets/map.*.png");
 const hostname = window.location.hostname;
 let { id = null, name = null, image = null, description = null, state = null, port = null, created = null, by = null, oncreate, onstarted, ondeleted, onstopped, onstatus, onterminal } = $props();
 const images = {};
-const imageBackground = (username) => `hsl(${Math.abs(hashCode(username))%359}, 70%, 90%)`; // hsl(250, 69%, 90%)
 
 for (const path in assets) {
   assets[path]().then(({ default: imageUrl }) => {
@@ -47,7 +46,9 @@ for (const path in assets) {
       {/if}
     </p>
     <div class="user">
-      <img src="images/user.2.png" alt="user" style={'background-color: ' + imageBackground(by)}/>
+      <span class="avatar">
+        <img src={`images/profile/${spriteIndex(by ?? 'you')}.png`} alt="user"/>
+      </span>
       <div class="user-info">
         <h5>{by ?? 'you'}</h5>
         <small>{timeago.format(created)}</small>
@@ -165,12 +166,20 @@ for (const path in assets) {
   display: flex;
   margin-bottom: 10px;
 }
-.user img {
+.user .avatar {
   border-radius: 50%;
   width: 40px;
   height: 40px;
   margin-right: 10px;
-  background-color: hsl(250, 69%, 90%);
+  background-color: #e2e4ec;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.user .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.25);
 }
 .user-info h5 {
   margin: 0;
