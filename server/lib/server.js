@@ -110,7 +110,7 @@ class Server {
     console.log('Server.prune()');
     const images = await this.docker.pruneImages();
     const volumes = await this.docker.pruneVolumes();
-    const totalMb = Math.round((images?.SpaceReclaimed || 0) + (volumes.SpaceReclaimed || 0) / 1024 / 1024);
+    const totalMb = Math.round(((images?.SpaceReclaimed || 0) + (volumes?.SpaceReclaimed || 0)) / 1024 / 1024);
     console.log(`Deleted ${images?.ImagesDeleted?.length} images and ${volumes?.VolumesDeleted?.length} volumes. Saving ${totalMb}MB space.`);
     return {images, volumes, totalMb};
   }
