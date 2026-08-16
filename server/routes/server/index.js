@@ -1,8 +1,8 @@
-import server from '../../lib/server.js';
+import Server from '../../lib/server.js';
 
 export const info = async (req, res) => {
   try {
-    res.status(200).json(await server.info());
+    res.status(200).json(await Server.info());
   } catch (err) {
     res.status(500).send(err);
   }
@@ -10,14 +10,14 @@ export const info = async (req, res) => {
 
 export const version = async (req, res) => {
   try {
-    res.status(200).json(await server.version());
+    res.status(200).json(await Server.version());
   } catch (err) {
     res.status(500).send(err);
   }
 };
 
 export const connected = async (req, res) => {
-  const connected = await server.connected();
+  const connected = await Server.connected();
   if (connected) {
     res.status(200).send({connected});
   } else {
@@ -27,7 +27,15 @@ export const connected = async (req, res) => {
 
 export const containers = async (req, res) => {
   try {
-    res.status(200).send(await server.containers());
+    res.status(200).send(await Server.containers());
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+export const images = async (req, res) => {
+  try {
+    res.status(200).send(await Server.images());
   } catch (err) {
     res.status(500).send(err);
   }
@@ -35,7 +43,7 @@ export const containers = async (req, res) => {
 
 export const prune = async (req, res) => {
   try {
-    res.status(200).send(await server.prune());
+    res.status(200).send(await Server.prune());
   } catch (err) {
     res.status(500).send(err);
   }

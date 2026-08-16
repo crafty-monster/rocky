@@ -29,7 +29,7 @@
         <div class="card-header">
           <a :href="`minecraft://?addExternalServer=${w.name}|${hostname}:${w.port}`">
             <h4>{{w.name}}</h4>
-            <img :src="`/admin/images/thumbs/map.${String(w.id).substr(0,2)}.jpg`" :alt="w.name" />
+            <img :src="`/admin/images/thumbs/${w.image}`" :alt="w.name" />
           </a>
         </div>
         <div class="card-body">

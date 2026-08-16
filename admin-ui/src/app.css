@@ -11,3 +11,7 @@ body {
 body, button, input, optgroup, select, textarea {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
+
+button .fa {
+  margin-right: 0.5em;
+}
