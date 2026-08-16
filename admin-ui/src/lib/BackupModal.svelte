@@ -3,16 +3,14 @@
 
   import Modal from './Modal.svelte';
   import {timeAgo} from '../../../utils/index';
-  import {createEventDispatcher} from 'svelte';
 
-  export let show = false;
-  export let worlds = [];
-  
+  let { show = $bindable(false), worlds = [], onrestored } = $props();
+
   let loading = false;
-  let backups = [];
-  let missing = [];
+  let backups = $state([]);
+  let missing = $state([]);
 
-  const dispatch = createEventDispatcher();
+  $effect(() => { fetchBackups(show); });
 
   function track(item, action, promise) {
     item.busy = action;
@@ -26,8 +24,6 @@
     return promise;
   }
 
-  $: fetchBackups(show);
-  
   async function fetchBackups() {
     console.log('fetchBackups()');
     loading = true;
@@ -77,8 +73,8 @@
             <em>{backup.name}</em>
             <small>{timeAgo(backup.created)}</small>
             <div class="tools">
-              <button class="button is-warning" disabled={backup.busy} on:click={() => confirm(`Restore "${backup.name}" backup?.`) && track(backup, 'restore', fetch('/api/backup/' + backup.id, {method: 'PUT'}).then(() => dispatch('restored')))}>{#if backup.busy === 'restore'}<i class="fa fa-spinner fa-spin"></i>{/if} Restore</button>
-              <button class="button is-danger" disabled={backup.busy} on:click={() => confirm(`Delete "${backup.name}" backup?.`) && track(backup, 'delete', fetch('/api/backup/' + backup.id, {method: 'DELETE'}).then(fetchBackups))}>{#if backup.busy === 'delete'}<i class="fa fa-spinner fa-spin"></i>{/if} Delete</button>
+              <button class="button is-warning" disabled={backup.busy} onclick={() => confirm(`Restore "${backup.name}" backup?.`) && track(backup, 'restore', fetch('/api/backup/' + backup.id, {method: 'PUT'}).then(() => onrestored?.()))}>{#if backup.busy === 'restore'}<i class="fa fa-spinner fa-spin"></i>{/if} Restore</button>
+              <button class="button is-danger" disabled={backup.busy} onclick={() => confirm(`Delete "${backup.name}" backup?.`) && track(backup, 'delete', fetch('/api/backup/' + backup.id, {method: 'DELETE'}).then(fetchBackups))}>{#if backup.busy === 'delete'}<i class="fa fa-spinner fa-spin"></i>{/if} Delete</button>
             </div>
           </div>
         </li>
@@ -92,7 +88,7 @@
             <em>{world.name}</em>
             <small>n/a</small>
             <div class="tools">
-              <button class="button is-success" disabled={world.busy} on:click={() => confirm(`Create "${world.name}" backup?.`) && track(world, 'create', fetch('/api/world/' + world.id + '/backup', {method: 'POST'}).then(fetchBackups))}>{#if world.busy === 'create'}<i class="fa fa-spinner fa-spin"></i>{/if} Create</button>
+              <button class="button is-success" disabled={world.busy} onclick={() => confirm(`Create "${world.name}" backup?.`) && track(world, 'create', fetch('/api/world/' + world.id + '/backup', {method: 'POST'}).then(fetchBackups))}>{#if world.busy === 'create'}<i class="fa fa-spinner fa-spin"></i>{/if} Create</button>
             </div>
           </div>
         </li>
@@ -100,8 +96,8 @@
       {/if}
     </ul>
     <div class="upload">
-      <input bind:this={fileInput} type="file" style="display:none" on:change={handleUpload} />
-      <button class="button is-info is-small" on:click={() => fileInput.click()}><i class="fa fa-upload"></i> Upload Backup</button>
+      <input bind:this={fileInput} type="file" style="display:none" onchange={handleUpload} />
+      <button class="button is-info is-small" onclick={() => fileInput.click()}><i class="fa fa-upload"></i> Upload Backup</button>
     </div>
   </div>
 </Modal>

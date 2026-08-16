@@ -11,31 +11,31 @@
   import BackupModal from './BackupModal.svelte';
   import logo from '../assets/logo.transparentbg.png';
 
-  export let username = null;
-  
-  let ready = false;
-  let disconnected = false;
-  let refreshing = false;
+  let { username = null } = $props();
+
+  let ready = $state(false);
+  let disconnected = $state(false);
+  let refreshing = $state(false);
   let newworld = {id: '(new)', name: 'New World', state: 'new', port: 'survival', by: username};
-  let worlds = null;
-  let server = null;
+  let worlds = $state(null);
+  let server = $state(null);
   const adjectives = ['nifty', 'golden', 'pristine', 'dark', 'red', 'shadow', 'shining', 'magnificent', 'dangerous', 'pure', 'white', 'iron', 'diamond', 'copper', 'frozen', 'lofty', 'splendid', 'mysterious', 'magical', 'strange', 'hidden', 'fancy', 'scary', 'shimmering', 'fantastic', 'amazing', 'tricky', 'puny'];
   const nouns = ['pickaxe', 'sword', 'allay', 'jungle', 'mountains', 'skies', 'caves', 'forge', 'smithy', 'village', 'forest', 'grassland', 'seas', 'islands', 'desert', 'piglin', 'cobblestone', 'deepslate', 'compass', 'ocelot', 'lava', 'farm', 'golem', 'creeper', 'slime', 'witch', 'zombie', 'dragon', 'pillager', 'netherite'];
-  const terminalModal = {
+  let terminalModal = $state({
     show: false,
     world: {},
-  };
-  const statusModal = {
+  });
+  let statusModal = $state({
     show: false,
     world: {},
-  }
-  const backupModal = {
+  });
+  let backupModal = $state({
     show: false,
     worlds: [],
-  }
-  const uiModal = {
+  });
+  let uiModal = $state({
     show: false
-  };
+  });
 
   class Dashboard {
     static async mounted() {
@@ -115,28 +115,28 @@
 
   <TerminalModal bind:show={terminalModal.show} world={terminalModal.world} />
   <StatusModal bind:show={statusModal.show} world={statusModal.world} />
-  <BackupModal bind:show={backupModal.show} worlds={backupModal.worlds} on:restored={Dashboard.list} />
+  <BackupModal bind:show={backupModal.show} worlds={backupModal.worlds} onrestored={Dashboard.list} />
   <UIModal bind:show={uiModal.show} />
 
   <section class="px-3 toolbar">
     <div class="toolbar-buttons">
-      <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
+      <button disabled={disconnected} class="button is-light" onclick={ () => confirm('Stop all running worlds?') && fetch('/api/world/stopAll', {method: 'POST'}).then(Dashboard.list) }>
         stop worlds
       </button>
-      <button disabled={disconnected} class="button is-light" on:click={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
+      <button disabled={disconnected} class="button is-light" onclick={ () => confirm('Are you sure you want to delete all stopped worlds?') && fetch('/api/world', {method: 'DELETE'}).then(Dashboard.list) }>
         remove stopped worlds
       </button>
-      <button disabled={disconnected} class="button is-light" on:click={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
+      <button disabled={disconnected} class="button is-light" onclick={ () => confirm('This will clean up unused space in the server.\n\nDo you want to go ahead?') && fetch('/api/server/prune', {method: 'POST'}).then(r => r.json()).then(r => alert(`Saved ${r.totalMb}MB space`)).then(Dashboard.list) }>
         cleanup unused space
       </button>
-      <button disabled={disconnected} class="button is-light" on:click={Dashboard.backups}>
+      <button disabled={disconnected} class="button is-light" onclick={Dashboard.backups}>
         backups
       </button>
-      <button disabled={disconnected} class="button is-light" on:click={ () => uiModal.show = true }>
+      <button disabled={disconnected} class="button is-light" onclick={ () => uiModal.show = true }>
         branding
       </button>
     </div>
-    <button disabled={disconnected} class="button is-light" on:click={Dashboard.refresh} title="Refresh worlds">
+    <button disabled={disconnected} class="button is-light" onclick={Dashboard.refresh} title="Refresh worlds">
       <i class="fa fa-refresh {refreshing ? 'fa-spin' : ''}"></i>
     </button>
   </section>
@@ -150,7 +150,7 @@
       </div>
     {:else}
       {#each worlds as world}
-        <World {...world} on:stopped={Dashboard.list} on:started={Dashboard.list} on:deleted={Dashboard.list} on:create={Dashboard.create} on:terminal={() => Dashboard.terminal(world)} on:status={() => Dashboard.status(world)}/>
+        <World {...world} onstopped={Dashboard.list} onstarted={Dashboard.list} ondeleted={Dashboard.list} oncreate={Dashboard.create} onterminal={() => Dashboard.terminal(world)} onstatus={() => Dashboard.status(world)}/>
       {/each}
     {/if}
   </section>

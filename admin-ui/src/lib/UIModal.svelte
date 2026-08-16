@@ -1,15 +1,16 @@
 <script>
   // @ts-nocheck
 
+  import { onMount } from 'svelte';
   import Modal from './Modal.svelte';
 
-  export let show = false;
+  let { show = $bindable(false) } = $props();
   let loading = false;
-  let data = {};
-  let tab = 'header';
+  let data = $state({});
+  let tab = $state('header');
 
-  $: init();
-  
+  onMount(init);
+
   async function init() {
     console.log('init()');
     loading = true;
@@ -36,12 +37,12 @@
     </h3>
     <div class="tabs is-boxed">
       <ul>
-        <li class={tab === 'header' ? 'is-active' : ''} on:click={ () => tab = 'header' } on:keyup={ () => tab = 'header' }>
-          <!-- svelte-ignore a11y-invalid-attribute -->
+        <li class={tab === 'header' ? 'is-active' : ''} onclick={ () => tab = 'header' } onkeyup={ () => tab = 'header' }>
+          <!-- svelte-ignore a11y_invalid_attribute -->
           <a href="javascript:;" class="nav-link active">Header</a>
         </li>
-        <li class={tab === 'footer' ? 'is-active' : ''} on:click={ () => tab = 'footer' } on:keyup={ () => tab = 'footer' }>
-          <!-- svelte-ignore a11y-invalid-attribute -->
+        <li class={tab === 'footer' ? 'is-active' : ''} onclick={ () => tab = 'footer' } onkeyup={ () => tab = 'footer' }>
+          <!-- svelte-ignore a11y_invalid_attribute -->
           <a href="javascript:;" class="nav-link">Footer</a>
         </li>
       </ul>
@@ -58,7 +59,7 @@
     {/if}
     <p style="font-size: 80%; margin: -1em 0 5px;">After saving. Check the <a href=".." target="_blank">main page</a>.</p>
     <p class="buttons are-small" style="line-height: 35px">
-      <button class="button is-info" on:click={() => save()}>Save</button>
+      <button class="button is-info" onclick={() => save()}>Save</button>
     </p>
   </div>
 </Modal>
